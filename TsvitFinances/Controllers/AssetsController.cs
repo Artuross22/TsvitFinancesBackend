@@ -2,7 +2,6 @@
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace TsvitFinances.Controllers
 {
@@ -39,10 +38,22 @@ namespace TsvitFinances.Controllers
         [HttpPost]
         public async Task<ActionResult<Asset>> AddAsset([FromBody] Asset asset)
         {
-            _mainDb.Assets.Add(asset);
-            await _mainDb.SaveChangesAsync();
+            try
+            {
+                asset.AddedAt = DateTime.UtcNow;
+                asset.PublicId = Guid.NewGuid();
+                asset.IsActive = true;
 
-            return Ok(await GetAssets());
+                _mainDb.Assets.Add(asset);
+                await _mainDb.SaveChangesAsync();
+            }
+            catch (DbUpdateException db)
+            {
+                Console.WriteLine(db);
+                return BadRequest(new { message = $"Failed to add the asset to data base. The name of the asset is {asset.Name}"});
+            }
+
+            return Ok();
         }
 
         [HttpPut]
