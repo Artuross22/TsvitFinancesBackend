@@ -19,4 +19,6 @@ public class Asset
     public DateTime? ClosedAt { get; set; }
 
     public decimal? SoldFor { get; set; }
+
+    public required virtual IEnumerable<Chart> Charts { get; set; }
 }

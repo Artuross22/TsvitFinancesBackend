@@ -11,4 +11,6 @@ public class MainDb : DbContext
     }
 
     public DbSet<Asset> Assets { get; set; }
+
+    //public DbSet<Chart> Charts { get; set; }
 }

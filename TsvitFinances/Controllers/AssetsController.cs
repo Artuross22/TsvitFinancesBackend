@@ -31,7 +31,7 @@ namespace TsvitFinances.Controllers
             {
                 return NotFound();
             }
-
+           
             return product;
         }
 
