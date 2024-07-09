@@ -20,5 +20,5 @@ public class Asset
 
     public decimal? SoldFor { get; set; }
 
-    public required virtual IEnumerable<Chart> Charts { get; set; }
+    public virtual IEnumerable<Chart> Charts { get; set; } = [];
 }

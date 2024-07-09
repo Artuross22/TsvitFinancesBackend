@@ -2,6 +2,7 @@
 using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TsvitFinances.Dto;
 
 namespace TsvitFinances.Controllers
 {
@@ -19,62 +20,101 @@ namespace TsvitFinances.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Asset>>> GetAssets()
         {
-            return await _mainDb.Assets.ToListAsync();
+            return await _mainDb.Set<Asset>()
+                .Include(c => c.Charts)
+                .ToListAsync();
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Asset>> GetAsset(int id)
         {
-            var product = await _mainDb.Assets.FirstOrDefaultAsync(a => a.Id == id);
+            var product = await _mainDb.Set<Asset>()
+                .Include(c => c.Charts)
+                .FirstOrDefaultAsync(a => a.Id == id);
 
             if (product is null)
             {
                 return NotFound();
             }
-           
+
             return product;
         }
 
         [HttpPost]
-        public async Task<ActionResult<Asset>> AddAsset([FromBody] Asset asset)
+        public async Task<ActionResult> AddAsset([FromBody] AssetDto model)
         {
             try
             {
-                asset.AddedAt = DateTime.UtcNow;
-                asset.PublicId = Guid.NewGuid();
-                asset.IsActive = true;
+                model.AddedAt = DateTime.UtcNow;
+                model.PublicId = Guid.NewGuid();
+                model.IsActive = true;
 
-                _mainDb.Assets.Add(asset);
+                var asset = new Asset
+                {
+                    PublicId = Guid.NewGuid(),
+                    Name = model.Name,
+                    AddedAt = DateTime.UtcNow,
+                    CurrentPrice = model.CurrentPrice,
+                    BoughtFor = model.BoughtFor,
+                    IsActive = true,
+                    ClosedAt = null,
+                    SoldFor = null,
+                };
+
+                _mainDb.Add(asset);
+                await _mainDb.SaveChangesAsync();
+
+                foreach (var chartDto in model.Charts)
+                {
+                    _mainDb.Add(new Chart
+                    {
+                        AssetId = asset.Id,
+                        Asset = asset,
+                        Title = chartDto.Title,
+                        Description = chartDto.Description,
+                        ImageData = chartDto.ImageData,
+                    });
+                }
+
                 await _mainDb.SaveChangesAsync();
             }
             catch (DbUpdateException db)
             {
                 Console.WriteLine(db);
-                return BadRequest(new { message = $"Failed to add the asset to data base. The name of the asset is {asset.Name}"});
+                return BadRequest(new { message = $"Failed to add the asset to data base. The name of the asset is {model.Name}" });
             }
 
             return Ok();
         }
 
         [HttpPut]
-        public async Task<ActionResult<Asset>> UpdateAsset([FromBody] Asset asset)
+        public async Task<ActionResult<Asset>> UpdateAsset([FromBody] AssetDto model)
         {
-            var dbAsset = await _mainDb.Assets
-                 .Where(a => a.Id == asset.Id)
+            var asset = await _mainDb.Set<Asset>()
+                 .Where(a => a.Id == model.Id)
                  .SingleOrDefaultAsync();
 
-            if (dbAsset is null)
+            if (asset is null)
             {
                 return NotFound();
             }
 
-            dbAsset.Name = asset.Name;
-            dbAsset.CurrentPrice = asset.CurrentPrice;
-            dbAsset.AddedAt = asset.AddedAt;
-            dbAsset.ClosedAt = asset.ClosedAt;
-            dbAsset.IsActive = asset.IsActive;
-            dbAsset.BoughtFor = asset.BoughtFor;
-            dbAsset.SoldFor = asset.SoldFor;
+            asset.Name = model.Name;
+            asset.CurrentPrice = model.CurrentPrice;
+            asset.AddedAt = model.AddedAt;
+            asset.ClosedAt = model.ClosedAt;
+            asset.IsActive = model.IsActive;
+            asset.BoughtFor = model.BoughtFor;
+            asset.SoldFor = model.SoldFor;
+
+            foreach (var chart in asset.Charts)
+            {
+                var chartDto = model.Charts.Single(a => a.Id == chart.Id);
+
+                chart.Title = chartDto.Title;
+                chart.ImageData = chartDto.ImageData;
+                chart.Description = chartDto.Description;
+            }
 
             await _mainDb.SaveChangesAsync();
 
@@ -84,7 +124,7 @@ namespace TsvitFinances.Controllers
         [HttpDelete]
         public async Task<ActionResult<Asset>> DeleteAsset(int id)
         {
-            var dbAsset = await _mainDb.Assets
+            var dbAsset = await _mainDb.Set<Asset>()
                  .Where(a => a.Id == id)
                  .SingleOrDefaultAsync();
 

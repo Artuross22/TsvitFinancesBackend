@@ -1,7 +1,10 @@
-﻿namespace TsvitFinances.Dto
+﻿using Data.Models;
+
+namespace TsvitFinances.Dto
 {
     public class AssetDto
     {
+        public int Id { get; init; }
         public Guid PublicId { get; set; }
 
         public required string Name { get; set; }
@@ -17,5 +20,7 @@
         public DateTime? ClosedAt { get; set; }
 
         public decimal? SoldFor { get; set; }
+
+        public virtual IEnumerable<Chart> Charts { get; set; } = [];
     }
 }
