@@ -14,5 +14,3 @@ public class Chart
 
     public required byte[] ImageData { get; set; }
 }
-
-

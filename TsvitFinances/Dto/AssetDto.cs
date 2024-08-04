@@ -1,13 +1,14 @@
-﻿using Data.Models;
-
-namespace TsvitFinances.Dto
+﻿namespace TsvitFinances.Dto
 {
     public class AssetDto
     {
         public int Id { get; init; }
+
         public Guid PublicId { get; set; }
 
         public required string Name { get; set; }
+
+        public required string Ticker { get; set; }
 
         public decimal CurrentPrice { get; set; }
 
@@ -21,6 +22,9 @@ namespace TsvitFinances.Dto
 
         public decimal? SoldFor { get; set; }
 
-        public virtual IEnumerable<Chart> Charts { get; set; } = [];
+        public int? SeasonalityId { get; set; }
+        public SeasonalityDto? Seasonalities { get; set; }
+
+        public virtual IEnumerable<ChartDto> Charts { get; set; } = [];
     }
 }

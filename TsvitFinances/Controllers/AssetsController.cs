@@ -51,7 +51,7 @@ namespace TsvitFinances.Controllers
 
                 var asset = new Asset
                 {
-                    PublicId = Guid.NewGuid(),
+                    PublicId = Guid.NewGuid(),                 
                     Name = model.Name,
                     AddedAt = DateTime.UtcNow,
                     CurrentPrice = model.CurrentPrice,
