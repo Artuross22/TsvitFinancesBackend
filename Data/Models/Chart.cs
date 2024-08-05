@@ -1,4 +1,7 @@
-﻿namespace Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Data.Models;
 
 public class Chart
 {
@@ -13,4 +16,12 @@ public class Chart
     public string? Description { get; set; }
 
     public required byte[] ImageData { get; set; }
+
+    internal class EFConfiguration : IEntityTypeConfiguration<Chart>
+    {
+        public void Configure(EntityTypeBuilder<Chart> builder)
+        {
+            builder.ToTable("Charts");
+        }
+    }
 }

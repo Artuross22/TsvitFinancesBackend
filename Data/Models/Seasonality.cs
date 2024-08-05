@@ -1,4 +1,7 @@
-﻿namespace Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Data.Models;
 
 public class Seasonality
 {
@@ -11,4 +14,12 @@ public class Seasonality
     public DateTime StartSeason { get; set; }
 
     public DateTime EndSeason { get; set; }
+
+    internal class EFConfiguration : IEntityTypeConfiguration<Seasonality>
+    {
+        public void Configure(EntityTypeBuilder<Seasonality> builder)
+        {
+            builder.ToTable("Seasonalities");
+        }
+    }
 }

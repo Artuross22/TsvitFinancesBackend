@@ -53,6 +53,7 @@ namespace TsvitFinances.Controllers
                 {
                     PublicId = Guid.NewGuid(),                 
                     Name = model.Name,
+                    Ticker = model.Ticker,
                     AddedAt = DateTime.UtcNow,
                     CurrentPrice = model.CurrentPrice,
                     BoughtFor = model.BoughtFor,

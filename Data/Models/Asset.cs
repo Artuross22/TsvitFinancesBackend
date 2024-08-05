@@ -1,4 +1,7 @@
-﻿namespace Data.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Data.Models;
 
 public class Asset
 {
@@ -7,6 +10,8 @@ public class Asset
     public required Guid PublicId { get; set; }
 
     public required string Name { get; set; }
+
+    public required string Ticker { get; set; }
 
     public required decimal CurrentPrice { get; set; }
 
@@ -24,4 +29,14 @@ public class Asset
     public Seasonality? Seasonalities { get; set; }
 
     public virtual IEnumerable<Chart> Charts { get; set; } = [];
+
+    internal class EFConfiguration : IEntityTypeConfiguration<Asset>
+    {
+        public void Configure(EntityTypeBuilder<Asset> builder)
+        {
+            builder.ToTable("Assets");
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Ticker).IsRequired().HasMaxLength(10);
+        }
+    }
 }
