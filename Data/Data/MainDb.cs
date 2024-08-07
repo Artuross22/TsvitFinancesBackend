@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Db;
 
-public class MainDb : DbContext
+public class MainDb : IdentityDbContext<AppUser>
 {
     public MainDb(DbContextOptions<MainDb> options) : base(options)
     { }

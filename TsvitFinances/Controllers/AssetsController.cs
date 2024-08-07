@@ -1,5 +1,6 @@
 ﻿using Data.Db;
 using Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto;
@@ -17,7 +18,7 @@ namespace TsvitFinances.Controllers
             _mainDb = mainDb;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public async Task<ActionResult<IEnumerable<Asset>>> GetAssets()
         {
             return await _mainDb.Set<Asset>()
