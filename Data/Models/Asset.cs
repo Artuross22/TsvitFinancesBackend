@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Data.Models.Enums;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Data.Models;
@@ -8,6 +9,11 @@ public class Asset
     public int Id { get; set; }
 
     public required Guid PublicId { get; set; }
+
+    public required string AppUserId { get; set; }
+    public required AppUser AppUser { get; set; }
+
+    public required Sector Sector { get; set; }
 
     public required string Name { get; set; }
 

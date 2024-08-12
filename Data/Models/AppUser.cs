@@ -6,10 +6,13 @@ namespace Data.Models;
 
 public class AppUser : IdentityUser
 {
+    public Guid PublicId { get; set; }
     public string Nickname { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName {get ; set; } = string.Empty;
     public DateTime CreatedOn { get; set; }
+    public virtual IEnumerable<Asset>? Asset { get; set; }
+
     public virtual IEnumerable<BalanceFlow>? BalanceFlows { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<AppUser>

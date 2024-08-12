@@ -44,6 +44,13 @@ namespace TsvitFinances.Controllers
         [HttpPost]
         public async Task<ActionResult> AddAsset([FromBody] AssetDto model)
         {
+            var user = await _mainDb.Users.SingleAsync(u => u.PublicId == model.UserPublicId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
             try
             {
                 model.AddedAt = DateTime.UtcNow;
@@ -52,7 +59,10 @@ namespace TsvitFinances.Controllers
 
                 var asset = new Asset
                 {
-                    PublicId = Guid.NewGuid(),                 
+                    PublicId = Guid.NewGuid(),
+                    AppUserId = user.Id,
+                    AppUser = user,
+                    Sector = model.Sector,
                     Name = model.Name,
                     Ticker = model.Ticker,
                     AddedAt = DateTime.UtcNow,

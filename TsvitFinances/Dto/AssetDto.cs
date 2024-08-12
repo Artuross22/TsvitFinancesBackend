@@ -1,10 +1,16 @@
-﻿namespace TsvitFinances.Dto
+﻿using Data.Models.Enums;
+
+namespace TsvitFinances.Dto
 {
     public class AssetDto
     {
         public int Id { get; init; }
 
         public Guid PublicId { get; set; }
+
+        public required Guid UserPublicId { get; set; }
+
+        public required Sector Sector { get; set; }
 
         public required string Name { get; set; }
 
