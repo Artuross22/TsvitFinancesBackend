@@ -1,6 +1,5 @@
 ﻿using Data.Db;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto;
@@ -18,12 +17,14 @@ namespace TsvitFinances.Controllers
             _mainDb = mainDb;
         }
 
-        [HttpGet, Authorize]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Asset>>> GetAssets()
         {
-            return await _mainDb.Set<Asset>()
+            var asset = await _mainDb.Set<Asset>()
                 .Include(c => c.Charts)
                 .ToListAsync();
+
+            return asset;
         }
 
         [HttpGet("{id}")]
@@ -45,7 +46,7 @@ namespace TsvitFinances.Controllers
         public async Task<ActionResult> AddAsset([FromBody] AssetDto model)
         {
             var user = await _mainDb.Users.SingleAsync(u => u.PublicId == model.UserPublicId);
-
+            
             if (user == null)
             {
                 return NotFound();

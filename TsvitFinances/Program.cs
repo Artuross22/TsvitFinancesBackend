@@ -1,8 +1,10 @@
 using Data.Db;
 using Data.Models;
+using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
+using TsvitFinances.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,10 +31,14 @@ builder.Services.AddSwaggerGen(options =>
     options.OperationFilter<SecurityRequirementsOperationFilter>();
 });
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+builder.Services.AddScoped<JwtProvider>();
 builder.Services.AddAuthorization();
 
 builder.Services.AddIdentityApiEndpoints<AppUser>()
                 .AddEntityFrameworkStores<MainDb>();
+
+builder.Services.AddJwtAuthentication();
 
 var app = builder.Build();
 
