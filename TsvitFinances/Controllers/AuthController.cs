@@ -1,11 +1,13 @@
 ﻿using Data.Models;
 using Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TsvitFinances.Dto.User;
 
 namespace TsvitFinances.Controllers;
 
+[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : Controller
@@ -32,6 +34,7 @@ public class AuthController : Controller
 
                 return Ok(new { Token = token });
             }
+
             return Unauthorized(new { Message = "Invalid credentials" });
         }
         return BadRequest(ModelState);

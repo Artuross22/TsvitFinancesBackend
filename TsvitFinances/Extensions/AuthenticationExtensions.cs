@@ -22,6 +22,15 @@ public static class AuthenticationExtensions
                         ValidateLifetime = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey))
                     };
+
+                    //options.Events = new JwtBearerEvents
+                    //{
+                    //    OnMessageReceived = context =>
+                    //    {
+                    //        context.Token = "";
+                    //        return Task.CompletedTask;
+                    //    }
+                    //};
                 });
 
         services.AddAuthorization();
