@@ -15,11 +15,19 @@ public class Asset
 
     public required Sector Sector { get; set; }
 
+    public required InvestmentTerm Term { get; set; }
+
+    public required Market Market { get; set; }
+
     public required string Name { get; set; }
 
     public required string Ticker { get; set; }
 
     public required decimal CurrentPrice { get; set; }
+
+    public required decimal Quantity { get; set; }
+
+    public required decimal InterestOnCurrentDeposit {  get; set; }
 
     public required decimal BoughtFor { get; set; }
 

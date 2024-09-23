@@ -1,14 +1,14 @@
 ﻿using Data.Models.Enums;
 
-namespace TsvitFinances.Dto
+namespace TsvitFinances.Dto.AssetDto
 {
-    public class AssetDto
+    public class AssetUpdateDto
     {
         public int Id { get; init; }
 
         public Guid PublicId { get; set; }
 
-        public required Guid UserPublicId { get; set; }
+        public required string UserPublicId { get; set; }
 
         public required Sector Sector { get; set; }
 
@@ -19,14 +19,6 @@ namespace TsvitFinances.Dto
         public decimal CurrentPrice { get; set; }
 
         public decimal BoughtFor { get; set; }
-
-        public DateTime AddedAt { get; set; }
-
-        public bool IsActive { get; set; }
-
-        public DateTime? ClosedAt { get; set; }
-
-        public decimal? SoldFor { get; set; }
 
         public int? SeasonalityId { get; set; }
         public SeasonalityDto? Seasonalities { get; set; }

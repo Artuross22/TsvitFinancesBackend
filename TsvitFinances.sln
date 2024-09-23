@@ -9,9 +9,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "library", "library", "{DB8E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{E90CAD28-B9E9-4FA1-88AE-BC4B4C62201C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Application", "Application\Application.csproj", "{C2215CD2-41EA-4E01-8192-A74E839EBC57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Application", "Application\Application.csproj", "{C2215CD2-41EA-4E01-8192-A74E839EBC57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E9F6E17C-3BE4-4545-B6D2-B7EAC48CB422}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{E9F6E17C-3BE4-4545-B6D2-B7EAC48CB422}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

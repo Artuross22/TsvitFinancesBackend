@@ -2,8 +2,6 @@ using Data.Db;
 using Data.Models;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
 using TsvitFinances.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);

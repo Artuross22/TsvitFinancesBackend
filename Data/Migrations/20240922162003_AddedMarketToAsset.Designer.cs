@@ -4,6 +4,7 @@ using Data.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(MainDb))]
-    partial class MainDbModelSnapshot : ModelSnapshot
+    [Migration("20240922162003_AddedMarketToAsset")]
+    partial class AddedMarketToAsset
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -129,9 +132,6 @@ namespace Data.Migrations
                     b.Property<decimal>("CurrentPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal>("InterestOnCurrentDeposit")
-                        .HasColumnType("decimal(18,2)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -145,9 +145,6 @@ namespace Data.Migrations
 
                     b.Property<Guid>("PublicId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int?>("SeasonalityId")
                         .HasColumnType("int");
