@@ -2,8 +2,7 @@
 
 public enum Sector
 {
-    None = 0,
-    Technology,
+    Technology = 100,
     Industrials,
     HealthCare,
     RealEstate,

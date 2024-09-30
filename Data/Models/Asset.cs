@@ -15,7 +15,7 @@ public class Asset
 
     public required Sector Sector { get; set; }
 
-    public required InvestmentTerm Term { get; set; }
+    public InvestmentTerm Term { get; set; }
 
     public required Market Market { get; set; }
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto.Asset;
 using TsvitFinances.Dto.AssetDto;
+using TsvitFinances.Extensions;
 
 namespace TsvitFinances.Controllers
 {
@@ -46,6 +47,17 @@ namespace TsvitFinances.Controllers
             return product;
         }
 
+        [HttpGet("AddAsset")]
+        public ActionResult<AssetPreCreationDataDto> AddAsset()
+        {
+            return new AssetPreCreationDataDto
+            {
+                InvestmentTerms = EnumHelper.GetSelectListFromEnum<InvestmentTerm>(),
+                Markets = EnumHelper.GetSelectListFromEnum<Market>(),
+                Sectors = EnumHelper.GetSelectListFromEnum<Sector>(),
+            };
+        }
+
         [HttpPost]
         public async Task<ActionResult> AddAsset([FromBody] AddAssetDto model)
         {
@@ -63,9 +75,9 @@ namespace TsvitFinances.Controllers
                     PublicId = Guid.NewGuid(),
                     AppUserId = user.Id,
                     AppUser = user,
-                    Sector = Sector.Energy,
-                    Market = Market.Stock,
-                    Term = InvestmentTerm.Position,
+                    Sector = (Sector)model.Sector,
+                    Market = (Market)model.Market,
+                    Term = (InvestmentTerm)model.InvestmentTerm,
                     Name = model.Name,
                     Ticker = model.Ticker,
                     AddedAt = DateTime.UtcNow,

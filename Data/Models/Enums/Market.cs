@@ -2,7 +2,7 @@
 
 public enum Market
 {
-    Stock,
+    Stock = 10,
     Bond,
     Crypto,
     ETF,

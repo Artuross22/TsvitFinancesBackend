@@ -2,8 +2,8 @@
 
 public enum InvestmentTerm
 {
-    Intraday,
-    Swing,
-    Position,
-    Investing,
+    Intraday = 10,
+    Swing = 20,
+    Position = 30,
+    Investing = 40,
 }
