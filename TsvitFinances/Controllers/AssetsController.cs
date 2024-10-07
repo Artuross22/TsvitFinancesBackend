@@ -2,6 +2,7 @@
 using Data.Models;
 using Data.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto.Asset;
@@ -26,7 +27,6 @@ namespace TsvitFinances.Controllers
         public async Task<ActionResult<IEnumerable<Asset>>> GetAssets()
         {
             var asset = await _mainDb.Set<Asset>()
-                .Include(c => c.Charts)
                 .ToListAsync();
 
             return asset;
@@ -59,7 +59,7 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddAsset([FromBody] AddAssetDto model)
+        public async Task<ActionResult> AddAsset(AddAssetDto model)
         {
             var user = await _mainDb.Users.SingleAsync(u => u.Id == model.UserPublicId);
 
@@ -88,24 +88,14 @@ namespace TsvitFinances.Controllers
                     IsActive = true,
                     ClosedAt = null,
                     SoldFor = null,
+                    Charts = null!
                 };
 
                 _mainDb.Add(asset);
                 await _mainDb.SaveChangesAsync();
 
-                //foreach (var chartDto in model.Charts)
-                //{
-                //    _mainDb.Add(new Chart
-                //    {
-                //        AssetId = asset.Id,
-                //        Asset = asset,
-                //        Title = chartDto.Title,
-                //        Description = chartDto.Description,
-                //        ImageData = chartDto.ImageData,
-                //    });
-                //}
+               await _uploadFiles(model.Charts, asset.Id);
 
-                await _mainDb.SaveChangesAsync();
             }
             catch (DbUpdateException db)
             {
@@ -139,14 +129,13 @@ namespace TsvitFinances.Controllers
             asset.CurrentPrice = model.CurrentPrice;
             asset.BoughtFor = model.BoughtFor;
 
-            //foreach (var chart in asset.Charts)
-            //{
-            //    var chartDto = model.Charts.Single(a => a.Id == chart.Id);
+            foreach (var chart in asset.Charts)
+            {
+                var chartDto = model.Charts.Single(a => a.Id == chart.Id);
 
-            //    chart.Title = chartDto.Title;
-            //    chart.ImageData = chartDto.ImageData;
-            //    chart.Description = chartDto.Description;
-            //}
+                chart.Title = chartDto.Title;
+                chart.Description = chartDto.Description;
+            }
 
             await _mainDb.SaveChangesAsync();
 
@@ -201,6 +190,36 @@ namespace TsvitFinances.Controllers
             await _mainDb.SaveChangesAsync();
 
             return Ok();
+        }
+
+        private async Task _uploadFiles(List<IFormFile> files, int assetId)
+        {
+            foreach (var formFile in files)
+            {
+                if (formFile.Length > 0)
+                {
+                    var filePath = Path.Combine("D:\\Backend\\Uploads", formFile.FileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await formFile.CopyToAsync(stream);
+                    }
+
+                    var fileEntity = new Chart
+                    {
+                        AssetId = assetId,
+                        Asset = null!,
+                        FileName = formFile.FileName,
+                        FilePath = filePath,
+                        FileSize = formFile.Length,
+                        UploadedDate = DateTime.UtcNow
+                    };
+
+                    _mainDb.Add(fileEntity);
+                }
+            }
+
+            await _mainDb.SaveChangesAsync();
         }
     }
 }

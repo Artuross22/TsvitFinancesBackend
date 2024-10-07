@@ -6,16 +6,21 @@ namespace Data.Models;
 public class Chart
 {
     public int Id { get; set; }
+    public required int AssetId { get; set; }
 
-    public required int AssetId { get; set; } 
+    public required Asset Asset { get; set; }
 
-    public required Asset Asset { get; set; }    
+    public required string FileName { get; set; }
+
+    public required string FilePath { get; set; }
+
+    public required long FileSize { get; set; }
+
+    public DateTime UploadedDate { get; set; }
 
     public string? Title { get; set; }
 
     public string? Description { get; set; }
-
-    public required byte[] ImageData { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<Chart>
     {

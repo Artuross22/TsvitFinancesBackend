@@ -22,5 +22,5 @@ public class AddAssetDto
 
     public required int Market { get; set; }
 
-    public required IFormFile Files { get; set; }
+    public required List<IFormFile> Charts { get; set; }
 }

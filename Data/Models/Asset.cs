@@ -42,7 +42,7 @@ public class Asset
     public int? SeasonalityId { get; set; }
     public Seasonality? Seasonalities { get; set; }
 
-    public virtual IEnumerable<Chart> Charts { get; set; } = [];
+    public virtual required IEnumerable<Chart> Charts { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<Asset>
     {
