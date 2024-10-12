@@ -1,11 +1,10 @@
 ﻿using Data.Db;
 using Data.Models;
 using Data.Models.Enums;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto.Asset;
+using TsvitFinances.Dto.Asset.Output;
 using TsvitFinances.Dto.AssetDto;
 using TsvitFinances.Extensions;
 
@@ -33,18 +32,39 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Asset>> GetAsset(int id)
+        public async Task<ActionResult<GetAssetsDto>> GetAsset(int id)
         {
-            var product = await _mainDb.Set<Asset>()
+            var asset = await _mainDb.Set<Asset>()
                 .Include(c => c.Charts)
                 .FirstOrDefaultAsync(a => a.Id == id);
 
-            if (product is null)
+            if(asset == null)
             {
                 return NotFound();
             }
 
-            return product;
+            var output = new GetAssetsDto
+            {
+                PublicId = asset.PublicId,
+                AddedAt = asset.AddedAt,
+                BoughtFor = asset.BoughtFor,
+                CurrentPrice = asset.CurrentPrice,
+                InterestOnCurrentDeposit = asset.InterestOnCurrentDeposit,
+                Market = asset.Market.ToString(),
+                Sector = asset.Sector.ToString(),
+                Term = asset.Term.ToString(),
+                Name = asset.Name,
+                Ticker = asset.Ticker,
+                Quantity = asset.Quantity,
+                ChartsPath = asset.Charts.Select(s => s.FilePath).ToList(),
+            };
+
+            if (asset is null)
+            {
+                return NotFound();
+            }
+
+            return output;
         }
 
         [HttpGet("AddAsset")]
