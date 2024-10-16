@@ -32,13 +32,13 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<GetAssetsDto>> GetAsset(int id)
+        public async Task<ActionResult<GetAssetsDto>> GetAsset(Guid id)
         {
             var asset = await _mainDb.Set<Asset>()
                 .Include(c => c.Charts)
-                .FirstOrDefaultAsync(a => a.Id == id);
+                .FirstOrDefaultAsync(a => a.PublicId == id);
 
-            if(asset == null)
+            if (asset == null)
             {
                 return NotFound();
             }
@@ -56,8 +56,25 @@ namespace TsvitFinances.Controllers
                 Name = asset.Name,
                 Ticker = asset.Ticker,
                 Quantity = asset.Quantity,
-                ChartsPath = asset.Charts.Select(s => s.FilePath).ToList(),
+
+                ChartsPath = asset.Charts
+                    .Select(s => s.FilePath)
+                    .Where(filePath => filePath.Contains("public"))
+                    .Select(filePath => filePath.Substring(filePath.IndexOf("public") + "public".Length)
+                    .Replace("\\", "/"))
+                    .ToList()
             };
+
+            foreach (var item in asset.Charts)
+            {
+                output.Charts?.Add(new GetAssetsDto._Chart
+                {
+                    Name = item.FileName,
+                    Description = item.Description,
+                    ChartsPath = item.FilePath.Substring(item.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/"),
+                });
+            }
+
 
             if (asset is null)
             {
@@ -114,7 +131,7 @@ namespace TsvitFinances.Controllers
                 _mainDb.Add(asset);
                 await _mainDb.SaveChangesAsync();
 
-               await _uploadFiles(model.Charts, asset.Id);
+                await _uploadFiles(model.Charts, asset.Id);
 
             }
             catch (DbUpdateException db)
@@ -163,11 +180,11 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpPost("SellAsset/{id}")]
-        public async Task<IActionResult> SellAsset(int id)
+        public async Task<IActionResult> SellAsset(Guid id)
         {
             var asset = await _mainDb.Set<Asset>()
                  .Include(a => a.AppUser)
-                 .Where(a => a.Id == id)
+                 .Where(a => a.PublicId == id)
                  .SingleOrDefaultAsync();
 
             if (asset is null)
@@ -195,10 +212,10 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Asset>> DeleteAsset(int id)
+        public async Task<ActionResult<Asset>> DeleteAsset(Guid id)
         {
             var asset = await _mainDb.Set<Asset>()
-                 .Where(a => a.Id == id)
+                 .Where(a => a.PublicId == id)
                  .SingleOrDefaultAsync();
 
             if (asset is null)
@@ -214,11 +231,17 @@ namespace TsvitFinances.Controllers
 
         private async Task _uploadFiles(List<IFormFile> files, int assetId)
         {
+            string now = DateTime.UtcNow.Date.ToString("dd/MM/yyyy");
+
+            string directoryPath = Path.Combine("D:\\TsvitFund\\TsvitFinances\\tsvit\\public\\uploads\\", now);
+
+            Directory.CreateDirectory(directoryPath);
+
             foreach (var formFile in files)
             {
                 if (formFile.Length > 0)
                 {
-                    var filePath = Path.Combine("D:\\Backend\\Uploads", formFile.FileName);
+                    var filePath = Path.Combine(directoryPath, formFile.FileName);
 
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {

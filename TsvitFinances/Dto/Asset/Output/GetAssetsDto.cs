@@ -1,6 +1,4 @@
-﻿using Data.Models.Enums;
-
-namespace TsvitFinances.Dto.Asset.Output;
+﻿namespace TsvitFinances.Dto.Asset.Output;
 
 public class GetAssetsDto
 {
@@ -26,5 +24,16 @@ public class GetAssetsDto
 
     public required decimal InterestOnCurrentDeposit { get; set; }
 
-   public IReadOnlyList<string> ChartsPath { get; set; }
+    public IReadOnlyList<string> ChartsPath { get; set; }
+
+    public IList<_Chart>? Charts { get; set; } = [];
+
+    public class _Chart
+    {
+        public string Name { get; set; } = string.Empty;
+
+        public string Description { get; set; } = string.Empty;
+
+        public string ChartsPath { get; set; } = string.Empty;
+    }
 }
