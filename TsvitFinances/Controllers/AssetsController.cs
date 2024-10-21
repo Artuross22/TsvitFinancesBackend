@@ -56,13 +56,6 @@ namespace TsvitFinances.Controllers
                 Name = asset.Name,
                 Ticker = asset.Ticker,
                 Quantity = asset.Quantity,
-
-                ChartsPath = asset.Charts
-                    .Select(s => s.FilePath)
-                    .Where(filePath => filePath.Contains("public"))
-                    .Select(filePath => filePath.Substring(filePath.IndexOf("public") + "public".Length)
-                    .Replace("\\", "/"))
-                    .ToList()
             };
 
             foreach (var item in asset.Charts)
@@ -144,7 +137,7 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult<Asset>> UpdateAsset([FromBody] AssetUpdateDto model)
+        public async Task<ActionResult<Asset>> UpdateAsset(AssetUpdateDto model)
         {
             var user = await _mainDb.Users.SingleAsync(u => u.Id == model.UserPublicId);
 
@@ -166,13 +159,6 @@ namespace TsvitFinances.Controllers
             asset.CurrentPrice = model.CurrentPrice;
             asset.BoughtFor = model.BoughtFor;
 
-            foreach (var chart in asset.Charts)
-            {
-                var chartDto = model.Charts.Single(a => a.Id == chart.Id);
-
-                chart.Title = chartDto.Title;
-                chart.Description = chartDto.Description;
-            }
 
             await _mainDb.SaveChangesAsync();
 
@@ -228,6 +214,75 @@ namespace TsvitFinances.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("DeleteChart/{id}/{assetId}")]
+        public async Task<IActionResult> DeleteChart(int id, Guid assetId)
+        {
+            var chart = await _mainDb.Set<Chart>()
+                .Where(c => c.Asset.PublicId == assetId)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (chart is null)
+            {
+                return NotFound();
+            }
+
+            _mainDb.Remove(chart);
+            await _mainDb.SaveChangesAsync();
+
+            return Ok();
+        }
+
+
+        [HttpPost("UpdateChart")]
+        public async Task<IActionResult> UpdateChart(UpdateChartDto model)
+        {
+            var chart = await _mainDb.Set<Chart>().FirstOrDefaultAsync(c => c.Id == model.Id);
+
+            if (chart is null)
+            {
+                return NotFound();
+            }
+
+            chart.FileName = model.Name;
+            chart.Description = model.Description;
+
+            await _mainDb.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        [HttpGet("GetChartsByAssetId/{id}")]
+        public async Task<IActionResult> GetChartsByAssetId(Guid id)
+        {
+            var charts = await _mainDb.Set<Asset>().Where(a => a.PublicId == id)
+                .Include(a => a.Charts)
+                .FirstOrDefaultAsync();
+
+            if (charts is null)
+            {
+                return NotFound();
+            }
+
+            var output = new GetCharts
+            {
+                AssetPublicId = id,
+            };
+
+            foreach (var item in charts.Charts)
+            {
+                output.Charts?.Add(new GetCharts._Chart
+                {
+                    Id = item.Id,
+                    Name = item.FileName,
+                    Description = item.Description,
+                    ChartsPath = item.FilePath.Substring(item.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/"),
+                });
+            }
+
+            return Ok(output);
+        }
+
 
         private async Task _uploadFiles(List<IFormFile> files, int assetId)
         {

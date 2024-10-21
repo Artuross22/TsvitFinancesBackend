@@ -6,6 +6,7 @@ namespace Data.Models;
 public class Chart
 {
     public int Id { get; set; }
+
     public required int AssetId { get; set; }
 
     public required Asset Asset { get; set; }

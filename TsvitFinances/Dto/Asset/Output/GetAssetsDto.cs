@@ -24,8 +24,6 @@ public class GetAssetsDto
 
     public required decimal InterestOnCurrentDeposit { get; set; }
 
-    public IReadOnlyList<string> ChartsPath { get; set; }
-
     public IList<_Chart>? Charts { get; set; } = [];
 
     public class _Chart

@@ -22,7 +22,5 @@ namespace TsvitFinances.Dto.AssetDto
 
         public int? SeasonalityId { get; set; }
         public SeasonalityDto? Seasonalities { get; set; }
-
-        public virtual IEnumerable<ChartDto> Charts { get; set; } = [];
     }
 }
