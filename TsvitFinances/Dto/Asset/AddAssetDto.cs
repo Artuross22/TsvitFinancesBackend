@@ -1,6 +1,4 @@
-﻿using Data.Models.Enums;
-
-namespace TsvitFinances.Dto.Asset;
+﻿namespace TsvitFinances.Dto.Asset;
 
 public class AddAssetDto
 {
@@ -22,5 +20,5 @@ public class AddAssetDto
 
     public required int Market { get; set; }
 
-    public required List<IFormFile> Charts { get; set; }
+    public List<ChartDto>? Charts { get; set; }
 }

@@ -89,7 +89,7 @@ namespace TsvitFinances.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddAsset(AddAssetDto model)
+        public async Task<ActionResult> AddAsset([FromForm] AddAssetDto model)
         {
             var user = await _mainDb.Users.SingleAsync(u => u.Id == model.UserPublicId);
 
@@ -233,8 +233,25 @@ namespace TsvitFinances.Controllers
             return Ok();
         }
 
+        [HttpPost("AddChart")]
+        public async Task<IActionResult> AddChart([FromForm] AddChartDto model)
+        {
+            var chart = await _mainDb.Set<Chart>()
+              .Where(c => c.Asset.PublicId == model.AssetId)
+              .FirstOrDefaultAsync();
 
-        [HttpPost("UpdateChart")]
+            if(chart is null)
+            {
+                return NotFound();
+            }
+
+            await _uploadFiles(model.Charts, chart.AssetId);
+
+            return Ok();
+        }
+
+
+        [HttpPut("UpdateChart")]
         public async Task<IActionResult> UpdateChart(UpdateChartDto model)
         {
             var chart = await _mainDb.Set<Chart>().FirstOrDefaultAsync(c => c.Id == model.Id);
@@ -283,8 +300,7 @@ namespace TsvitFinances.Controllers
             return Ok(output);
         }
 
-
-        private async Task _uploadFiles(List<IFormFile> files, int assetId)
+        private async Task _uploadFiles(List<ChartDto> charts, int assetId)
         {
             string now = DateTime.UtcNow.Date.ToString("dd/MM/yyyy");
 
@@ -292,29 +308,26 @@ namespace TsvitFinances.Controllers
 
             Directory.CreateDirectory(directoryPath);
 
-            foreach (var formFile in files)
+            foreach (var chart in charts)
             {
-                if (formFile.Length > 0)
+                var filePath = Path.Combine(directoryPath, chart.Name);
+
+                using (var stream = new FileStream(filePath, FileMode.Create))
                 {
-                    var filePath = Path.Combine(directoryPath, formFile.FileName);
-
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await formFile.CopyToAsync(stream);
-                    }
-
-                    var fileEntity = new Chart
-                    {
-                        AssetId = assetId,
-                        Asset = null!,
-                        FileName = formFile.FileName,
-                        FilePath = filePath,
-                        FileSize = formFile.Length,
-                        UploadedDate = DateTime.UtcNow
-                    };
-
-                    _mainDb.Add(fileEntity);
+                    await chart.File.CopyToAsync(stream);
                 }
+
+                var fileEntity = new Chart
+                {
+                    AssetId = assetId,
+                    Asset = null!,
+                    FileName = chart.Name,
+                    FilePath = filePath,
+                    FileSize = chart.File.Length,
+                    UploadedDate = DateTime.UtcNow
+                };
+
+                _mainDb.Add(fileEntity);
             }
 
             await _mainDb.SaveChangesAsync();
