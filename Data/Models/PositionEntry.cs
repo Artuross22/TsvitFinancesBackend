@@ -1,0 +1,24 @@
+﻿using Data.Models.Enums;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore;
+
+namespace Data.Models;
+
+public class PositionManagement
+{
+    public int Id { get; private set; }
+
+    public required decimal? ScalingOut { get; set; }
+
+    public required decimal? ScalingIn { get; set; }
+
+    public required double AverageLevel { get; set; }
+
+    internal class EFConfiguration : IEntityTypeConfiguration<PositionManagement>
+    {
+        public void Configure(EntityTypeBuilder<PositionManagement> builder)
+        {
+            builder.ToTable("PositionEntries");
+        }
+    }
+}
