@@ -6,7 +6,7 @@ namespace Data.Models;
 
 public class PositionManagement
 {
-    public int Id { get; private set; }
+    public int Id { get; init; }
 
     public required decimal? ScalingOut { get; set; }
 

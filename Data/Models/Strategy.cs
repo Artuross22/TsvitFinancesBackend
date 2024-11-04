@@ -6,7 +6,7 @@ namespace Data.Modelsl;
 
 public class Strategy
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     public Guid PublicId { get; set; }
 

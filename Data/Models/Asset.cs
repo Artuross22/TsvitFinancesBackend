@@ -7,7 +7,7 @@ namespace Data.Models;
 
 public class Asset
 {
-    public int Id { get; set; }
+    public int Id { get; init; }
 
     public required Guid PublicId { get; set; }
 
@@ -40,7 +40,7 @@ public class Asset
 
     public decimal? SoldFor { get; set; }
 
-    public required int StrategyId { get; set; }
+    public required int? StrategyId { get; set; }
     public virtual required Strategy Strategy { get; set; }
 
     public int? SeasonalityId { get; set; }
