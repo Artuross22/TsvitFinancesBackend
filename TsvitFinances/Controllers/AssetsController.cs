@@ -118,7 +118,9 @@ namespace TsvitFinances.Controllers
                     IsActive = true,
                     ClosedAt = null,
                     SoldFor = null,
-                    Charts = null!
+                    Charts = null!,
+                    StrategyId = null!,
+                    Strategy = null!,           
                 };
 
                 _mainDb.Add(asset);

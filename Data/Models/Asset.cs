@@ -11,7 +11,7 @@ public class Asset
 
     public required Guid PublicId { get; set; }
 
-    public required string AppUserId { get; set; }
+    public required string AppUserId { get; set; } 
     public required AppUser AppUser { get; set; }
 
     public required Sector Sector { get; set; }
@@ -63,9 +63,9 @@ public class Asset
             builder.Property(e => e.Ticker).IsRequired().HasMaxLength(10);
 
             builder.HasOne(a => a.AppUser)
-               .WithMany()
-               .HasForeignKey(a => a.AppUserId)
-               .OnDelete(DeleteBehavior.Restrict);
+                .WithMany(u => u.Assets)
+                .HasForeignKey(a => a.AppUserId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(a => a.Strategy)
                .WithMany()

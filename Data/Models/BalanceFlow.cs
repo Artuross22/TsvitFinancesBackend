@@ -1,6 +1,6 @@
 ﻿using Data.Models.Enums;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Data.Models;
 
@@ -10,14 +10,20 @@ public class BalanceFlow
     public required decimal Sum { get; set; }
     public required Balance Balance { get; set; }
     public required DateTime CreatedOn { get; set; }
-    public int AppUserId {  get; set; } 
-    public required AppUser AppUser { get; set; }
+    //public required string AppUserId { get; set; }
+    //public required AppUser AppUser { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<BalanceFlow>
     {
         public void Configure(EntityTypeBuilder<BalanceFlow> builder)
         {
             builder.ToTable("BalanceFlows");
+
+            builder.HasKey(e => e.Id);
+
+            //builder.HasOne(b => b.AppUser)
+            //    .WithMany(u => u.BalanceFlows)
+            //    .HasForeignKey(b => b.AppUserId);
         }
     }
 }
