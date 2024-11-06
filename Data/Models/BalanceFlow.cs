@@ -10,8 +10,8 @@ public class BalanceFlow
     public required decimal Sum { get; set; }
     public required Balance Balance { get; set; }
     public required DateTime CreatedOn { get; set; }
-    //public required string AppUserId { get; set; }
-    //public required AppUser AppUser { get; set; }
+    public required string? AppUserId { get; set; }
+    public required AppUser? AppUser { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<BalanceFlow>
     {
@@ -21,9 +21,9 @@ public class BalanceFlow
 
             builder.HasKey(e => e.Id);
 
-            //builder.HasOne(b => b.AppUser)
-            //    .WithMany(u => u.BalanceFlows)
-            //    .HasForeignKey(b => b.AppUserId);
+            builder.HasOne(b => b.AppUser)
+                .WithMany(u => u.BalanceFlows)
+                .HasForeignKey(b => b.AppUserId);
         }
     }
 }

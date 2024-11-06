@@ -14,7 +14,7 @@ public class AppUser : IdentityUser
     public DateTime CreatedOn { get; set; }
     public virtual ICollection<Asset> Assets { get; set; } = [];
     public virtual ICollection<Strategy> Strategies { get; set; } = [];
-    //public virtual IEnumerable<BalanceFlow> BalanceFlows { get; set; } = [];
+    public virtual IEnumerable<BalanceFlow> BalanceFlows { get; set; } = [];
 
     internal class EFConfiguration : IEntityTypeConfiguration<AppUser>
     {
@@ -33,9 +33,9 @@ public class AppUser : IdentityUser
                     .WithOne(a => a.AppUser)
                     .HasForeignKey(a => a.AppUserId);
 
-            //builder.HasMany(u => u.BalanceFlows)
-            //       .WithOne(a => a.AppUser)
-            //       .HasForeignKey(a => a.AppUserId);
+            builder.HasMany(u => u.BalanceFlows)
+                   .WithOne(a => a.AppUser)
+                   .HasForeignKey(a => a.AppUserId);
         }
     }
 }

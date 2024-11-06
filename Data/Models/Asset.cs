@@ -65,7 +65,7 @@ public class Asset
             builder.HasOne(a => a.AppUser)
                 .WithMany(u => u.Assets)
                 .HasForeignKey(a => a.AppUserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.Strategy)
                .WithMany()
