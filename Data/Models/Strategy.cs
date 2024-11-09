@@ -22,7 +22,7 @@ public class Strategy
     public required int? PositionManagementId { get; set; }
     public virtual required PositionManagement PositionManagement { get; set; }
 
-    public virtual required ICollection<Asset> Assets { get; set; }
+    public virtual ICollection<Asset>? Assets { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<Strategy>
     {

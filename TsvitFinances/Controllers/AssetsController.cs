@@ -189,6 +189,7 @@ namespace TsvitFinances.Controllers
             _mainDb.Add(new BalanceFlow
             {
                 AppUser = asset.AppUser,
+                AppUserId = asset.AppUserId,
                 Sum = asset.CurrentPrice,
                 CreatedOn = now,
                 Balance = Balance.InternalRevenue,
