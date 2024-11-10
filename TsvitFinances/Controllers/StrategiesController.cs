@@ -1,5 +1,6 @@
 ﻿using Data.Db;
 using Data.Models;
+using Data.Models.Enums;
 using Data.Modelsl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,22 @@ public class StrategiesController : Controller
        _mainDb = mainDb;
     }
 
+    [HttpGet("{publicId}/{userId}")]
+    public async Task<IActionResult> GetStrategy(Guid publicId, string userId)
+    {
+        var strategy = await _mainDb.Set<Strategy>()
+            .Where(s => s.PublicId == publicId)
+            .Where(s => s.AppUser.Id == userId)
+            .FirstOrDefaultAsync();
+
+        if (strategy == null)
+        {
+            return NotFound();
+        }
+
+        return Json(strategy);
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetStrategies(string id)
     {
@@ -36,7 +53,7 @@ public class StrategiesController : Controller
             return NotFound();
         }
 
-        return View(strategies);
+        return Json(strategies);
     }
 
     [HttpPost]
@@ -50,16 +67,42 @@ public class StrategiesController : Controller
             return NotFound();
         }
 
-        _mainDb.Add(new Strategy
-        {   
+        var riskManagement = new RiskManagement
+        {
+            Name = string.Empty,
+            Category = RiskCategory.Low,
+            BaseRiskPercentage = 2,
+            RiskToRewardRatio = 3,
+            HedgeId = null!,
+            Hedge = null!,
+            DiversificationId = null!,
+            Diversification = null!,
+        };
+
+        _mainDb.Add(riskManagement);
+
+        var positionManagement = new PositionManagement
+        {
+            ScalingIn = 0,
+            ScalingOut = 20,
+            AverageLevel = 5,
+        };
+
+        _mainDb.Add(positionManagement);
+
+        var strategy = new Strategy
+        {
+            PublicId = Guid.NewGuid(),
             AppUser = user,
             AppUserId = user.Id,
             Name = model.Name,
             PositionManagementId = null!,
-            PositionManagement = null!,
+            PositionManagement = positionManagement,
             RiskManagementId = null!,
-            RiskManagement = null!,
-        });
+            RiskManagement = riskManagement,
+        };
+
+        _mainDb.Add(strategy);
 
         await _mainDb.SaveChangesAsync();
 

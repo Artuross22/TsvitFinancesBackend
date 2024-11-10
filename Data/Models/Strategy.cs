@@ -1,7 +1,6 @@
 ﻿using Data.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Data.Modelsl;
 
@@ -9,7 +8,7 @@ public class Strategy
 {
     public int Id { get; init; }
 
-    public Guid PublicId { get; set; }
+    public required Guid PublicId { get; set; }
 
     public required string Name { get; set; }
 
