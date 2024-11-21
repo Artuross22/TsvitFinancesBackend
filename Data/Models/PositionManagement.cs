@@ -8,6 +8,8 @@ public class PositionManagement
 {
     public int Id { get; init; }
 
+    public required Guid PublicId {  get; init; }
+
     public required decimal? ScalingOut { get; set; }
 
     public required decimal? ScalingIn { get; set; }

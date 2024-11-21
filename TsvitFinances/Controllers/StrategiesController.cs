@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto.Strategy;
+using TsvitFinances.Dto.Strategy.PositionEntry;
 
 namespace TsvitFinances.Controllers;
 
@@ -17,13 +18,15 @@ public class StrategiesController : Controller
     readonly protected MainDb _mainDb;
     public StrategiesController(MainDb mainDb)
     {
-       _mainDb = mainDb;
+        _mainDb = mainDb;
     }
 
     [HttpGet("{publicId}/{userId}")]
     public async Task<IActionResult> GetStrategy(Guid publicId, string userId)
     {
         var strategy = await _mainDb.Set<Strategy>()
+            .Include(s => s.RiskManagement)
+            .Include(s => s.PositionManagement)
             .Where(s => s.PublicId == publicId)
             .Where(s => s.AppUser.Id == userId)
             .FirstOrDefaultAsync();
@@ -36,6 +39,57 @@ public class StrategiesController : Controller
         return Json(strategy);
     }
 
+    [HttpGet("GetRiskManagement/{publicId}")]
+    public async Task<IActionResult> GetRiskManagement(Guid publicId)
+    {
+        var strategy = await _mainDb.Set<RiskManagement>()
+            .Where(s => s.PublicId == publicId)
+            .FirstOrDefaultAsync();
+
+        if (strategy == null)
+        {
+            return NotFound();
+        }
+
+        return Json(strategy);
+    }
+
+    [HttpGet("GetPositionManagement/{publicId}")]
+    public async Task<IActionResult> GetPositionManagement(Guid publicId)
+    {
+        var strategy = await _mainDb.Set<PositionManagement>()
+            .Where(s => s.PublicId == publicId)
+            .FirstOrDefaultAsync();
+
+        if (strategy == null)
+        {
+            return NotFound();
+        }
+
+        return Json(strategy);
+    }
+
+    [HttpPut("PutPositionManagement")]
+    public async Task<IActionResult> PutPositionManagement(Dto.Strategy.PositionEntry.PositionManagement model)
+    {
+        var positionManagement = await _mainDb.Set<PositionManagement>()
+            .Where(s => s.PublicId == model.PublicId)
+            .FirstOrDefaultAsync();
+
+        if (positionManagement == null)
+        {
+            return NotFound();
+        }
+
+        positionManagement.ScalingOut = model.ScalingOut;
+        positionManagement.ScalingIn = model.ScalingIn;
+        positionManagement.AverageLevel = model.AverageLevel;
+
+        _mainDb.SaveChanges();
+
+        return Ok();
+    }
+
     [HttpGet("{id}")]
     public async Task<IActionResult> GetStrategies(string id)
     {
@@ -43,8 +97,8 @@ public class StrategiesController : Controller
             .Where(s => s.AppUser.Id == id)
             .Select(s => new ListStrategies
             {
-              PubliceId = s.PublicId,
-              Name = s.Name,
+                PubliceId = s.PublicId,
+                Name = s.Name,
             })
             .ToListAsync();
 
@@ -81,8 +135,9 @@ public class StrategiesController : Controller
 
         _mainDb.Add(riskManagement);
 
-        var positionManagement = new PositionManagement
+        var positionManagement = new Data.Models.PositionManagement
         {
+            PublicId = Guid.NewGuid(),
             ScalingIn = 0,
             ScalingOut = 20,
             AverageLevel = 5,
