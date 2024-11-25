@@ -1,6 +1,7 @@
 ﻿using Data.Db;
 using Data.Models;
 using Data.Models.Enums;
+using Data.Modelsl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto.Asset;
@@ -36,6 +37,7 @@ namespace TsvitFinances.Controllers
         {
             var asset = await _mainDb.Set<Asset>()
                 .Include(c => c.Charts)
+                .Include(c => c.Strategy)
                 .FirstOrDefaultAsync(a => a.PublicId == id);
 
             if (asset == null)
@@ -46,6 +48,8 @@ namespace TsvitFinances.Controllers
             var output = new GetAssetsDto
             {
                 PublicId = asset.PublicId,
+                StrategyPublicId = asset.Strategy?.PublicId,
+                StrategyName = asset.Strategy?.Name,
                 AddedAt = asset.AddedAt,
                 BoughtFor = asset.BoughtFor,
                 CurrentPrice = asset.CurrentPrice,
@@ -149,7 +153,7 @@ namespace TsvitFinances.Controllers
             }
 
             var asset = await _mainDb.Set<Asset>()
-                 .Where(a => a.Id == model.Id)
+                 .Where(a => a.PublicId == model.PublicId)
                  .SingleOrDefaultAsync();
 
             if (asset is null)

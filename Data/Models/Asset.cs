@@ -41,7 +41,7 @@ public class Asset
     public decimal? SoldFor { get; set; }
 
     public required int? StrategyId { get; set; }
-    public virtual required Strategy Strategy { get; set; }
+    public virtual required Strategy? Strategy { get; set; }
 
     public int? SeasonalityId { get; set; }
     public Seasonality? Seasonalities { get; set; }

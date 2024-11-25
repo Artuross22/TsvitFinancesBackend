@@ -4,8 +4,6 @@ namespace TsvitFinances.Dto.AssetDto
 {
     public class AssetUpdateDto
     {
-        public int Id { get; init; }
-
         public Guid PublicId { get; set; }
 
         public required string UserPublicId { get; set; }

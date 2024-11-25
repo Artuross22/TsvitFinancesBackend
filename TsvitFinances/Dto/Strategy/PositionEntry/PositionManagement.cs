@@ -1,6 +1,8 @@
-﻿namespace TsvitFinances.Dto.Strategy.PositionEntry;
+﻿using Data.Models.Enums;
 
-public class PositionManagement
+namespace TsvitFinances.Dto.Strategy.PositionEntry;
+
+public class PositionManagementDto
 {
     public required Guid PublicId { get; init; }
 

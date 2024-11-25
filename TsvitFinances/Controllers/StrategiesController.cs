@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Dto.Strategy;
 using TsvitFinances.Dto.Strategy.PositionEntry;
+using TsvitFinances.Dto.Strategy.RiskManagement;
 
 namespace TsvitFinances.Controllers;
 
@@ -42,8 +43,15 @@ public class StrategiesController : Controller
     [HttpGet("GetRiskManagement/{publicId}")]
     public async Task<IActionResult> GetRiskManagement(Guid publicId)
     {
-        var strategy = await _mainDb.Set<RiskManagement>()
-            .Where(s => s.PublicId == publicId)
+        var strategy = await _mainDb.Set<Strategy>()
+            .Where(s => s.RiskManagement.PublicId == publicId)
+            .Select(s => new
+            {
+                StrategyPublicId = s.PublicId,
+                RiskToRewardRatio = s.RiskManagement.RiskToRewardRatio,
+                BaseRiskPercentage = s.RiskManagement.BaseRiskPercentage,
+                Category = s.RiskManagement.Category
+            })
             .FirstOrDefaultAsync();
 
         if (strategy == null)
@@ -54,11 +62,40 @@ public class StrategiesController : Controller
         return Json(strategy);
     }
 
+    [HttpPut("PutRiskManagement")]
+    public async Task<IActionResult> PutRiskManagement(RiskManagementDto model)
+    {
+        var riskManagement = await _mainDb.Set<RiskManagement>()
+            .Where(s => s.PublicId == model.PublicId)
+            .FirstOrDefaultAsync();
+
+        if (riskManagement == null)
+        {
+            return NotFound();
+        }
+
+        riskManagement.Category = (RiskCategory)model.Category;
+        riskManagement.RiskToRewardRatio = model.RiskToRewardRatio;
+        riskManagement.BaseRiskPercentage = model.BaseRiskPercentage;
+
+        _mainDb.SaveChanges();
+
+        return Ok();
+    }
+
     [HttpGet("GetPositionManagement/{publicId}")]
     public async Task<IActionResult> GetPositionManagement(Guid publicId)
     {
-        var strategy = await _mainDb.Set<PositionManagement>()
-            .Where(s => s.PublicId == publicId)
+        var strategy = await _mainDb.Set<Strategy>()
+            .Where(s => s.PositionManagement.PublicId == publicId)
+            .Select(s => new
+            {
+                StrategyPublicId = s.PublicId,
+                PublicId = s.PositionManagement.PublicId,
+                ScalingOut = s.PositionManagement.ScalingOut,
+                ScalingIn = s.PositionManagement.ScalingIn,
+                AverageLevel = s.PositionManagement.AverageLevel
+            })
             .FirstOrDefaultAsync();
 
         if (strategy == null)
@@ -70,7 +107,7 @@ public class StrategiesController : Controller
     }
 
     [HttpPut("PutPositionManagement")]
-    public async Task<IActionResult> PutPositionManagement(Dto.Strategy.PositionEntry.PositionManagement model)
+    public async Task<IActionResult> PutPositionManagement(PositionManagementDto model)
     {
         var positionManagement = await _mainDb.Set<PositionManagement>()
             .Where(s => s.PublicId == model.PublicId)

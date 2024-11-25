@@ -20,6 +20,10 @@ public class GetAssetsDto
 
     public required decimal BoughtFor { get; set; }
 
+    public required Guid? StrategyPublicId { get; set; }
+
+    public required string? StrategyName { get; set; }
+
     public required DateTime AddedAt { get; set; }
 
     public required decimal InterestOnCurrentDeposit { get; set; }
