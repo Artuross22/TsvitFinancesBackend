@@ -134,7 +134,7 @@ public class StrategiesController : Controller
             .Where(s => s.AppUser.Id == id)
             .Select(s => new ListStrategies
             {
-                PubliceId = s.PublicId,
+                PublicId = s.PublicId,
                 Name = s.Name,
             })
             .ToListAsync();
@@ -145,6 +145,26 @@ public class StrategiesController : Controller
         }
 
         return Json(strategies);
+    }
+
+    [HttpPost("AddStrategyToAsset")]
+    public async Task<IActionResult> AddStrategyToAsset(AddStrategyToAsset model)
+    {
+        var strategy = await _mainDb.Set<Strategy>()
+            .FirstOrDefaultAsync(s => s.PublicId == model.StrategyPublicId);
+
+        var asset = await _mainDb.Set<Asset>()
+            .FirstOrDefaultAsync(s => s.PublicId == model.AssetPublicId);
+
+        if (strategy == null || asset == null)
+        {
+            return NotFound();
+        }
+
+       asset.Strategy = strategy;
+       await _mainDb.SaveChangesAsync();
+
+        return Ok();
     }
 
     [HttpPost]

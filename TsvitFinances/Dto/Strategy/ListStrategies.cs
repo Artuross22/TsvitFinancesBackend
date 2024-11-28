@@ -2,6 +2,6 @@
 
 public class ListStrategies
 {
-    public required Guid PubliceId { get; set; }
+    public required Guid PublicId { get; set; }
     public required string Name {  get; set; } 
 }

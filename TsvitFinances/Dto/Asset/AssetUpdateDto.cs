@@ -8,8 +8,6 @@ namespace TsvitFinances.Dto.AssetDto
 
         public required string UserPublicId { get; set; }
 
-        public required Sector Sector { get; set; }
-
         public required string Name { get; set; }
 
         public required string Ticker { get; set; }
@@ -17,8 +15,5 @@ namespace TsvitFinances.Dto.AssetDto
         public decimal CurrentPrice { get; set; }
 
         public decimal BoughtFor { get; set; }
-
-        public int? SeasonalityId { get; set; }
-        public SeasonalityDto? Seasonalities { get; set; }
     }
 }

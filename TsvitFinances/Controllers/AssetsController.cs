@@ -142,6 +142,31 @@ namespace TsvitFinances.Controllers
             return Ok();
         }
 
+        [HttpGet("EditAssetGet/{id}")]
+        public async Task<ActionResult<GetAssetsDto>> EditAssetGet(Guid id)
+        {
+            var asset = await _mainDb.Set<Asset>()
+                .Include(c => c.AppUser)
+                .FirstOrDefaultAsync(a => a.PublicId == id);
+
+            if (asset == null)
+            {
+                return NotFound();
+            }
+
+            var output = new AssetUpdateDto
+            {
+                PublicId = asset.PublicId,
+                UserPublicId = asset.AppUser.Id,
+                BoughtFor = asset.BoughtFor,
+                CurrentPrice = asset.CurrentPrice,
+                Name = asset.Name,
+                Ticker = asset.Ticker,
+            };
+
+            return Json(output);
+        }
+
         [HttpPut]
         public async Task<ActionResult<Asset>> UpdateAsset(AssetUpdateDto model)
         {
@@ -164,7 +189,6 @@ namespace TsvitFinances.Controllers
             asset.Name = model.Name;
             asset.CurrentPrice = model.CurrentPrice;
             asset.BoughtFor = model.BoughtFor;
-
 
             await _mainDb.SaveChangesAsync();
 
