@@ -24,7 +24,6 @@ public class AppUser : IdentityUser
 
             builder.HasKey(e => e.Id);
 
-
             builder.HasMany(u => u.Assets)
                     .WithOne(a => a.AppUser)
                     .HasForeignKey(a => a.AppUserId);

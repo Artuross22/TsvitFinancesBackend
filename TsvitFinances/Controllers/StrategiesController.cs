@@ -127,15 +127,18 @@ public class StrategiesController : Controller
         return Ok();
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetStrategies(string id)
+    [HttpGet("GetStrategies/{userId}/{assetPublicId}")]
+    public async Task<IActionResult> GetStrategies(string userId, Guid assetPublicId)
     {
         var strategies = await _mainDb.Set<Strategy>()
-            .Where(s => s.AppUser.Id == id)
+            .Where(s => s.AppUser.Id == userId)
             .Select(s => new ListStrategies
             {
                 PublicId = s.PublicId,
                 Name = s.Name,
+                IsSetToCurrentAsset = s.Assets != null 
+                    ? s.Assets.Any(a => a.PublicId == assetPublicId) 
+                    : false,
             })
             .ToListAsync();
 
@@ -192,7 +195,7 @@ public class StrategiesController : Controller
 
         _mainDb.Add(riskManagement);
 
-        var positionManagement = new Data.Models.PositionManagement
+        var positionManagement = new PositionManagement
         {
             PublicId = Guid.NewGuid(),
             ScalingIn = 0,

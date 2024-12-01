@@ -16,6 +16,7 @@ public class PositionManagement
 
     public required double AverageLevel { get; set; }
 
+
     internal class EFConfiguration : IEntityTypeConfiguration<PositionManagement>
     {
         public void Configure(EntityTypeBuilder<PositionManagement> builder)
