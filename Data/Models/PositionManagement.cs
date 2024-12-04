@@ -16,12 +16,23 @@ public class PositionManagement
 
     public required double AverageLevel { get; set; }
 
+    public required IEnumerable<SalesLevels> SalesLevels { get; set; }
+
+    public required IEnumerable<PurchaseLevel> PurchaseLevels { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<PositionManagement>
     {
         public void Configure(EntityTypeBuilder<PositionManagement> builder)
         {
             builder.ToTable("PositionEntries");
+
+            builder.HasMany(s => s.SalesLevels)
+                .WithOne(a => a.PositionManagement)
+                .HasForeignKey(a => a.PositionManagementId);
+
+            builder.HasMany(s => s.PurchaseLevels)
+                .WithOne(a => a.PositionManagement)
+                .HasForeignKey(a => a.PositionManagementId);
         }
     }
 }

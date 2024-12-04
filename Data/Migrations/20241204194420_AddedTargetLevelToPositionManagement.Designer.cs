@@ -4,6 +4,7 @@ using Data.Db;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(MainDb))]
-    partial class MainDbModelSnapshot : ModelSnapshot
+    [Migration("20241204194420_AddedTargetLevelToPositionManagement")]
+    partial class AddedTargetLevelToPositionManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -312,14 +315,14 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("AverageLevel")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("AverageLevel")
+                        .HasColumnType("float");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Level")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
 
                     b.Property<int>("PositionManagementId")
                         .HasColumnType("int");
@@ -378,14 +381,14 @@ namespace Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal?>("AverageLevel")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double?>("AverageLevel")
+                        .HasColumnType("float");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("Level")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
 
                     b.Property<int>("PositionManagementId")
                         .HasColumnType("int");

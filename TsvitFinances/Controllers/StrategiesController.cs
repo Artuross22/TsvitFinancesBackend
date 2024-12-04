@@ -201,6 +201,8 @@ public class StrategiesController : Controller
             ScalingIn = 0,
             ScalingOut = 20,
             AverageLevel = 5,
+            SalesLevels = null!,
+            PurchaseLevels = null!,
         };
 
         _mainDb.Add(positionManagement);

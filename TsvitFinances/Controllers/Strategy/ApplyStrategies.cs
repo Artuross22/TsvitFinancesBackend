@@ -3,6 +3,7 @@ using Data.Models;
 using Data.Modelsl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using static TsvitFinances.Controllers.test.ApplyStrategies;
 
 namespace TsvitFinances.Controllers.test;
 
@@ -40,18 +41,65 @@ public class ApplyStrategies : Controller
 
         if (strategy.PositionManagement.ScalingOut != null)
         {
-            model.Position.SellTargets = _salesTargets(strategy.PositionManagement.ScalingOut!.Value, asset.BoughtFor);
+            var target = strategy.PositionManagement.SalesLevels.Select(s => new TargetLevels
+            {
+                Level = s.Level,
+                AverageLevel = s.AverageLevel
+            })
+            .ToList();
+
+            model.Position.SellTargets = _salesTargets(strategy.PositionManagement.ScalingOut!.Value, asset.BoughtFor, target);
         }
 
         if (strategy.PositionManagement.ScalingIn != null)
         {
-            model.Position.BuyTargets = _buyingTargets(strategy.PositionManagement.ScalingIn!.Value, asset.BoughtFor);
+
+            var target = strategy.PositionManagement.PurchaseLevels.Select(s => new TargetLevels
+            {
+                Level = s.Level,
+                AverageLevel = s.AverageLevel
+            })
+            .ToList();
+
+            model.Position.BuyTargets = _buyingTargets(strategy.PositionManagement.ScalingIn!.Value, asset.BoughtFor, target);
         }
 
         return Ok();
     }
 
-    private List<decimal> _salesTargets(decimal procent, decimal boughtFor)
+    private List<decimal> _salesTargets(decimal procent, decimal boughtFor, decimal defaultAverageLevel, List<TargetLevels> targetLevels)
+    {
+        List<decimal> targets = new List<decimal>();
+
+        decimal totalPercent = 100m;
+        decimal percentApplied = 0m;
+        decimal percentageLevel = boughtFor;
+
+        while (percentApplied < totalPercent)
+        {
+            percentageLevel += boughtFor * (procent / 100m);
+
+            //foreach (var target in targetLevels)
+            //{
+            //    var average = target.AverageLevel ?? defaultAverageLevel;
+
+            //    var saleLevel =+ target.Level * (average / 100m);
+
+            //    if (saleLevel >= percentageLevel)
+            //    {
+            //        percentageLevel = target.Level;
+            //        break;
+            //    }
+            //}
+
+            percentApplied += procent;
+            targets.Add(percentageLevel);
+        }
+
+        return targets;
+    }
+
+    private List<decimal> _buyingTargets(decimal procent, decimal boughtFor, List<TargetLevels> targetLevels)
     {
         List<decimal> targets = new List<decimal>();
 
@@ -61,7 +109,7 @@ public class ApplyStrategies : Controller
 
         while (percentApplied < totalPercent)
         {
-            currentSum += boughtFor * (procent / 100m);
+            currentSum -= boughtFor * (procent / 100m);
             percentApplied += procent;
             targets.Add(currentSum);
         }
@@ -69,22 +117,10 @@ public class ApplyStrategies : Controller
         return targets;
     }
 
-    private List<decimal> _buyingTargets(decimal procent, decimal boughtFor)
+    public class TargetLevels
     {
-        List<decimal> targets = new List<decimal>();
-
-        decimal totalPercent = 100m;
-        decimal percentApplied = 0m;
-        decimal currentSum = boughtFor;
-
-        while (percentApplied < totalPercent)
-        {
-            currentSum += boughtFor * (procent / 100m);
-            percentApplied += procent;
-            targets.Add(currentSum);
-        }
-
-        return targets;
+        public required decimal Level { get; set; }
+        public required decimal? AverageLevel { get; set; }
     }
 
     public class BindingModel
