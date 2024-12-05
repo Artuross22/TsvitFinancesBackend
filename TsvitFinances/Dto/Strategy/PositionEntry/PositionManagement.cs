@@ -10,5 +10,5 @@ public class PositionManagementDto
 
     public required decimal? ScalingIn { get; set; }
 
-    public required double AverageLevel { get; set; }
+    public required decimal AverageLevel { get; set; }
 }

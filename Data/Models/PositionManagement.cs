@@ -14,7 +14,7 @@ public class PositionManagement
 
     public required decimal? ScalingIn { get; set; }
 
-    public required double AverageLevel { get; set; }
+    public required decimal AverageLevel { get; set; }
 
     public required IEnumerable<SalesLevels> SalesLevels { get; set; }
 
