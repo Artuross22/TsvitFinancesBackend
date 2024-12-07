@@ -3,7 +3,6 @@ using Data.Models;
 using Data.Modelsl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static TsvitFinances.Controllers.test.ApplyStrategies;
 
 namespace TsvitFinances.Controllers.test;
 
@@ -48,12 +47,16 @@ public class ApplyStrategies : Controller
             })
             .ToList();
 
-            model.Position.SellTargets = _salesTargets(strategy.PositionManagement.ScalingOut!.Value, strategy.PositionManagement.AverageLevel, asset.BoughtFor, target);
+            model.Position.SellTargets = _generateTargets(
+                strategy.PositionManagement.ScalingOut!.Value,
+                strategy.PositionManagement.AverageLevel,
+                asset.BoughtFor,
+                target,
+                isSaleStrategy: true);
         }
 
         if (strategy.PositionManagement.ScalingIn != null)
         {
-
             var target = strategy.PositionManagement.PurchaseLevels.Select(s => new TargetLevels
             {
                 Level = s.Level,
@@ -61,87 +64,108 @@ public class ApplyStrategies : Controller
             })
             .ToList();
 
-            model.Position.BuyTargets = _buyingTargets(strategy.PositionManagement.ScalingIn!.Value, asset.BoughtFor, target);
+            model.Position.BuyTargets = _generateTargets(
+                strategy.PositionManagement.ScalingIn!.Value,
+                asset.BoughtFor,
+                strategy.PositionManagement.AverageLevel,
+                target,
+                isSaleStrategy: false);
         }
 
         return Ok();
     }
 
-    private List<decimal> _salesTargets(decimal procent, decimal boughtFor, decimal defaultAverageLevel, List<TargetLevels> targetLevels)
+    private List<Range> _generateTargets(
+    decimal percent,
+    decimal boughtAssetFor,
+    decimal defaultRange,
+    List<TargetLevels> targetLevels,
+    bool isSaleStrategy)
     {
-        List<decimal> procentTargets = new List<decimal>();
+        List<decimal> percentLevelTargets = new List<decimal>();
 
         decimal totalPercent = 100m;
         decimal percentApplied = 0m;
-        decimal percentageLevel = boughtFor;
+        decimal basePrice = boughtAssetFor;
 
         while (percentApplied < totalPercent)
         {
-            percentageLevel += boughtFor * (procent / 100m);
-            percentApplied += procent;
-            procentTargets.Add(percentageLevel);
+            if (isSaleStrategy)
+            {
+                basePrice += boughtAssetFor * (percent / 100m);
+            }
+            else
+            {
+                basePrice -= boughtAssetFor * (percent / 100m);
+            }
+
+            percentApplied += percent;
+            percentLevelTargets.Add(basePrice);
         }
 
         List<decimal> levelTargets = new List<decimal>();
 
         foreach (var targetLevel in targetLevels)
         {
-            var average = targetLevel.AverageLevel ?? defaultAverageLevel;
-            var saleLevel =+ targetLevel.Level * (average / 100m);
-            levelTargets.Add(saleLevel);
+            var range = targetLevel.AverageLevel ?? defaultRange;
+            decimal calculatedLevel;
+
+            if (isSaleStrategy)
+            {
+                calculatedLevel = targetLevel.Level - targetLevel.Level * range / 100m;
+            }
+            else
+            {
+                calculatedLevel = targetLevel.Level + targetLevel.Level * range / 100m;
+            }
+
+            levelTargets.Add(calculatedLevel);
         }
 
-        List<decimal> bestTargets = new List<decimal>();
+        var bestTargets = new List<Range>();
 
-        foreach (var num in procentTargets)
+        foreach (var percentLevelTarget in percentLevelTargets)
         {
-            var closest = _findClosestLevel(num, levelTargets, 0.1m);
-
-            if (closest.HasValue)
+            var closest = _findClosestLevel(percentLevelTarget, levelTargets, 5m);
+            if (closest != null)
             {
-                bestTargets.Add(closest.Value);
+                bestTargets.AddRange(closest);
             }
         }
 
         return bestTargets;
     }
 
-    static decimal? _findClosestLevel(decimal procentTarget, List<decimal> levelTargets, decimal thresholdProcent)
+    private Range? _findClosestLevel(decimal percentLevelTarget, List<decimal> levelTargetIncRanges, decimal range)
     {
-        decimal threshold = procentTarget * thresholdProcent;
+        decimal maximumIndentation = (percentLevelTarget * range) / 100m;
 
-        decimal? closest = null;
+        var levelRanges = new List<decimal>();
 
-        foreach (var levelTarget in levelTargets)
+        foreach (var levelTargetIncRange in levelTargetIncRanges)
         {
-            if (Math.Abs(levelTarget - procentTarget) <= threshold)
+            if (Math.Abs(levelTargetIncRange - percentLevelTarget) <= maximumIndentation)
             {
-                if (closest == null || Math.Abs(levelTarget - procentTarget) < Math.Abs(closest.Value - procentTarget))
-                {
-                    closest = levelTarget;
-                }
+                levelRanges.Add(levelTargetIncRange);
             }
         }
 
-        return closest;
-    }
-
-    private List<decimal> _buyingTargets(decimal procent, decimal boughtFor, List<TargetLevels> targetLevels)
-    {
-        List<decimal> targets = new List<decimal>();
-
-        decimal totalPercent = 100m;
-        decimal percentApplied = 0m;
-        decimal currentSum = boughtFor;
-
-        while (percentApplied < totalPercent)
+        if (levelRanges.Any())
         {
-            currentSum -= boughtFor * (procent / 100m);
-            percentApplied += procent;
-            targets.Add(currentSum);
+            return new Range
+            {
+                Start = levelRanges.Min(),
+                End = levelRanges.Max()
+            };
         }
 
-        return targets;
+        return null;
+    }
+
+    public class Range
+    {
+        public decimal? Start { get; set; }
+        public decimal End { get; set; }
     }
 
     public class TargetLevels
@@ -157,9 +181,9 @@ public class ApplyStrategies : Controller
 
         public class _Position
         {
-            public List<decimal> BuyTargets { get; set; } = [];
+            public List<Range> BuyTargets { get; set; } = [];
 
-            public List<decimal> SellTargets { get; set; } = [];
+            public List<Range> SellTargets { get; set; } = [];
         }
 
         public class _Risk
