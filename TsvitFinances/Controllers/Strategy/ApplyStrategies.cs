@@ -1,5 +1,6 @@
 ﻿using Data.Db;
 using Data.Models;
+using Data.Models.Enums;
 using Data.Modelsl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,8 @@ public class ApplyStrategies : Controller
     public async Task<ActionResult> Index(Guid publicId)
     {
         var asset = await _mainDb.Set<Asset>()
-             .FirstOrDefaultAsync(s => s.PublicId == publicId);
+             .Include(a => a.AppUser)
+             .FirstOrDefaultAsync(a => a.PublicId == publicId);
 
         if (asset == null)
         {
@@ -37,6 +39,19 @@ public class ApplyStrategies : Controller
         }
 
         var model = new BindingModel();
+
+        if (strategy.RiskManagement != null)
+        {
+            var balance = asset.AppUser.BalanceFlows
+                .Where(a => a.Balance == Balance.Total)
+                .Sum(a => a.Sum);
+
+            var baseRiskPercentage = strategy.RiskManagement.BaseRiskPercentage;
+            var riskToRewardRatio = _calculateBaseRisk(balance, baseRiskPercentage);
+
+            model.Risk.BaseRisk = _calculateBaseRisk(balance, baseRiskPercentage);
+            model.Risk.RiskToReward = _calculateRiskToReward(asset.BoughtFor, baseRiskPercentage, riskToRewardRatio);
+        }
 
         if (strategy.PositionManagement.ScalingOut != null)
         {
@@ -73,6 +88,16 @@ public class ApplyStrategies : Controller
         }
 
         return Ok();
+    }
+
+    private decimal _calculateBaseRisk(decimal balance, decimal baseRiskPercentage)
+    {
+        return balance * (baseRiskPercentage / 100m);
+    }
+
+    private decimal _calculateRiskToReward(decimal boughtFor, decimal baseRiskPercentage, decimal riskToRewardRatio)
+    {
+        return boughtFor + riskToRewardRatio * baseRiskPercentage;
     }
 
     private List<Range> _generateTargets(
@@ -188,7 +213,9 @@ public class ApplyStrategies : Controller
 
         public class _Risk
         {
-            public required string Id { get; set; }
+            public decimal BaseRisk { get; set; }
+
+            public decimal RiskToReward { get; set; }
         }
     }
 }
