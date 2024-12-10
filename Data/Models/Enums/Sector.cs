@@ -14,4 +14,7 @@ public enum Sector
     Materials,
     CommunicationServices,
     ConsumerDiscretionary,
+
+
+    Crypto = 200,
 }

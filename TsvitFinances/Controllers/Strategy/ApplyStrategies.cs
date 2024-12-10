@@ -17,11 +17,14 @@ public class ApplyStrategies : Controller
 
     [HttpGet]
     [Route("api/[controller]")]
-    public async Task<ActionResult> Index(Guid publicId)
+    public async Task<ActionResult> Index(Guid publicId, string userId)
     {
-        var asset = await _mainDb.Set<Asset>()
+        var assets = await _mainDb.Set<Asset>()
              .Include(a => a.AppUser)
-             .FirstOrDefaultAsync(a => a.PublicId == publicId);
+             .Where(a => a.AppUser.Id == userId)
+             .ToListAsync();
+
+        var asset = assets.FirstOrDefault(a => a.PublicId == publicId);
 
         if (asset == null)
         {
@@ -47,10 +50,32 @@ public class ApplyStrategies : Controller
                 .Sum(a => a.Sum);
 
             var baseRiskPercentage = strategy.RiskManagement.BaseRiskPercentage;
-            var riskToRewardRatio = _calculateBaseRisk(balance, baseRiskPercentage);
+            var riskToRewardRatio = strategy.RiskManagement.RiskToRewardRatio;
 
             model.Risk.BaseRisk = _calculateBaseRisk(balance, baseRiskPercentage);
             model.Risk.RiskToReward = _calculateRiskToReward(asset.BoughtFor, baseRiskPercentage, riskToRewardRatio);
+
+            if (strategy.RiskManagement.Diversification != null)
+            {
+                var sum = 0m;
+                var diversifications = new List<Diversification>();
+
+                foreach (var diversification in strategy.RiskManagement.Diversification)
+                {
+                    diversifications.Add(new Diversification
+                    {
+                        Total = sum += assets.Where(a => a.Sector == diversification.Sector).Sum(a => a.CurrentPrice),
+                        Sector = diversification.Sector
+                    });
+                }
+
+                var total = assets.Sum(a => a.CurrentPrice);
+
+                foreach (var diversification in diversifications)
+                {
+                    
+                }
+            }
         }
 
         if (strategy.PositionManagement.ScalingOut != null)
@@ -185,6 +210,13 @@ public class ApplyStrategies : Controller
         }
 
         return null;
+    }
+
+    public class Diversification
+    {
+        public decimal Total { get; set; }
+
+        public required Sector Sector { get; set; }
     }
 
     public class Range

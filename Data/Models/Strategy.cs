@@ -1,4 +1,5 @@
 ﻿using Data.Models;
+using Data.Models.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -11,6 +12,8 @@ public class Strategy
     public required Guid PublicId { get; set; }
 
     public required string Name { get; set; }
+
+    public required RiskCategory Category { get; set; }
 
     public required string AppUserId { get; set; }
     public virtual required AppUser AppUser { get; set; }
@@ -38,11 +41,6 @@ public class Strategy
                 .WithMany(u => u.Strategies)
                 .HasForeignKey(s => s.AppUserId)
                 .OnDelete(DeleteBehavior.Cascade);
-
-            //builder.HasOne(a => a.AppUser)
-            //   .WithMany()
-            //   .HasForeignKey(a => a.AppUserId)
-            //   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasMany(s => s.Assets)
                 .WithOne(a => a.Strategy)

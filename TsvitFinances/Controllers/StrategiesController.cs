@@ -50,7 +50,6 @@ public class StrategiesController : Controller
                 StrategyPublicId = s.PublicId,
                 RiskToRewardRatio = s.RiskManagement.RiskToRewardRatio,
                 BaseRiskPercentage = s.RiskManagement.BaseRiskPercentage,
-                Category = s.RiskManagement.Category
             })
             .FirstOrDefaultAsync();
 
@@ -74,7 +73,6 @@ public class StrategiesController : Controller
             return NotFound();
         }
 
-        riskManagement.Category = (RiskCategory)model.Category;
         riskManagement.RiskToRewardRatio = model.RiskToRewardRatio;
         riskManagement.BaseRiskPercentage = model.BaseRiskPercentage;
 
@@ -184,12 +182,10 @@ public class StrategiesController : Controller
         var riskManagement = new RiskManagement
         {
             Name = string.Empty,
-            Category = RiskCategory.Low,
             BaseRiskPercentage = 2,
             RiskToRewardRatio = 3,
             HedgeId = null!,
             Hedge = null!,
-            DiversificationId = null!,
             Diversification = null!,
         };
 
@@ -210,6 +206,7 @@ public class StrategiesController : Controller
         var strategy = new Strategy
         {
             PublicId = Guid.NewGuid(),
+            Category = RiskCategory.Low,
             AppUser = user,
             AppUserId = user.Id,
             Name = model.Name,
