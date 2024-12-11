@@ -57,24 +57,7 @@ public class ApplyStrategies : Controller
 
             if (strategy.RiskManagement.Diversification != null)
             {
-                var sum = 0m;
-                var diversifications = new List<Diversification>();
-
-                foreach (var diversification in strategy.RiskManagement.Diversification)
-                {
-                    diversifications.Add(new Diversification
-                    {
-                        Total = sum += assets.Where(a => a.Sector == diversification.Sector).Sum(a => a.CurrentPrice),
-                        Sector = diversification.Sector
-                    });
-                }
-
-                var total = assets.Sum(a => a.CurrentPrice);
-
-                foreach (var diversification in diversifications)
-                {
-                    
-                }
+                model.Risk.Diversifications = _diversificationCalculation(assets, strategy);
             }
         }
 
@@ -112,7 +95,29 @@ public class ApplyStrategies : Controller
                 isSaleStrategy: false);
         }
 
-        return Ok();
+        return Ok(model);
+    }
+
+    private List<Diversification> _diversificationCalculation(List<Asset> assets, Strategy strategy)
+    {
+        var diversifications = new List<Diversification>();
+
+        var total = assets.Sum(a => a.CurrentPrice);
+
+        foreach (var diversification in strategy.RiskManagement.Diversification)
+        {
+            var totalNicheSum = assets.Where(a => a.Sector == diversification.Sector).Sum(a => a.CurrentPrice);
+
+            diversifications.Add(new Diversification
+            {
+                TotalNicheSum = totalNicheSum,
+                Total = (totalNicheSum / total) * 100,
+                RecommendedNichePercentage = diversification.NichePercentage,
+                Sector = diversification.Sector,
+            });
+        }
+
+        return diversifications;
     }
 
     private decimal _calculateBaseRisk(decimal balance, decimal baseRiskPercentage)
@@ -214,10 +219,14 @@ public class ApplyStrategies : Controller
 
     public class Diversification
     {
-        public decimal Total { get; set; }
+        public decimal TotalNicheSum { get; set; }
+
+        public decimal RecommendedNichePercentage { get; set; }
 
         public required Sector Sector { get; set; }
-    }
+
+        public required decimal Total { get; set; }
+}
 
     public class Range
     {
@@ -248,6 +257,8 @@ public class ApplyStrategies : Controller
             public decimal BaseRisk { get; set; }
 
             public decimal RiskToReward { get; set; }
+
+            public List<Diversification> Diversifications { get; set; } = [];
         }
     }
 }
