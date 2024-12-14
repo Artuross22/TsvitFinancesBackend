@@ -11,6 +11,8 @@ public class Strategy
 
     public required Guid PublicId { get; set; }
 
+    public required string Description { get; set; }
+
     public required string Name { get; set; }
 
     public required RiskCategory Category { get; set; }

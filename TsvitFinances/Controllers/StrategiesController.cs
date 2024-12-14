@@ -1,4 +1,4 @@
-﻿using Data.Db;
+﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
 using Data.Modelsl;
@@ -207,6 +207,7 @@ public class StrategiesController : Controller
         {
             PublicId = Guid.NewGuid(),
             Category = RiskCategory.Low,
+            Description = string.Empty,
             AppUser = user,
             AppUserId = user.Id,
             Name = model.Name,

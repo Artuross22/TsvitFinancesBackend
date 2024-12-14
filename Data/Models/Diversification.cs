@@ -8,6 +8,8 @@ public class Diversification
 {
     public int Id { get; set; }
 
+    public Guid PublicId { get; set; }
+
     public decimal NichePercentage { get; set; }
 
     public required Sector Sector { get; set; }
