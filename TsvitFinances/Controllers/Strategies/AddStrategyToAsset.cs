@@ -1,10 +1,9 @@
-﻿using Data.Modelsl;
-using Data;
+﻿using Data;
+using Data.Models;
+using Data.Modelsl;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Data.Models;
-using Microsoft.AspNetCore.Authorization;
-using static TsvitFinances.Controllers.Strategies.GetStrategies;
 
 namespace TsvitFinances.Controllers.Strategies;
 
@@ -60,6 +59,13 @@ public class AddStrategyToAsset : Controller
         await _mainDb.SaveChangesAsync();
 
         return Ok();
+    }
+
+    public class ListStrategies
+    {
+        public required Guid PublicId { get; set; }
+        public required string Name { get; set; }
+        public required bool IsSetToCurrentAsset { get; set; }
     }
 
     public class BindingModel
