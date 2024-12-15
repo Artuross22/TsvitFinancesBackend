@@ -2,11 +2,15 @@
 using Data.Models;
 using Data.Models.Enums;
 using Data.Modelsl;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.test;
 
+[AllowAnonymous]
+[Route("api/[controller]")]
+[ApiController]
 public class ApplyStrategies : Controller
 {
     readonly protected MainDb _mainDb;
@@ -16,7 +20,6 @@ public class ApplyStrategies : Controller
     }
 
     [HttpGet]
-    [Route("api/[controller]")]
     public async Task<ActionResult> Index(Guid publicId, string userId)
     {
         var assets = await _mainDb.Set<Asset>()

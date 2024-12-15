@@ -1,0 +1,40 @@
+﻿using Data;
+using Data.Modelsl;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using static TsvitFinances.Controllers.Strategies.GetStrategies;
+
+namespace TsvitFinances.Controllers.Strategies;
+
+[AllowAnonymous]
+[Route("api/[controller]")]
+[ApiController]
+public class ListStrategy : Controller
+{
+    readonly protected MainDb _mainDb;
+    public ListStrategy(MainDb mainDb)
+    {
+        _mainDb = mainDb;
+    }
+
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> Index(string userId)
+    {
+        var strategies = await _mainDb.Set<Strategy>()
+            .Where(s => s.AppUser.Id == userId)
+            .Select(s => new
+            {
+                PublicId = s.PublicId,
+                Name = s.Name,
+            })
+            .ToListAsync();
+
+        if (strategies == null)
+        {
+            return NotFound();
+        }
+
+        return Json(strategies);
+    }
+}
