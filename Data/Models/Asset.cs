@@ -11,7 +11,7 @@ public class Asset
 
     public required Guid PublicId { get; set; }
 
-    public required string AppUserId { get; set; } 
+    public required string AppUserId { get; set; }
     public required AppUser AppUser { get; set; }
 
     public required Sector Sector { get; set; }
@@ -43,6 +43,9 @@ public class Asset
     public required int? StrategyId { get; set; }
     public virtual required Strategy? Strategy { get; set; }
 
+    public required int? InvestmentIdeaId { get; set; }
+    public virtual required InvestmentIdea? InvestmentIdea { get; set; }
+
     public int? SeasonalityId { get; set; }
     public Seasonality? Seasonalities { get; set; }
 
@@ -59,8 +62,13 @@ public class Asset
             builder.Property(e => e.Id)
                 .ValueGeneratedOnAdd();
 
-            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
-            builder.Property(e => e.Ticker).IsRequired().HasMaxLength(10);
+            builder.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+
+            builder.Property(e => e.Ticker)
+                .IsRequired()
+                .HasMaxLength(10);
 
             builder.HasOne(a => a.AppUser)
                 .WithMany(u => u.Assets)
@@ -68,9 +76,14 @@ public class Asset
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(a => a.Strategy)
-               .WithMany()
-               .HasForeignKey(a => a.StrategyId)
-               .OnDelete(DeleteBehavior.Restrict);
+                .WithMany()
+                .HasForeignKey(a => a.StrategyId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(a => a.InvestmentIdea)
+                .WithMany(u => u.Assets)
+                .HasForeignKey(a => a.InvestmentIdeaId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

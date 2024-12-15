@@ -123,7 +123,9 @@ namespace TsvitFinances.Controllers
                     SoldFor = null,
                     Charts = null!,
                     StrategyId = null!,
-                    Strategy = null!,           
+                    Strategy = null!,
+                    InvestmentIdeaId = null!,
+                    InvestmentIdea = null!,
                 };
 
                 _mainDb.Add(asset);
