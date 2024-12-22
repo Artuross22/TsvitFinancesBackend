@@ -29,6 +29,11 @@ builder.Services.AddSwaggerGen();
 //    options.OperationFilter<SecurityRequirementsOperationFilter>();
 //});
 
+builder.Services.AddSwaggerGen(c =>
+{
+    c.CustomSchemaIds(type => type.FullName);
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -50,6 +55,18 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
 builder.Services.AddJwtAuthentication();
 
 var app = builder.Build();
+
+
+if (builder.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

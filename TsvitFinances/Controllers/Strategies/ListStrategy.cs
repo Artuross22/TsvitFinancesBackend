@@ -3,7 +3,6 @@ using Data.Modelsl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static TsvitFinances.Controllers.Strategies.GetStrategies;
 
 namespace TsvitFinances.Controllers.Strategies;
 
