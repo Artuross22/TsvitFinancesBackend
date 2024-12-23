@@ -33,6 +33,11 @@ public class SellAssets : Controller
             return NotFound();
         }
 
+        if(!asset.IsActive)
+        {
+            return Ok();
+        }
+
         var now = DateTime.UtcNow;
 
         asset.SoldFor = asset.CurrentPrice;

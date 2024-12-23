@@ -32,6 +32,9 @@ public class ViewAsset : Controller
             return NotFound();
         }
 
+        var percentageProfit = (asset.CurrentPrice - asset.BoughtFor) / asset.BoughtFor * 100;
+        var profit = (asset.CurrentPrice - asset.BoughtFor) * asset.Quantity;
+
         var output = new BindingModel
         {
             PublicId = asset.PublicId,
@@ -44,9 +47,12 @@ public class ViewAsset : Controller
             Market = asset.Market.ToString(),
             Sector = asset.Sector.ToString(),
             Term = asset.Term.ToString(),
+            PercentageProfit = Math.Round(percentageProfit, 2),
+            Profit = Math.Round(profit, 2),
             Name = asset.Name,
             Ticker = asset.Ticker,
             Quantity = asset.Quantity,
+            
         };
 
         foreach (var item in asset.Charts)
@@ -85,6 +91,10 @@ public class ViewAsset : Controller
         public required decimal CurrentPrice { get; set; }
 
         public required decimal Quantity { get; set; }
+
+        public required decimal PercentageProfit { get; set; }
+
+        public required decimal Profit { get; set; }
 
         public required decimal BoughtFor { get; set; }
 

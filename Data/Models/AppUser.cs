@@ -12,9 +12,9 @@ public class AppUser : IdentityUser
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public DateTime CreatedOn { get; set; }
-    public virtual ICollection<Asset> Assets { get; set; } = [];
-    public virtual ICollection<Strategy> Strategies { get; set; } = [];
-    public virtual IEnumerable<BalanceFlow> BalanceFlows { get; set; } = [];
+    public virtual ICollection<Asset>? Assets { get; set; }
+    public virtual ICollection<Strategy>? Strategies { get; set; }
+    public virtual IEnumerable<BalanceFlow>? BalanceFlows { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<AppUser>
     {
