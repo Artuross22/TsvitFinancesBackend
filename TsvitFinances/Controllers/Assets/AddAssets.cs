@@ -68,6 +68,8 @@ public class AddAssets : Controller
                 Strategy = null!,
                 InvestmentIdeaId = null!,
                 InvestmentIdea = null!,
+                SalesLevels = null!,
+                PurchaseLevels = null!,
             };
 
             _mainDb.Add(asset);

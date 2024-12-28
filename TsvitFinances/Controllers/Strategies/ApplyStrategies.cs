@@ -19,11 +19,11 @@ public class ApplyStrategies : Controller
         _mainDb = mainDb;
     }
 
-    [HttpGet]
+    [HttpGet("{publicId}/{userId}")]
     public async Task<ActionResult> Index(Guid publicId, string userId)
     {
         var assets = await _mainDb.Set<Asset>()
-             .Include(a => a.AppUser)
+             .Include(a => a.AppUser.BalanceFlows)
              .Where(a => a.AppUser.Id == userId)
              .ToListAsync();
 
@@ -44,18 +44,22 @@ public class ApplyStrategies : Controller
             return NotFound();
         }
 
-        var model = new BindingModel();
+        var model = new OutputModel();
 
         if (strategy.RiskManagement != null)
         {
-            var balance = asset.AppUser.BalanceFlows
-                .Where(a => a.Balance == Balance.Total)
-                .Sum(a => a.Sum);
-
             var baseRiskPercentage = strategy.RiskManagement.BaseRiskPercentage;
             var riskToRewardRatio = strategy.RiskManagement.RiskToRewardRatio;
 
-            model.Risk.BaseRisk = _calculateBaseRisk(balance, baseRiskPercentage);
+            if(asset.AppUser.BalanceFlows != null)
+            {
+                var balance = asset.AppUser.BalanceFlows
+                    .Where(a => a.Balance == Balance.Total)
+                    .Sum(a => a.Sum);
+
+                model.Risk.BaseRisk = _calculateBaseRisk(balance, baseRiskPercentage);
+            }
+
             model.Risk.RiskToReward = _calculateRiskToReward(asset.BoughtFor, baseRiskPercentage, riskToRewardRatio);
 
             if (strategy.RiskManagement.Diversification != null)
@@ -66,7 +70,7 @@ public class ApplyStrategies : Controller
 
         if (strategy.PositionManagement.ScalingOut != null)
         {
-            var target = strategy.PositionManagement.SalesLevels.Select(s => new TargetLevels
+            var targets = asset.SalesLevels.Select(s => new TargetLevels
             {
                 Level = s.Level,
                 AverageLevel = s.AverageLevel
@@ -77,13 +81,13 @@ public class ApplyStrategies : Controller
                 strategy.PositionManagement.ScalingOut!.Value,
                 strategy.PositionManagement.AverageLevel,
                 asset.BoughtFor,
-                target,
+                targets,
                 isSaleStrategy: true);
         }
 
         if (strategy.PositionManagement.ScalingIn != null)
         {
-            var target = strategy.PositionManagement.PurchaseLevels.Select(s => new TargetLevels
+            var target = asset.PurchaseLevels.Select(s => new TargetLevels
             {
                 Level = s.Level,
                 AverageLevel = s.AverageLevel
@@ -229,7 +233,7 @@ public class ApplyStrategies : Controller
         public required Sector Sector { get; set; }
 
         public required decimal Total { get; set; }
-}
+    }
 
     public class Range
     {
@@ -243,10 +247,10 @@ public class ApplyStrategies : Controller
         public required decimal? AverageLevel { get; set; }
     }
 
-    public class BindingModel
+    public class OutputModel
     {
-        public _Position Position { get; set; } = null!;
-        public _Risk Risk { get; set; } = null!;
+        public _Position Position { get; set; } = new _Position();
+        public _Risk Risk { get; set; } = new _Risk();
 
         public class _Position
         {

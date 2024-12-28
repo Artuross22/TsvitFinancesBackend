@@ -9,8 +9,8 @@ public class SalesLevels
     public string? Description { get; set; }
     public required decimal Level { get; set; }
     public required decimal? AverageLevel { get; set; }
-    public required int PositionManagementId { get; set; }
-    public required PositionManagement PositionManagement { get; set; }
+    public int? AssetId { get; set; }
+    public required Asset Asset { get; set; }
     internal class EFConfiguration : IEntityTypeConfiguration<SalesLevels>
     {
         public void Configure(EntityTypeBuilder<SalesLevels> builder)

@@ -37,6 +37,7 @@ public class UpdateAssets : Controller
             UserPublicId = asset.AppUser.Id,
             BoughtFor = asset.BoughtFor,
             CurrentPrice = asset.CurrentPrice,
+            Quantity = asset.Quantity,
             Name = asset.Name,
             Ticker = asset.Ticker,
         };
@@ -66,6 +67,7 @@ public class UpdateAssets : Controller
         asset.Name = model.Name;
         asset.CurrentPrice = model.CurrentPrice;
         asset.BoughtFor = model.BoughtFor;
+        asset.Quantity = model.Quantity;
 
         await _mainDb.SaveChangesAsync();
 
@@ -81,6 +83,8 @@ public class UpdateAssets : Controller
         public required string Name { get; set; }
 
         public required string Ticker { get; set; }
+
+        public required decimal Quantity { get; set; }
 
         public decimal CurrentPrice { get; set; }
 

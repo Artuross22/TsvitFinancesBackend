@@ -51,6 +51,10 @@ public class Asset
 
     public virtual required IEnumerable<Chart> Charts { get; set; }
 
+    public virtual required IEnumerable<SalesLevels> SalesLevels { get; set; }
+
+    public virtual required IEnumerable<PurchaseLevel> PurchaseLevels { get; set; }
+
     internal class EFConfiguration : IEntityTypeConfiguration<Asset>
     {
         public void Configure(EntityTypeBuilder<Asset> builder)
@@ -84,6 +88,14 @@ public class Asset
                 .WithMany(u => u.Assets)
                 .HasForeignKey(a => a.InvestmentIdeaId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasMany(s => s.SalesLevels)
+                .WithOne(a => a.Asset)
+                .HasForeignKey(a => a.AssetId);
+
+            builder.HasMany(s => s.PurchaseLevels)
+                .WithOne(a => a.Asset)
+                .HasForeignKey(a => a.AssetId);
         }
     }
 }

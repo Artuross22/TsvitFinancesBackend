@@ -13,9 +13,9 @@ public class PurchaseLevel
 
     public required decimal? AverageLevel { get; set; }
 
-    public required int PositionManagementId { get; set; }
+    public int? AssetId { get; set; }
 
-    public required PositionManagement PositionManagement { get; set; }
+    public required Asset Asset { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<PurchaseLevel>
     {

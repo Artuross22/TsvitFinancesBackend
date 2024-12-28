@@ -40,18 +40,31 @@ public class SellAssets : Controller
 
         var now = DateTime.UtcNow;
 
-        asset.SoldFor = asset.CurrentPrice;
-        asset.ClosedAt = now;
-        asset.IsActive = false;
+        var profit = (asset.CurrentPrice - asset.BoughtFor) * asset.Quantity;
 
         _mainDb.Add(new BalanceFlow
         {
             AppUser = asset.AppUser,
             AppUserId = asset.AppUserId,
-            Sum = asset.CurrentPrice,
+            Sum = profit,
             CreatedOn = now,
             Balance = Balance.InternalRevenue,
         });
+
+        var total = asset.CurrentPrice * asset.Quantity;
+
+        _mainDb.Add(new BalanceFlow
+        {
+            AppUser = asset.AppUser,
+            AppUserId = asset.AppUserId,
+            Sum = total,
+            CreatedOn = now,
+            Balance = Balance.Total,
+        });
+
+        asset.SoldFor = asset.CurrentPrice;
+        asset.ClosedAt = now;
+        asset.IsActive = false;
 
         await _mainDb.SaveChangesAsync();
 
