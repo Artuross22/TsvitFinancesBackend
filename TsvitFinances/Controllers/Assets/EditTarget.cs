@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-public class a : Controller
+public class EditTarget : Controller
 {
     readonly protected MainDb _mainDb;
 
