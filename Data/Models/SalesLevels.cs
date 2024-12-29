@@ -6,6 +6,7 @@ namespace Data.Models;
 public class SalesLevels
 {
     public int Id { get; set; }
+    public required Guid PublicId { get; set; }
     public string? Description { get; set; }
     public required decimal Level { get; set; }
     public required decimal? AverageLevel { get; set; }

@@ -32,6 +32,7 @@ public class AddTargets : Controller
         {
             _mainDb.Add(new PurchaseLevel
             {
+                PublicId = Guid.NewGuid(),
                 Level = item.Level,
                 AverageLevel = item.AverageLevel,
                 Description = item.Description,
@@ -44,6 +45,7 @@ public class AddTargets : Controller
         {
             _mainDb.Add(new SalesLevels
             {
+                PublicId = Guid.NewGuid(),
                 Level = item.Level,
                 AverageLevel = item.AverageLevel,
                 Description = item.Description,

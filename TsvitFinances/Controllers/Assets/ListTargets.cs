@@ -26,16 +26,18 @@ public class ListTargets : Controller
             .Select(s => new BindingModel
             {
                 PublicId = s.PublicId,
-                BuyLevels = s.PurchaseLevels.Select(b => new BuyLevel
+                BuyLevels = s.PurchaseLevels.Select(bl => new BuyLevel
                 {
-                    Description = b.Description,
-                    Level = b.Level,
-                    AverageLevel = b.AverageLevel
+                    PublicId = bl.PublicId,
+                    Description = bl.Description,
+                    Level = bl.Level,
+                    AverageLevel = bl.AverageLevel
                 })
                 .ToList(),
 
                 SalesLevels = s.SalesLevels.Select(sl => new SaleLevels
                 {
+                    PublicId = sl.PublicId,
                     Description = sl.Description,
                     Level = sl.Level,
                     AverageLevel = sl.AverageLevel
@@ -54,6 +56,7 @@ public class ListTargets : Controller
 
     public class SaleLevels
     {
+        public Guid PublicId { get; set; }
         public string? Description { get; set; }
         public required decimal Level { get; set; }
         public required decimal? AverageLevel { get; set; }
@@ -61,6 +64,7 @@ public class ListTargets : Controller
 
     public class BuyLevel
     {
+        public Guid PublicId { get; set; }
         public string? Description { get; set; }
         public required decimal Level { get; set; }
         public required decimal? AverageLevel { get; set; }

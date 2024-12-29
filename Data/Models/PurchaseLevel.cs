@@ -7,6 +7,8 @@ public class PurchaseLevel
 {
     public int Id { get; set; }
 
+    public required Guid PublicId { get; set; }
+
     public string? Description { get; set; }
 
     public required decimal Level { get; set; }
