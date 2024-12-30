@@ -3,7 +3,6 @@ using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NuGet.ContentModel;
 
 namespace TsvitFinances.Controllers.Assets;
 
@@ -23,14 +22,14 @@ public class DeleteTarget : Controller
     public async Task<IActionResult> Index(Guid publicId, string levelName)
     {
 
-        if (string.Equals(levelName, "saleLevel", StringComparison.Ordinal))
+        if (string.Equals(levelName, "SaleLevels", StringComparison.Ordinal))
         {
             var level = await _mainDb.Set<SalesLevels>()
                 .SingleAsync(c => c.PublicId == publicId);
 
             _mainDb.Remove(level);
         }
-        else if(string.Equals(levelName, "buyLevel", StringComparison.Ordinal))
+        else if(string.Equals(levelName, "PurchaseLevels", StringComparison.Ordinal))
         {
             var level = await _mainDb.Set<PurchaseLevel>()
                 .SingleAsync(c => c.PublicId == publicId);

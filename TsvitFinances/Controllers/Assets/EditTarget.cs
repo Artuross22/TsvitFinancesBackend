@@ -1,10 +1,14 @@
 ﻿using Data;
 using Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
+[AllowAnonymous]
+[Route("api/[controller]")]
+[ApiController]
 public class EditTarget : Controller
 {
     readonly protected MainDb _mainDb;
@@ -14,7 +18,7 @@ public class EditTarget : Controller
         _mainDb = mainDb;
     }
 
-    [HttpGet("{publicId}")]
+    [HttpGet("{publicId}/{levelName}")]
     public async Task<ActionResult<BindingModelGet>> Index(Guid publicId, string levelName)
     {
         if (string.Equals(levelName, "SaleLevels", StringComparison.OrdinalIgnoreCase))
