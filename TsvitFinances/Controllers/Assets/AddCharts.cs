@@ -3,6 +3,7 @@ using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace TsvitFinances.Controllers.Assets;
 
@@ -21,6 +22,22 @@ public class AddCharts : Controller
     [HttpPost]
     public async Task<IActionResult> Index([FromForm] AddChartDto model)
     {
+
+        if (Request.HasJsonContentType())
+        {
+            using var reader = new StreamReader(Request.Body);
+
+            var body = await reader.ReadToEndAsync();
+
+            if(string.IsNullOrEmpty(body))
+            {
+                return BadRequest();
+            }
+
+            model = JsonConvert.DeserializeObject<AddChartDto>(body)!;
+        }
+
+
         var positionEntryNote = await _mainDb.Set<PositionEntryNote>()
           .Where(pen => pen.Asset.PublicId == model.AssetId)
           .Include(pen => pen.Charts)
@@ -31,12 +48,12 @@ public class AddCharts : Controller
             return NotFound();
         }
 
-        if (model.Charts == null)
+        if (model.Charts.Count == 0)
         {
             _mainDb.Add(new PositionEntryNote
             {
-                AssetId = positionEntryNote.Asset.Id,
-                Asset = positionEntryNote.Asset,
+                AssetId = positionEntryNote.AssetId,
+                Asset = null!,
                 CreateAt = DateTime.UtcNow,
                 Note = model.Note,
                 Charts = null!

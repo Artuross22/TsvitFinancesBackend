@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-
 [AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
@@ -24,7 +23,7 @@ public class GetChartsByAsset : Controller
     {
         var positionEntryNotes = await _mainDb.Set<PositionEntryNote>()
             .Where(a => a.Asset.PublicId == id)
-            .Include(p => p.Charts)   
+            .Include(p => p.Charts)
             .ToListAsync();
 
         if (positionEntryNotes is null)
@@ -32,46 +31,64 @@ public class GetChartsByAsset : Controller
             return NotFound();
         }
 
-        var output = new GetCharts
+        var output = new BindingModel
         {
             AssetPublicId = id,
+            PositionEntries = new List<BindingModel.PositionEntry>()
         };
 
         foreach (var positionEntryNote in positionEntryNotes)
         {
-            if(positionEntryNote.Charts is null)
+            var positionEntry = new BindingModel.PositionEntry
             {
-                continue;
+                PublicId = positionEntryNote.PublicId,
+                Note = positionEntryNote.Note,
+                Charts = new List<_Chart>()
+            };
+
+            if (positionEntryNote.Charts != null)
+            {
+                foreach (var chart in positionEntryNote.Charts)
+                {
+                    positionEntry.Charts.Add(new _Chart
+                    {
+                        Id = chart.Id,
+                        Name = chart.FileName,
+                        Description = chart.Description,
+                        ChartsPath = chart.FilePath.Substring(chart.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/")
+                    });
+                }
             }
 
-            foreach (var chart in positionEntryNote.Charts)
-            {
-                output.Charts?.Add(new GetCharts._Chart
-                {
-                    Id = chart.Id,
-                    Name = chart.FileName,
-                    Description = chart.Description,
-                    ChartsPath = chart.FilePath.Substring(chart.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/"),
-                });
-            }
+            output.PositionEntries.Add(positionEntry);
         }
 
         return Ok(output);
     }
-    public class GetCharts
+
+    public class BindingModel
     {
         public required Guid AssetPublicId { get; set; }
-        public IList<_Chart>? Charts { get; set; } = [];
 
-        public class _Chart
+        public List<PositionEntry>? PositionEntries { get; set; } = [];
+
+        public class PositionEntry
         {
-            public int Id { get; set; }
+            public required Guid PublicId { get; set; }
 
-            public string Name { get; set; } = string.Empty;
+            public string? Note { get; set; } = string.Empty;
 
-            public string? Description { get; set; } = string.Empty;
-
-            public string ChartsPath { get; set; } = string.Empty;
+            public List<_Chart>? Charts { get; set; }
         }
+    }
+    public class _Chart
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
+
+        public string? Description { get; set; } = string.Empty;
+
+        public string ChartsPath { get; set; } = string.Empty;
     }
 }
