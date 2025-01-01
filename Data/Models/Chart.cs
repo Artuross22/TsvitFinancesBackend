@@ -7,9 +7,9 @@ public class Chart
 {
     public int Id { get; set; }
 
-    public required int AssetId { get; set; }
+    public required int? PositionEntryNoteId { get; set; }
 
-    public required Asset Asset { get; set; }
+    public required PositionEntryNote? PositionEntryNote { get; set; }
 
     public required string FileName { get; set; }
 
@@ -28,6 +28,11 @@ public class Chart
         public void Configure(EntityTypeBuilder<Chart> builder)
         {
             builder.ToTable("Charts");
+
+            builder.HasOne(chart => chart.PositionEntryNote)
+               .WithMany()
+               .HasForeignKey(chart => chart.PositionEntryNoteId)
+               .OnDelete(DeleteBehavior.Cascade); 
         }
     }
 }

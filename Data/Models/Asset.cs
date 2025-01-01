@@ -49,7 +49,7 @@ public class Asset
     public int? SeasonalityId { get; set; }
     public Seasonality? Seasonalities { get; set; }
 
-    public virtual required IEnumerable<Chart> Charts { get; set; }
+    public virtual required IEnumerable<PositionEntryNote> PositionEntryNotes { get; set; }
 
     public virtual required IEnumerable<SalesLevels> SalesLevels { get; set; }
 
@@ -94,6 +94,10 @@ public class Asset
                 .HasForeignKey(a => a.AssetId);
 
             builder.HasMany(s => s.PurchaseLevels)
+                .WithOne(a => a.Asset)
+                .HasForeignKey(a => a.AssetId);
+
+            builder.HasMany(s => s.PositionEntryNotes)
                 .WithOne(a => a.Asset)
                 .HasForeignKey(a => a.AssetId);
         }

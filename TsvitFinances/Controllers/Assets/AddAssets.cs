@@ -63,7 +63,7 @@ public class AddAssets : Controller
                 IsActive = true,
                 ClosedAt = null,
                 SoldFor = null,
-                Charts = null!,
+                PositionEntryNotes = null!,
                 StrategyId = null!,
                 Strategy = null!,
                 InvestmentIdeaId = null!,
@@ -72,12 +72,23 @@ public class AddAssets : Controller
                 PurchaseLevels = null!,
             };
 
+            var positionEntryNote = new PositionEntryNote
+            {
+                Asset = asset,
+                AssetId = asset.Id,
+                PublicId = Guid.NewGuid(),
+                Charts = null!,
+                Note = null!,
+                CreateAt = DateTime.UtcNow
+            };
+
+            _mainDb.Add(positionEntryNote);
             _mainDb.Add(asset);
             await _mainDb.SaveChangesAsync();
 
-            if(model.Charts != null)
+            if (model.Charts != null)
             {
-                await _uploadFiles(model.Charts, asset.Id);
+                await _uploadFiles(model.Charts, positionEntryNote.Id);
             }
         }
         catch (DbUpdateException db)
@@ -89,7 +100,7 @@ public class AddAssets : Controller
         return Ok();
     }
 
-    private async Task _uploadFiles(List<ChartDto> charts, int assetId)
+    private async Task _uploadFiles(List<ChartDto> charts, int positionEntryNoteId)
     {
         string now = DateTime.UtcNow.Date.ToString("dd/MM/yyyy");
 
@@ -108,8 +119,8 @@ public class AddAssets : Controller
 
             var fileEntity = new Chart
             {
-                AssetId = assetId,
-                Asset = null!,
+                PositionEntryNoteId = positionEntryNoteId,
+                PositionEntryNote = null!,
                 FileName = chart.Name,
                 FilePath = filePath,
                 FileSize = chart.File.Length,

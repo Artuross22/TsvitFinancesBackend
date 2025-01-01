@@ -22,11 +22,12 @@ public class GetChartsByAsset : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> Index(Guid id)
     {
-        var charts = await _mainDb.Set<Asset>().Where(a => a.PublicId == id)
-            .Include(a => a.Charts)
-            .FirstOrDefaultAsync();
+        var positionEntryNotes = await _mainDb.Set<PositionEntryNote>()
+            .Where(a => a.Asset.PublicId == id)
+            .Include(p => p.Charts)   
+            .ToListAsync();
 
-        if (charts is null)
+        if (positionEntryNotes is null)
         {
             return NotFound();
         }
@@ -36,15 +37,23 @@ public class GetChartsByAsset : Controller
             AssetPublicId = id,
         };
 
-        foreach (var item in charts.Charts)
+        foreach (var positionEntryNote in positionEntryNotes)
         {
-            output.Charts?.Add(new GetCharts._Chart
+            if(positionEntryNote.Charts is null)
             {
-                Id = item.Id,
-                Name = item.FileName,
-                Description = item.Description,
-                ChartsPath = item.FilePath.Substring(item.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/"),
-            });
+                continue;
+            }
+
+            foreach (var chart in positionEntryNote.Charts)
+            {
+                output.Charts?.Add(new GetCharts._Chart
+                {
+                    Id = chart.Id,
+                    Name = chart.FileName,
+                    Description = chart.Description,
+                    ChartsPath = chart.FilePath.Substring(chart.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/"),
+                });
+            }
         }
 
         return Ok(output);
@@ -60,7 +69,7 @@ public class GetChartsByAsset : Controller
 
             public string Name { get; set; } = string.Empty;
 
-            public string Description { get; set; } = string.Empty;
+            public string? Description { get; set; } = string.Empty;
 
             public string ChartsPath { get; set; } = string.Empty;
         }

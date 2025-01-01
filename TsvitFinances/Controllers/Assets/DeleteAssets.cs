@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-
 [AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]

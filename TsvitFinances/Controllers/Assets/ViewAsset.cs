@@ -3,9 +3,9 @@ using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 
 namespace TsvitFinances.Controllers.Assets;
-
 
 [AllowAnonymous]
 [Route("api/[controller]")]
@@ -23,9 +23,10 @@ public class ViewAsset : Controller
     public async Task<ActionResult<BindingModel>> Index(Guid id)
     {
         var asset = await _mainDb.Set<Asset>()
-            .Include(c => c.Charts)
-            .Include(c => c.Strategy)
-            .FirstOrDefaultAsync(a => a.PublicId == id);
+          .Include(a => a.PositionEntryNotes)
+              .ThenInclude(n => n.Charts)
+          .Include(a => a.Strategy)
+          .FirstOrDefaultAsync(a => a.PublicId == id);
 
         if (asset == null)
         {
@@ -55,23 +56,35 @@ public class ViewAsset : Controller
             
         };
 
-        foreach (var item in asset.Charts)
-        {
-            output.Charts?.Add(new BindingModel._Chart
+        var chartsToAdd = asset.PositionEntryNotes
+            .Where(note => note.Charts != null)
+            .SelectMany(note => note.Charts!)
+            .Select(chart => new BindingModel._Chart
             {
-                Name = item.FileName,
-                Description = item.Description,
-                ChartsPath = item.FilePath.Substring(item.FilePath.IndexOf("public") + "public".Length).Replace("\\", "/"),
+                Name = chart.FileName,
+                Description = chart.Description,
+                ChartsPath = _getPublicPath(chart.FilePath)
             });
-        }
 
+        output.Charts.AddRange(chartsToAdd);
 
+         
         if (asset is null)
         {
             return NotFound();
         }
 
         return output;
+    }
+
+    private static string _getPublicPath(string filePath)
+    {
+        const string PUBLIC_MARKER = "public";
+
+        var publicIndex = filePath.IndexOf(PUBLIC_MARKER, StringComparison.OrdinalIgnoreCase);
+        return publicIndex >= 0
+            ? filePath.Substring(publicIndex + PUBLIC_MARKER.Length).Replace("\\", "/")
+            : filePath;
     }
 
     public class BindingModel
@@ -112,7 +125,7 @@ public class ViewAsset : Controller
         {
             public string Name { get; set; } = string.Empty;
 
-            public string Description { get; set; } = string.Empty;
+            public string? Description { get; set; } = string.Empty;
 
             public string ChartsPath { get; set; } = string.Empty;
         }

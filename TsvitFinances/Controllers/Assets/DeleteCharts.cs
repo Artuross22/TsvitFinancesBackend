@@ -23,8 +23,8 @@ public class DeleteCharts : Controller
     public async Task<IActionResult> Index(int id, Guid assetId)
     {
         var chart = await _mainDb.Set<Chart>()
-            .Where(c => c.Asset.PublicId == assetId)
-            .FirstOrDefaultAsync(c => c.Id == id);
+            .Where(c => c.PositionEntryNote.Asset.PublicId == assetId && c.Id == id)
+            .FirstOrDefaultAsync();
 
         if (chart is null)
         {

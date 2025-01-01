@@ -21,21 +21,38 @@ public class AddCharts : Controller
     [HttpPost]
     public async Task<IActionResult> Index([FromForm] AddChartDto model)
     {
-        var chart = await _mainDb.Set<Chart>()
-          .Where(c => c.Asset.PublicId == model.AssetId)
+        var positionEntryNote = await _mainDb.Set<PositionEntryNote>()
+          .Where(pen => pen.Asset.PublicId == model.AssetId)
+          .Include(pen => pen.Charts)
           .FirstOrDefaultAsync();
 
-        if (chart is null)
+        if (positionEntryNote is null)
         {
             return NotFound();
         }
 
-        await _uploadFiles(model.Charts, chart.AssetId);
+        if (model.Charts == null)
+        {
+            _mainDb.Add(new PositionEntryNote
+            {
+                AssetId = positionEntryNote.Asset.Id,
+                Asset = positionEntryNote.Asset,
+                CreateAt = DateTime.UtcNow,
+                Note = model.Note,
+                Charts = null!
+            });
+        }
+        else
+        {
+            await _uploadFiles(model.Charts, positionEntryNote.Id);
+        }
+
+        await _mainDb.SaveChangesAsync();
 
         return Ok();
     }
 
-    private async Task _uploadFiles(List<ChartUpload> charts, int assetId)
+    private async Task _uploadFiles(List<ChartUpload> charts, int positionEntryNoteId)
     {
         string now = DateTime.UtcNow.Date.ToString("dd/MM/yyyy");
 
@@ -54,23 +71,24 @@ public class AddCharts : Controller
 
             var fileEntity = new Chart
             {
-                AssetId = assetId,
-                Asset = null!,
+                PositionEntryNoteId = positionEntryNoteId,
+                PositionEntryNote = null!,
                 FileName = chart.Name,
                 FilePath = filePath,
                 FileSize = chart.File.Length,
-                UploadedDate = DateTime.UtcNow
+                UploadedDate = DateTime.UtcNow,
+                Description = chart.Description
             };
 
             _mainDb.Add(fileEntity);
         }
-
-        await _mainDb.SaveChangesAsync();
     }
 
     public class AddChartDto
     {
         public Guid AssetId { get; set; }
+
+        public string? Note { get; set; }
 
         public List<ChartUpload> Charts { get; set; } = [];
     }
