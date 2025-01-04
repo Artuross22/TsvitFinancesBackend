@@ -3,69 +3,34 @@ using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 
 namespace TsvitFinances.Controllers.Assets;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
-public class AddCharts : Controller
+public class AddChartToPositionEntry : Controller
 {
     readonly protected MainDb _mainDb;
-
-    public AddCharts(MainDb mainDb)
+    public AddChartToPositionEntry(MainDb mainDb)
     {
         _mainDb = mainDb;
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index([FromForm] AddChartDto model)
+    public async Task<IActionResult> Index([FromForm] BindingModel model)
     {
-        if (Request.HasJsonContentType())
-        {
-            using var reader = new StreamReader(Request.Body);
+        var positionEntry = await _mainDb.Set<PositionEntryNote>()
+            .FirstOrDefaultAsync(c => c.PublicId == model.PublicId);
 
-            var body = await reader.ReadToEndAsync();
-
-            if (string.IsNullOrEmpty(body))
-            {
-                return BadRequest();
-            }
-
-            model = JsonConvert.DeserializeObject<AddChartDto>(body)!;
-        }
-
-        var asset = await _mainDb.Set<Asset>()
-          .Where(pen => pen.PublicId == model.AssetId)
-          .FirstOrDefaultAsync();
-
-        if (asset is null)
+        if (positionEntry is null)
         {
             return NotFound();
         }
 
-        var positionEntryNote = new PositionEntryNote
-        {
-            AssetId = asset.Id,
-            PublicId = Guid.NewGuid(),
-            Asset = null!,
-            CreateAt = DateTime.UtcNow,
-            Note = model.Note,
-            Charts = null!
-        };
-
-        _mainDb.Add(positionEntryNote);
+        await _uploadFiles(model.Charts, positionEntry.Id);
 
         await _mainDb.SaveChangesAsync();
-
-        if (model.Charts.Count != 0)
-        {
-            await _uploadFiles(model.Charts, positionEntryNote.Id);
-        }
-
-        await _mainDb.SaveChangesAsync();
-
         return Ok();
     }
 
@@ -101,18 +66,16 @@ public class AddCharts : Controller
         }
     }
 
-    public class AddChartDto
+    public class BindingModel
     {
-        public Guid AssetId { get; set; }
-
-        public string? Note { get; set; }
+        public Guid PublicId { get; set; }
 
         public List<ChartUpload> Charts { get; set; } = [];
     }
 
     public class ChartUpload
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
         public IFormFile File { get; set; }

@@ -22,7 +22,8 @@ public class UpdateCharts : Controller
     [HttpPut]
     public async Task<IActionResult> Index(UpdateChartDto model)
     {
-        var chart = await _mainDb.Set<Chart>().FirstOrDefaultAsync(c => c.Id == model.Id);
+        var chart = await _mainDb.Set<Chart>()
+            .FirstOrDefaultAsync(c => c.Id == model.Id);
 
         if (chart is null)
         {
