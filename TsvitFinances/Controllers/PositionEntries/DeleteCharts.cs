@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 
-namespace TsvitFinances.Controllers.Assets;
+namespace TsvitFinances.Controllers.PositionEntries;
 
 
 [AllowAnonymous]

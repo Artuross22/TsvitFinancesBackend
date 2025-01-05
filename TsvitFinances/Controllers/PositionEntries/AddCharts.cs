@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
-namespace TsvitFinances.Controllers.Assets;
+namespace TsvitFinances.Controllers.PositionEntries;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
@@ -112,7 +112,7 @@ public class AddCharts : Controller
 
     public class ChartUpload
     {
-        public int Id { get; set; } 
+        public int Id { get; set; }
         public required string Name { get; set; }
         public string? Description { get; set; }
         public IFormFile File { get; set; }

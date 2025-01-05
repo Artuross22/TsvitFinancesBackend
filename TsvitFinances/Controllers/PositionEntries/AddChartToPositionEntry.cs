@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace TsvitFinances.Controllers.Assets;
+namespace TsvitFinances.Controllers.PositionEntries;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
