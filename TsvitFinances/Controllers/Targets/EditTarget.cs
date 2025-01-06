@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace TsvitFinances.Controllers.Assets;
+namespace TsvitFinances.Controllers.Targets;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
@@ -70,8 +70,8 @@ public class EditTarget : Controller
         {
             var saleLevels = await _mainDb.Set<SalesLevels>()
                 .FirstOrDefaultAsync(a => a.PublicId == model.PublicId);
-            
-            if(saleLevels == null)
+
+            if (saleLevels == null)
             {
                 return NotFound();
             }
@@ -112,8 +112,8 @@ public class EditTarget : Controller
     {
         public required Guid PublicId { get; set; }
         public required string levelName { get; set; }
-        public required decimal Level { get; set; } 
+        public required decimal Level { get; set; }
         public required decimal? AverageLevel { get; set; }
-        public required string? Description { get; set; }    
+        public required string? Description { get; set; }
     }
 }

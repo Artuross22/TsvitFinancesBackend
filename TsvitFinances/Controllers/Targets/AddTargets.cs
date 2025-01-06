@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace TsvitFinances.Controllers.Assets;
+namespace TsvitFinances.Controllers.Targets;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
@@ -24,7 +24,8 @@ public class AddTargets : Controller
         var asset = await _mainDb.Set<Asset>()
             .FirstOrDefaultAsync(a => a.PublicId == model.PublicId);
 
-        if(asset == null) {
+        if (asset == null)
+        {
             return NotFound();
         }
 

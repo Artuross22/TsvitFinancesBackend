@@ -4,13 +4,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace TsvitFinances.Controllers.Assets;
+namespace TsvitFinances.Controllers.Targets;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class DeleteTarget : Controller
-{  
+{
     readonly protected MainDb _mainDb;
 
     public DeleteTarget(MainDb mainDb)
@@ -29,7 +29,7 @@ public class DeleteTarget : Controller
 
             _mainDb.Remove(level);
         }
-        else if(string.Equals(levelName, "PurchaseLevels", StringComparison.Ordinal))
+        else if (string.Equals(levelName, "PurchaseLevels", StringComparison.Ordinal))
         {
             var level = await _mainDb.Set<PurchaseLevel>()
                 .SingleAsync(c => c.PublicId == publicId);

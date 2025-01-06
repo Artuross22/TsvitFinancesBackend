@@ -9,11 +9,11 @@ namespace TsvitFinances.Controllers.Assets;
 [AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
-public class GetChartsByAsset : Controller
+public class PositionEntryByAsset : Controller
 {
     readonly protected MainDb _mainDb;
 
-    public GetChartsByAsset(MainDb mainDb)
+    public PositionEntryByAsset(MainDb mainDb)
     {
         _mainDb = mainDb;
     }
