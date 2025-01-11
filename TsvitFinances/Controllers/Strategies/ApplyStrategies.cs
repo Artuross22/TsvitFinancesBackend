@@ -51,7 +51,7 @@ public class ApplyStrategies : Controller
             var baseRiskPercentage = strategy.RiskManagement.BaseRiskPercentage;
             var riskToRewardRatio = strategy.RiskManagement.RiskToRewardRatio;
 
-            if(asset.AppUser.BalanceFlows != null)
+            if (asset.AppUser.BalanceFlows != null)
             {
                 var balance = asset.AppUser.BalanceFlows
                     .Where(a => a.Balance == Balance.Total)
@@ -68,38 +68,62 @@ public class ApplyStrategies : Controller
             }
         }
 
-        if (strategy.PositionManagement.ScalingOut != null)
+        if (strategy.PositionManagement?.ScalingOut != null)
         {
-            var targets = asset.SalesLevels.Select(s => new TargetLevels
-            {
-                Level = s.Level,
-                AverageLevel = s.AverageLevel
-            })
-            .ToList();
+            var percentSellTargets = _findPercentTargets(
+                 strategy.PositionManagement.ScalingOut!.Value,
+                 asset.BoughtFor,
+                 isSaleStrategy: true);
 
-            model.Position.SellTargets = _generateTargets(
+            if (asset.SalesLevels != null)
+            {
+                var targets = asset.SalesLevels?.Select(s => new TargetLevels
+                {
+                    Level = s.Level,
+                    AverageLevel = s.AverageLevel
+                })
+                .ToList();
+
+                model.Position.SellTargets = _generateTargets(
                 strategy.PositionManagement.ScalingOut!.Value,
                 strategy.PositionManagement.AverageLevel,
-                asset.BoughtFor,
+                percentSellTargets.Select(s => s.End).ToList(),
                 targets,
                 isSaleStrategy: true);
+            }
+            else
+            {
+                model.Position.SellTargets = percentSellTargets;
+            }
         }
 
-        if (strategy.PositionManagement.ScalingIn != null)
+        if (strategy.PositionManagement?.ScalingIn != null)
         {
-            var target = asset.PurchaseLevels.Select(s => new TargetLevels
-            {
-                Level = s.Level,
-                AverageLevel = s.AverageLevel
-            })
-            .ToList();
-
-            model.Position.BuyTargets = _generateTargets(
-                strategy.PositionManagement.ScalingIn!.Value,
+            var percentBuyLevels = _findPercentTargets(
+                strategy.PositionManagement.ScalingOut!.Value,
                 asset.BoughtFor,
-                strategy.PositionManagement.AverageLevel,
-                target,
                 isSaleStrategy: false);
+
+            if (asset.PurchaseLevels != null)
+            {
+                var target = asset.PurchaseLevels.Select(s => new TargetLevels
+                {
+                    Level = s.Level,
+                    AverageLevel = s.AverageLevel
+                })
+                .ToList();
+
+                model.Position.BuyTargets = _generateTargets(
+                    strategy.PositionManagement.ScalingIn!.Value,
+                    strategy.PositionManagement.AverageLevel,
+                    percentBuyLevels.Select(s => s.End).ToList(),
+                    target,
+                    isSaleStrategy: false);
+            }
+            else
+            {
+                model.Position.BuyTargets = percentBuyLevels;
+            }
         }
 
         return Ok(model);
@@ -139,32 +163,11 @@ public class ApplyStrategies : Controller
 
     private List<Range> _generateTargets(
     decimal percent,
-    decimal boughtAssetFor,
     decimal defaultRange,
+    List<decimal> percentLevelTargets,
     List<TargetLevels> targetLevels,
     bool isSaleStrategy)
     {
-        List<decimal> percentLevelTargets = new List<decimal>();
-
-        decimal totalPercent = 100m;
-        decimal percentApplied = 0m;
-        decimal basePrice = boughtAssetFor;
-
-        while (percentApplied < totalPercent)
-        {
-            if (isSaleStrategy)
-            {
-                basePrice += boughtAssetFor * (percent / 100m);
-            }
-            else
-            {
-                basePrice -= boughtAssetFor * (percent / 100m);
-            }
-
-            percentApplied += percent;
-            percentLevelTargets.Add(basePrice);
-        }
-
         List<decimal> levelTargets = new List<decimal>();
 
         foreach (var targetLevel in targetLevels)
@@ -196,6 +199,32 @@ public class ApplyStrategies : Controller
         }
 
         return bestTargets;
+    }
+
+    private static List<Range> _findPercentTargets(decimal percent, decimal boughtAssetFor, bool isSaleStrategy)
+    {
+        List<Range> percentLevelTargets = new List<Range>();
+
+        decimal totalPercent = 100m;
+        decimal percentApplied = 0m;
+        decimal basePrice = boughtAssetFor;
+
+        while (percentApplied < totalPercent)
+        {
+            if (isSaleStrategy)
+            {
+                basePrice += boughtAssetFor * (percent / 100m);
+            }
+            else
+            {
+                basePrice -= boughtAssetFor * (percent / 100m);
+            }
+
+            percentApplied += percent;
+            percentLevelTargets.Add(new Range { End = basePrice });
+        }
+
+        return percentLevelTargets;
     }
 
     private Range? _findClosestLevel(decimal percentLevelTarget, List<decimal> levelTargetIncRanges, decimal range)
