@@ -22,12 +22,12 @@ public class ApplyStrategies : Controller
     [HttpGet("{publicId}/{userId}")]
     public async Task<ActionResult> Index(Guid publicId, string userId)
     {
-        var assets = await _mainDb.Set<Asset>()
-             .Include(a => a.AppUser.BalanceFlows)
-             .Where(a => a.AppUser.Id == userId)
-             .ToListAsync();
-
-        var asset = assets.FirstOrDefault(a => a.PublicId == publicId);
+        var asset = await _mainDb.Set<Asset>()
+            .Include(a => a.SalesLevels)
+            .Include(a => a.PurchaseLevels)
+            .Include(a => a.AppUser.BalanceFlows)
+            .Where(a => a.AppUser.Id == userId && a.PublicId == publicId)
+            .FirstOrDefaultAsync();
 
         if (asset == null)
         {
@@ -35,7 +35,7 @@ public class ApplyStrategies : Controller
         }
 
         var strategy = await _mainDb.Set<Strategy>()
-            .Include(s => s.RiskManagement)
+            .Include(s => s.RiskManagement.Diversification)
             .Include(s => s.PositionManagement)
             .FirstOrDefaultAsync(rm => rm.Id == asset.StrategyId);
 
@@ -64,7 +64,7 @@ public class ApplyStrategies : Controller
 
             if (strategy.RiskManagement.Diversification != null)
             {
-                model.Risk.Diversifications = _diversificationCalculation(assets, strategy);
+                model.Risk.Diversifications = await _diversificationCalculation(asset.AppUserId, strategy);
             }
         }
 
@@ -75,9 +75,11 @@ public class ApplyStrategies : Controller
                  asset.BoughtFor,
                  isSaleStrategy: true);
 
+            model.Position.SellTargets = percentSellTargets;
+
             if (asset.SalesLevels != null)
             {
-                var targets = asset.SalesLevels?.Select(s => new TargetLevels
+                var targets = asset.SalesLevels.Select(s => new TargetLevels
                 {
                     Level = s.Level,
                     AverageLevel = s.AverageLevel
@@ -87,13 +89,9 @@ public class ApplyStrategies : Controller
                 model.Position.SellTargets = _generateTargets(
                 strategy.PositionManagement.ScalingOut!.Value,
                 strategy.PositionManagement.AverageLevel,
-                percentSellTargets.Select(s => s.End).ToList(),
+                percentSellTargets,
                 targets,
                 isSaleStrategy: true);
-            }
-            else
-            {
-                model.Position.SellTargets = percentSellTargets;
             }
         }
 
@@ -103,6 +101,8 @@ public class ApplyStrategies : Controller
                 strategy.PositionManagement.ScalingOut!.Value,
                 asset.BoughtFor,
                 isSaleStrategy: false);
+
+            model.Position.BuyTargets = percentBuyLevels;
 
             if (asset.PurchaseLevels != null)
             {
@@ -116,21 +116,21 @@ public class ApplyStrategies : Controller
                 model.Position.BuyTargets = _generateTargets(
                     strategy.PositionManagement.ScalingIn!.Value,
                     strategy.PositionManagement.AverageLevel,
-                    percentBuyLevels.Select(s => s.End).ToList(),
+                    percentBuyLevels,
                     target,
                     isSaleStrategy: false);
-            }
-            else
-            {
-                model.Position.BuyTargets = percentBuyLevels;
             }
         }
 
         return Ok(model);
     }
 
-    private List<Diversification> _diversificationCalculation(List<Asset> assets, Strategy strategy)
+    private async Task<List<Diversification>> _diversificationCalculation(string userId, Strategy strategy)
     {
+        var assets = await _mainDb.Set<Asset>()
+            .Where(a => a.AppUser.Id == userId)
+            .ToListAsync();
+
         var diversifications = new List<Diversification>();
 
         var total = assets.Sum(a => a.CurrentPrice);
@@ -161,10 +161,10 @@ public class ApplyStrategies : Controller
         return boughtFor + riskToRewardRatio * baseRiskPercentage;
     }
 
-    private List<Range> _generateTargets(
+    private List<Target> _generateTargets(
     decimal percent,
     decimal defaultRange,
-    List<decimal> percentLevelTargets,
+    List<Target> targets,
     List<TargetLevels> targetLevels,
     bool isSaleStrategy)
     {
@@ -187,23 +187,26 @@ public class ApplyStrategies : Controller
             levelTargets.Add(calculatedLevel);
         }
 
-        var bestTargets = new List<Range>();
+        var bestTargets = new List<Target>();
 
-        foreach (var percentLevelTarget in percentLevelTargets)
+        foreach (var percentLevelTarget in targets)
         {
-            var closest = _findClosestLevel(percentLevelTarget, levelTargets, 5m);
-            if (closest != null)
+            var closest = _findClosestLevel(percentLevelTarget.Percentage, levelTargets, 5m);
+
+            bestTargets.Add(new Target
             {
-                bestTargets.AddRange(closest);
-            }
+                Percentage = percentLevelTarget.Percentage,
+                Start = closest?.Start,
+                End = closest?.End
+            });
         }
 
         return bestTargets;
     }
 
-    private static List<Range> _findPercentTargets(decimal percent, decimal boughtAssetFor, bool isSaleStrategy)
+    private static List<Target> _findPercentTargets(decimal percent, decimal boughtAssetFor, bool isSaleStrategy)
     {
-        List<Range> percentLevelTargets = new List<Range>();
+        List<Target> percentLevelTargets = new List<Target>();
 
         decimal totalPercent = 100m;
         decimal percentApplied = 0m;
@@ -221,13 +224,13 @@ public class ApplyStrategies : Controller
             }
 
             percentApplied += percent;
-            percentLevelTargets.Add(new Range { End = basePrice });
+            percentLevelTargets.Add(new Target { Percentage = basePrice });
         }
 
         return percentLevelTargets;
     }
 
-    private Range? _findClosestLevel(decimal percentLevelTarget, List<decimal> levelTargetIncRanges, decimal range)
+    private Target? _findClosestLevel(decimal percentLevelTarget, List<decimal> levelTargetIncRanges, decimal range)
     {
         decimal maximumIndentation = (percentLevelTarget * range) / 100m;
 
@@ -243,7 +246,7 @@ public class ApplyStrategies : Controller
 
         if (levelRanges.Any())
         {
-            return new Range
+            return new Target
             {
                 Start = levelRanges.Min(),
                 End = levelRanges.Max()
@@ -264,10 +267,12 @@ public class ApplyStrategies : Controller
         public required decimal Total { get; set; }
     }
 
-    public class Range
+    public class Target
     {
         public decimal? Start { get; set; }
-        public decimal End { get; set; }
+        public decimal? End { get; set; }
+
+        public decimal Percentage { get; set; }
     }
 
     public class TargetLevels
@@ -283,9 +288,9 @@ public class ApplyStrategies : Controller
 
         public class _Position
         {
-            public List<Range> BuyTargets { get; set; } = [];
+            public List<Target> BuyTargets { get; set; } = [];
 
-            public List<Range> SellTargets { get; set; } = [];
+            public List<Target> SellTargets { get; set; } = [];
         }
 
         public class _Risk
