@@ -46,28 +46,15 @@ public class ApplyStrategies : Controller
 
         var model = new OutputModel();
 
-        if (strategy.RiskManagement != null)
-        {
-            var baseRiskPercentage = strategy.RiskManagement.BaseRiskPercentage;
-            var riskToRewardRatio = strategy.RiskManagement.RiskToRewardRatio;
+        await _riskManagement(asset, strategy, model);
 
-            if (asset.AppUser.BalanceFlows != null)
-            {
-                var balance = asset.AppUser.BalanceFlows
-                    .Where(a => a.Balance == Balance.Total)
-                    .Sum(a => a.Sum);
+        _positionManagement(asset, strategy, model);
 
-                model.Risk.BaseRisk = _calculateBaseRisk(balance, baseRiskPercentage);
-            }
+        return Ok(model);
+    }
 
-            model.Risk.RiskToReward = _calculateRiskToReward(asset.BoughtFor, baseRiskPercentage, riskToRewardRatio);
-
-            if (strategy.RiskManagement.Diversification != null)
-            {
-                model.Risk.Diversifications = await _diversificationCalculation(asset.AppUserId, strategy);
-            }
-        }
-
+    private void _positionManagement(Asset? asset, Strategy strategy, OutputModel model)
+    {
         if (strategy.PositionManagement?.ScalingOut != null)
         {
             var percentSellTargets = _findPercentTargets(
@@ -121,14 +108,38 @@ public class ApplyStrategies : Controller
                     isSaleStrategy: false);
             }
         }
+    }
 
-        return Ok(model);
+    private async Task _riskManagement(Asset asset, Strategy strategy, OutputModel model)
+    {
+        if (strategy.RiskManagement != null)
+        {
+            var baseRiskPercentage = strategy.RiskManagement.BaseRiskPercentage;
+            var riskToRewardRatio = strategy.RiskManagement.RiskToRewardRatio;
+
+            if (asset.AppUser.BalanceFlows != null)
+            {
+                var balance = asset.AppUser.BalanceFlows
+                    .Where(a => a.Balance == Balance.Total)
+                    .Sum(a => a.Sum);
+
+                model.Risk.BaseRisk = _calculateBaseRisk(balance, baseRiskPercentage);
+            }
+
+            model.Risk.RiskToReward = _calculateRiskToReward(asset.BoughtFor, baseRiskPercentage, riskToRewardRatio);
+
+            if (strategy.RiskManagement.Diversification != null)
+            {
+                model.Risk.Diversifications = await _diversificationCalculation(asset.AppUserId, strategy);
+            }
+        }
     }
 
     private async Task<List<Diversification>> _diversificationCalculation(string userId, Strategy strategy)
     {
         var assets = await _mainDb.Set<Asset>()
             .Where(a => a.AppUser.Id == userId)
+            .Where(a => a.IsActive)
             .ToListAsync();
 
         var diversifications = new List<Diversification>();
@@ -158,7 +169,15 @@ public class ApplyStrategies : Controller
 
     private decimal _calculateRiskToReward(decimal boughtFor, decimal baseRiskPercentage, decimal riskToRewardRatio)
     {
-        return boughtFor + riskToRewardRatio * baseRiskPercentage;
+        decimal riskAmount = boughtFor * (baseRiskPercentage / 100);
+
+        //decimal stopLoss = boughtFor - riskAmount;
+
+        decimal rewardAmount = riskAmount * riskToRewardRatio;
+
+        decimal takeProfit = boughtFor + rewardAmount;
+
+        return takeProfit;
     }
 
     private List<Target> _generateTargets(
@@ -187,21 +206,9 @@ public class ApplyStrategies : Controller
             levelTargets.Add(calculatedLevel);
         }
 
-        var bestTargets = new List<Target>();
+        var closest = _findClosestLevel(targets, levelTargets, 5m);
 
-        foreach (var percentLevelTarget in targets)
-        {
-            var closest = _findClosestLevel(percentLevelTarget.Percentage, levelTargets, 5m);
-
-            bestTargets.Add(new Target
-            {
-                Percentage = percentLevelTarget.Percentage,
-                Start = closest?.Start,
-                End = closest?.End
-            });
-        }
-
-        return bestTargets;
+        return closest;
     }
 
     private static List<Target> _findPercentTargets(decimal percent, decimal boughtAssetFor, bool isSaleStrategy)
@@ -230,30 +237,33 @@ public class ApplyStrategies : Controller
         return percentLevelTargets;
     }
 
-    private Target? _findClosestLevel(decimal percentLevelTarget, List<decimal> levelTargetIncRanges, decimal range)
+    private List<Target> _findClosestLevel(List<Target> targets, List<decimal> levelTargetIncRanges, decimal range)
     {
-        decimal maximumIndentation = (percentLevelTarget * range) / 100m;
+        var levelRanges = new List<Target>();
 
-        var levelRanges = new List<decimal>();
-
-        foreach (var levelTargetIncRange in levelTargetIncRanges)
+        foreach (var item in targets)
         {
-            if (Math.Abs(levelTargetIncRange - percentLevelTarget) <= maximumIndentation)
-            {
-                levelRanges.Add(levelTargetIncRange);
-            }
-        }
+            decimal maximumIndentation = (item.Percentage * range) / 100m;
 
-        if (levelRanges.Any())
-        {
-            return new Target
+            var levelRange = new Target
             {
-                Start = levelRanges.Min(),
-                End = levelRanges.Max()
+                Percentage = item.Percentage
             };
+
+            var passingLevels = levelTargetIncRanges
+                .Where(levelTargetIncRange => Math.Abs(levelTargetIncRange - item.Percentage) <= maximumIndentation)
+                .ToList();
+
+            if (passingLevels.Any())
+            {
+                levelRange.Start = passingLevels.First();
+                levelRange.End = passingLevels.Last();
+            }
+
+            levelRanges.Add(levelRange);
         }
 
-        return null;
+        return levelRanges;
     }
 
     public class Diversification
