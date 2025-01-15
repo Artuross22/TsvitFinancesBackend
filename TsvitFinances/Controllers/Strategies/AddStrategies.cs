@@ -33,6 +33,7 @@ public class AddStrategies : Controller
 
         var riskManagement = new RiskManagement
         {
+            PublicId = Guid.NewGuid(),
             Name = string.Empty,
             BaseRiskPercentage = 2,
             RiskToRewardRatio = 3,

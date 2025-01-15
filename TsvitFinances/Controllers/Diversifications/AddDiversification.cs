@@ -1,11 +1,15 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Diversifications;
 
+[AllowAnonymous]
+[Route("api/[controller]")]
+[ApiController]
 public class AddDiversification : Controller
 {
     readonly protected MainDb _mainDb;
@@ -15,23 +19,27 @@ public class AddDiversification : Controller
         _mainDb = mainDb;
     }
 
+    [HttpPost]
     public async Task<ActionResult> Index(BindingModel model)
     {
         var riskManagement = await _mainDb.Set<RiskManagement>()
-            .FirstOrDefaultAsync(a => a.PublicId == model.RiskManagementPublicId);
+            .FirstOrDefaultAsync(a => a.PublicId == model.PublicId);
 
         if (riskManagement == null)
         {
             return NotFound();
         }
 
-        _mainDb.Add(new Diversification
+        foreach (var diversification in model.Diversifications)
         {
-            NichePercentage = model.RecommendedNichePercentage,
-            Sector = model.Sector,
-            RiskManagementId = riskManagement.Id,
-            RiskManagement = riskManagement
-        });
+            _mainDb.Add(new Diversification
+            {
+                NichePercentage = diversification.NichePercentage,
+                Sector = diversification.Sector,
+                RiskManagementId = riskManagement.Id,
+                RiskManagement = riskManagement
+            });
+        }
 
         await _mainDb.SaveChangesAsync();
 
@@ -40,10 +48,15 @@ public class AddDiversification : Controller
 
     public class BindingModel
     {
-        public Guid RiskManagementPublicId { get; set; }
+        public Guid PublicId { get; set; }
 
-        public decimal RecommendedNichePercentage { get; set; }
+        public List<_Diversification> Diversifications { get; set; } = [];
 
-        public required Sector Sector { get; set; }
+        public class _Diversification
+        {
+            public decimal NichePercentage { get; set; }
+
+            public required Sector Sector { get; set; }
+        }
     }
 }
