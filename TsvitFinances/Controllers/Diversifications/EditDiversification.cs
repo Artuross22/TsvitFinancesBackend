@@ -1,68 +1,102 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
-namespace TsvitFinances.Controllers.Diversifications
+namespace TsvitFinances.Controllers.Diversifications;
+
+[AllowAnonymous]
+[Route("api/[controller]")]
+[ApiController]
+public class EditDiversification : Controller
 {
-    public class EditDiversification : Controller
+    readonly protected MainDb _mainDb;
+
+    public EditDiversification(MainDb mainDb)
     {
-        readonly protected MainDb _mainDb;
+        _mainDb = mainDb;
+    }
 
-        public EditDiversification(MainDb mainDb)
+    [HttpGet("{publicId}")]
+    public async Task<ActionResult> Index(Guid publicId)
+    {
+        var diversification = await _mainDb.Set<Diversification>()
+            .Where(a => a.RiskManagement.PublicId == publicId)
+            .Select(a => new _Diversification
+            {
+                Id = a.Id,
+                NichePercentage = a.NichePercentage,
+                Sector = a.Sector
+            })
+            .ToListAsync();
+
+        if (diversification == null)
         {
-            _mainDb = mainDb;
+            return NotFound();
         }
 
-        [HttpGet]
-        public async Task<ActionResult> Index(Guid publicId)
+        return Ok(new BindingModel
         {
-            var diversification = await _mainDb.Set<Diversification>()
-                .Where(a => a.PublicId == publicId)
-                .Select(a => new BindingModel
+            PublicId = publicId,
+            Diversifications = diversification
+        });
+    }
+
+    [HttpPost]
+    public async Task<ActionResult> Index(BindingModel model)
+    {
+        var riskManagement = await _mainDb.Set<RiskManagement>()
+            .Include(s => s.Diversification)
+            .FirstOrDefaultAsync(a => a.PublicId == model.PublicId);
+
+        if (riskManagement == null)
+        {
+            return NotFound();
+        }
+
+        var riskManagementIds = riskManagement.Diversification
+            .Select(d => d.Id)
+            .ToList();
+
+        foreach (var diversification in model.Diversifications)
+        {
+            if (riskManagementIds.Contains(diversification.Id))
+            {
+                var currentDiversification = riskManagement.Diversification.Single(r => r.Id == diversification.Id);
+
+                currentDiversification.Sector = diversification.Sector;
+                currentDiversification.NichePercentage = diversification.NichePercentage;
+            }
+            else
+            {
+                _mainDb.Add(new Diversification
                 {
-                    PublicId = a.PublicId,
-                    NichePercentage = a.NichePercentage,
-                    Sector = a.Sector
-                })
-                .FirstOrDefaultAsync();
-
-            if (diversification == null)
-            {
-                return NotFound();
+                    PublicId = Guid.NewGuid(),
+                    NichePercentage = diversification.NichePercentage,
+                    Sector = diversification.Sector,
+                    RiskManagementId = riskManagement.Id,
+                    RiskManagement = riskManagement
+                });
             }
-
-            await _mainDb.SaveChangesAsync();
-
-            return Ok(diversification);
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Index(BindingModel model)
-        {
-            var diversification = await _mainDb.Set<Diversification>()
-                .SingleAsync(a => a.PublicId == model.PublicId);
+        await _mainDb.SaveChangesAsync();
 
-            if (diversification == null)
-            {
-                return NotFound();
-            }
+        return Ok(riskManagement.PublicId);
+    }
+    public class BindingModel
+    {
+        public Guid PublicId { get; set; }
 
-            diversification.NichePercentage = model.NichePercentage;
-            diversification.Sector = model.Sector;
-
-            await _mainDb.SaveChangesAsync();
-
-            return Ok();
-        }
-        public class BindingModel
-        {
-            public Guid PublicId { get; set; }
-
-            public decimal NichePercentage { get; set; }
-
-            public required Sector Sector { get; set; }
-        }
+        public List<_Diversification> Diversifications { get; set; } = [];
+    }
+    public class _Diversification
+    {
+        public int Id { get; set; }
+        public decimal NichePercentage { get; set; }
+        public required Sector Sector { get; set; }
     }
 }

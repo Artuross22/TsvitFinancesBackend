@@ -34,6 +34,7 @@ public class AddDiversification : Controller
         {
             _mainDb.Add(new Diversification
             {
+                PublicId = Guid.NewGuid(),
                 NichePercentage = diversification.NichePercentage,
                 Sector = diversification.Sector,
                 RiskManagementId = riskManagement.Id,
