@@ -5,6 +5,8 @@ using Data.Modelsl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using TsvitFinances.FinancialHelper;
+using TsvitFinances.FinancialHelper.Models;
 
 namespace TsvitFinances.Controllers.test;
 
@@ -46,7 +48,7 @@ public class ApplyStrategies : Controller
 
         var model = new OutputModel();
 
-        await _riskManagement(asset, strategy, model);
+         _riskManagement(asset, strategy, model);
 
         _positionManagement(asset, strategy, model);
 
@@ -85,7 +87,7 @@ public class ApplyStrategies : Controller
         if (strategy.PositionManagement?.ScalingIn != null)
         {
             var percentBuyLevels = _findPercentTargets(
-                strategy.PositionManagement.ScalingOut!.Value,
+                strategy.PositionManagement.ScalingIn!.Value,
                 asset.BoughtFor,
                 isSaleStrategy: false);
 
@@ -110,7 +112,7 @@ public class ApplyStrategies : Controller
         }
     }
 
-    private async Task _riskManagement(Asset asset, Strategy strategy, OutputModel model)
+    private void _riskManagement(Asset asset, Strategy strategy, OutputModel model)
     {
         if (strategy.RiskManagement != null)
         {
@@ -130,36 +132,11 @@ public class ApplyStrategies : Controller
 
             if (strategy.RiskManagement.Diversification != null)
             {
-                model.Risk.Diversifications = await _diversificationCalculation(asset.AppUserId, strategy);
+                var diversification = strategy.RiskManagement.Diversification.Where(d => d.Sector == asset.Sector).ToList();
+
+                model.Risk.Diversifications = CalculateDiversification.Result(diversification, asset.Sector, asset);
             }
         }
-    }
-
-    private async Task<List<Diversification>> _diversificationCalculation(string userId, Strategy strategy)
-    {
-        var assets = await _mainDb.Set<Asset>()
-            .Where(a => a.AppUser.Id == userId)
-            .Where(a => a.IsActive)
-            .ToListAsync();
-
-        var diversifications = new List<Diversification>();
-
-        var total = assets.Sum(a => a.CurrentPrice);
-
-        foreach (var diversification in strategy.RiskManagement.Diversification)
-        {
-            var totalNicheSum = assets.Where(a => a.Sector == diversification.Sector).Sum(a => a.CurrentPrice);
-
-            diversifications.Add(new Diversification
-            {
-                TotalNicheSum = totalNicheSum,
-                Total = (totalNicheSum / total) * 100,
-                RecommendedNichePercentage = diversification.NichePercentage,
-                Sector = diversification.Sector,
-            });
-        }
-
-        return diversifications;
     }
 
     private decimal _calculateBaseRisk(decimal balance, decimal baseRiskPercentage)
@@ -266,17 +243,6 @@ public class ApplyStrategies : Controller
         return levelRanges;
     }
 
-    public class Diversification
-    {
-        public decimal TotalNicheSum { get; set; }
-
-        public decimal RecommendedNichePercentage { get; set; }
-
-        public required Sector Sector { get; set; }
-
-        public required decimal Total { get; set; }
-    }
-
     public class Target
     {
         public decimal? Start { get; set; }
@@ -309,7 +275,7 @@ public class ApplyStrategies : Controller
 
             public decimal RiskToReward { get; set; }
 
-            public List<Diversification> Diversifications { get; set; } = [];
+            public List<DiversificationResult> Diversifications { get; set; } = [];
         }
     }
 }

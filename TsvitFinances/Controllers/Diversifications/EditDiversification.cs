@@ -4,7 +4,6 @@ using Data.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace TsvitFinances.Controllers.Diversifications;
 
@@ -57,13 +56,13 @@ public class EditDiversification : Controller
             return NotFound();
         }
 
-        var riskManagementIds = riskManagement.Diversification
+        var diversificationIds = riskManagement.Diversification
             .Select(d => d.Id)
             .ToList();
 
         foreach (var diversification in model.Diversifications)
         {
-            if (riskManagementIds.Contains(diversification.Id))
+            if (diversificationIds.Contains(diversification.Id))
             {
                 var currentDiversification = riskManagement.Diversification.Single(r => r.Id == diversification.Id);
 
@@ -80,6 +79,14 @@ public class EditDiversification : Controller
                     RiskManagementId = riskManagement.Id,
                     RiskManagement = riskManagement
                 });
+            }
+        }
+
+        foreach (var diversificationId in diversificationIds)
+        {
+            if (!model.Diversifications.Select(d => d.Id).Contains(diversificationId))
+            {
+                _mainDb.Remove(riskManagement.Diversification.Single(d => d.Id == diversificationId));
             }
         }
 
