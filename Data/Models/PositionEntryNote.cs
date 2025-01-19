@@ -17,7 +17,7 @@ public class PositionEntryNote
 
     public required Asset Asset { get; set; }
 
-    public IEnumerable<Chart>? Charts { get; set; }
+    public ICollection<Chart>? Charts { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<PositionEntryNote>
     {

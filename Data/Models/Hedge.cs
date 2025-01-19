@@ -9,11 +9,11 @@ public class Hedge
 
     public required string Name { get; set; }
 
-    public virtual IEnumerable<Option>? Options { get; set; }
+    public virtual ICollection<Option>? Options { get; set; }
 
-    public virtual IEnumerable<Futures>? Futures { get; set; }
+    public virtual ICollection<Futures>? Futures { get; set; }
 
-    public virtual IEnumerable<SectorHedge>? SectorHedges { get; set; }
+    public virtual ICollection<SectorHedge>? SectorHedges { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<Hedge>
     {

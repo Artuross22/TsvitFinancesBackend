@@ -17,11 +17,15 @@ public class InvestmentIdea
 
     public required decimal? Profit { get; set; }
 
-    public virtual required IEnumerable<Asset>? Assets { get; set; }
-
     public required DateTime CreatedAt { get; set; }
 
     public required DateTime? ClosedAt { get; set; }
+
+    public required string AppUserId { get; set; }
+
+    public required AppUser AppUser { get; set; }
+
+    public virtual required ICollection<Asset>? Assets { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<InvestmentIdea>
     {

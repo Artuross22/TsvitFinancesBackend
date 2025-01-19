@@ -49,11 +49,11 @@ public class Asset
     public int? SeasonalityId { get; set; }
     public Seasonality? Seasonalities { get; set; }
 
-    public virtual required IEnumerable<PositionEntryNote> PositionEntryNotes { get; set; }
+    public virtual required ICollection<PositionEntryNote> PositionEntryNotes { get; set; }
 
-    public virtual required IEnumerable<SalesLevels> SalesLevels { get; set; }
+    public virtual required ICollection<SalesLevels> SalesLevels { get; set; }
 
-    public virtual required IEnumerable<PurchaseLevel> PurchaseLevels { get; set; }
+    public virtual required ICollection<PurchaseLevel> PurchaseLevels { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<Asset>
     {

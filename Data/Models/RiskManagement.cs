@@ -18,7 +18,7 @@ public class RiskManagement
     public required int? HedgeId { get; set; }
     public required virtual Hedge Hedge {  get; set; }
 
-    public required virtual IEnumerable<Diversification> Diversification { get; set; }
+    public required virtual ICollection<Diversification> Diversification { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<RiskManagement>
     {

@@ -12,7 +12,7 @@ namespace TsvitFinances.Controllers.PositionEntries;
 [ApiController]
 public class AddCharts : Controller
 {
-    readonly protected MainDb _mainDb;
+     protected readonly MainDb _mainDb;
 
     public AddCharts(MainDb mainDb)
     {

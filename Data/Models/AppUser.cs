@@ -14,7 +14,8 @@ public class AppUser : IdentityUser
     public DateTime CreatedOn { get; set; }
     public virtual ICollection<Asset>? Assets { get; set; }
     public virtual ICollection<Strategy>? Strategies { get; set; }
-    public virtual IEnumerable<BalanceFlow>? BalanceFlows { get; set; }
+    public virtual ICollection<BalanceFlow>? BalanceFlows { get; set; }
+    public virtual ICollection<InvestmentIdea>? InvestmentIdeas { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<AppUser>
     {
