@@ -43,14 +43,14 @@ public class EditTarget : Controller
         else if (string.Equals(levelName, "PurchaseLevels", StringComparison.OrdinalIgnoreCase))
         {
             var purchaseLevel = await _mainDb.Set<PurchaseLevel>()
-            .Select(b => new BindingModelGet
-            {
-                PublicId = b.PublicId,
-                Description = b.Description,
-                Level = b.Level,
-                AverageLevel = b.AverageLevel
-            })
-            .FirstOrDefaultAsync(a => a.PublicId == publicId);
+                .Select(b => new BindingModelGet
+                {
+                    PublicId = b.PublicId,
+                    Description = b.Description,
+                    Level = b.Level,
+                    AverageLevel = b.AverageLevel
+                })
+                .FirstOrDefaultAsync(a => a.PublicId == publicId);
 
             if (purchaseLevel is null)
             {
