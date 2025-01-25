@@ -3,7 +3,6 @@ using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace TsvitFinances.Controllers.InvestmentIdeas;
 
@@ -53,6 +52,7 @@ public class EditInvestmentIdea : Controller
     public async Task<IActionResult> Index(BindingModel model)
     {
         var investmentIdea = await _mainDb.Set<InvestmentIdea>()
+            .Include(ii => ii.Assets)
             .Where(ii => ii.PublicId == model.PublicId)
             .FirstOrDefaultAsync();
 
@@ -61,26 +61,35 @@ public class EditInvestmentIdea : Controller
             return NotFound();
         }
 
+        var assets = await _mainDb.Set<Asset>()
+            .Where(a => a.AppUserId == investmentIdea.AppUserId)
+            .ToListAsync();
+
         investmentIdea.Name = model.Name;
         investmentIdea.Description = model.Description;
         investmentIdea.ExpectedReturn = model.ExpectedReturn;
         investmentIdea.Profit = model.Profit;
 
-        var modelAssetIds = model.Assets.Select(a => a.PublicId);
         var investmentIdeaAssetIds = investmentIdea.Assets.Select(a => a.PublicId);
 
         foreach (var asset in model.Assets)
         {
             if (!investmentIdeaAssetIds.Contains(asset.PublicId))
             {
-                var newAsset = investmentIdea.Assets.First(a => a.PublicId == asset.PublicId);
+                var newAsset = assets.First(a => a.PublicId == asset.PublicId);
                 investmentIdea.Assets.Add(newAsset);
             }
         }
 
-        investmentIdea.Assets = investmentIdea.Assets
-            .Where(a => modelAssetIds.Contains(a.PublicId))
-            .ToList();
+        var modelAssetIds = model.Assets.Select(a => a.PublicId);
+
+        foreach (var asset in investmentIdea.Assets)
+        {
+            if (!modelAssetIds.Contains(asset.PublicId))
+            {
+                investmentIdea.Assets.Remove(asset);
+            }
+        }
 
         await _mainDb.SaveChangesAsync();
 
