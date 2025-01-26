@@ -7,7 +7,7 @@ namespace Data.Models;
 
 public class AppUser : IdentityUser
 {
-    public Guid PublicId { get; set; }
+   // public Guid PublicId { get; set; }
     public string Nickname { get; set; } = string.Empty;
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
