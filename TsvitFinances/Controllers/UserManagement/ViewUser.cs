@@ -1,6 +1,5 @@
 ﻿using Data;
 using Data.Models;
-using Data.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,43 +24,44 @@ public class ViewUser : Controller
         var user = await _mainDb.Set<AppUser>()
             .Include(u => u.BalanceFlows)
             .Where(u => u.Id == userId)
-            .Select(u => new BindingModel
-            {
-                Id = u.Id,
-                Email = u.Email!,
-                Nickname = u.Nickname,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                PhoneNumber = u.PhoneNumber,
-                CreatedOn = u.CreatedOn,
-            })
-            .FirstOrDefaultAsync();
+            .SingleOrDefaultAsync();
 
         if (user == null)
         {
             return NotFound();
         }
 
+        var model = new BindingModel
+        {
+            Id = user!.Id,
+            Email = user.Email,
+            Nickname = user.Nickname,
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            PhoneNumber = user.PhoneNumber,
+            CreatedOn = user.CreatedOn,
+        };
+
         if (user.BalanceFlows != null)
         {
-            user.TotalBalance = user.BalanceFlows.Sum(bf => bf.Sum);
-            user.BalanceFlows = user.BalanceFlows.Select(bf => new _BalanceFlow
+            model.TotalBalance = user.BalanceFlows.Sum(bf => bf.Sum);
+            model.BalanceFlows = user.BalanceFlows.Select(bf => new _BalanceFlow
             {
                 Id = bf.Id,
                 Sum = bf.Sum,
-                BalanceType = bf.BalanceType,
+                BalanceType = bf.Balance.ToString(),
                 CreatedOn = bf.CreatedOn
             })
             .ToList();
         }
 
-        return Ok(user);
+        return Ok(model);
     }
 
     public class BindingModel
     {
-        public string Id { get; set; }
-        public required string Email { get; set; }
+        public required string Id { get; set; }
+        public string? Email { get; set; }
         public required string Nickname { get; set; }
         public required string FirstName { get; set; }
         public required string LastName { get; set; }
@@ -77,7 +77,7 @@ public class ViewUser : Controller
     {
         public int Id { get; set; }
         public required decimal Sum { get; set; }
-        public required Balance BalanceType { get; set; }
+        public required string BalanceType { get; set; }
         public required DateTime CreatedOn { get; set; }
     }
 }
