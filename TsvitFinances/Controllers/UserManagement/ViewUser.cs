@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.Models;
+using Data.Models.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -44,18 +45,31 @@ public class ViewUser : Controller
 
         if (user.BalanceFlows != null)
         {
-            model.TotalBalance = user.BalanceFlows.Sum(bf => bf.Sum);
-            model.BalanceFlows = user.BalanceFlows.Select(bf => new _BalanceFlow
-            {
-                Id = bf.Id,
-                Sum = bf.Sum,
-                BalanceType = bf.Balance.ToString(),
-                CreatedOn = bf.CreatedOn
-            })
-            .ToList();
+            model.TotalBalance = user.BalanceFlows.Where(bf => bf.Balance != Balance.Outcome).Sum(bf => bf.Sum);
+            model.GroupedBalanceFlows = user.BalanceFlows
+               .GroupBy(bf => bf.Balance)
+               .Select(g => new GroupedBalanceFlow
+               {
+                   BalanceType = g.Key.ToString(),
+                   TotalSum = g.Sum(bf => bf.Sum),
+                   BalanceFlows = g.Select(bf => new _BalanceFlow
+                   {
+                       Id = bf.Id,
+                       Sum = bf.Sum,
+                       BalanceType = bf.Balance.ToString(),
+                       CreatedOn = bf.CreatedOn
+                   }).ToList()
+               }).ToList();
         }
 
         return Ok(model);
+    }
+
+    public class GroupedBalanceFlow
+    {
+        public required string BalanceType { get; set; }
+        public required decimal TotalSum { get; set; }
+        public virtual ICollection<_BalanceFlow>? BalanceFlows { get; set; }
     }
 
     public class BindingModel
@@ -70,7 +84,7 @@ public class ViewUser : Controller
 
         public decimal TotalBalance { get; set; }
 
-        public virtual ICollection<_BalanceFlow>? BalanceFlows { get; set; }
+        public virtual ICollection<GroupedBalanceFlow>? GroupedBalanceFlows { get; set; }
     }
 
     public class _BalanceFlow
