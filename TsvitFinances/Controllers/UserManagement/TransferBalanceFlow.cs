@@ -1,11 +1,15 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.UserManagement;
 
+[AllowAnonymous]
+[Route("api/[controller]")]
+[ApiController]
 public class TransferBalanceFlow : Controller
 {
     readonly protected MainDb _mainDb;
@@ -17,23 +21,21 @@ public class TransferBalanceFlow : Controller
 
     [HttpPost]
     public async Task<IActionResult> Index(BindingModel model)
-    {
-        var fromBalanceFlowSum = await _mainDb.Set<BalanceFlow>()
-            .Where(b => b.Balance == model.ToBalanceFlow.BalanceType)
-            .Where(b => b.AppUserId == model.AppUserId)
-            .SumAsync(b => b.Sum);
-
-        var toBalanceFlow = await _mainDb.Set<BalanceFlow>()
-            .Where(u => u.Id == model.ToBalanceFlow.Id)
-            .Where(u => u.AppUserId == model.AppUserId)
+    {    
+        var appUser = await _mainDb.Set<AppUser>()
+            .Include(u => u.BalanceFlows)
+            .Where(u => u.Id == model.AppUserId)
+            .Where(u => u.BalanceFlows != null && u.BalanceFlows.Any(t => t.Balance == model.FromBalanceFlow.BalanceType))
             .SingleOrDefaultAsync();
 
-        if (toBalanceFlow == null)
+        if (appUser == null)
         {
             return NotFound();
         }
 
-        var fromBalanceSum = fromBalanceFlowSum - model.FromBalanceFlow.Sum;
+        var fromBalanceSum = appUser.BalanceFlows?
+            .Where(b => b.Balance ==  model.FromBalanceFlow.BalanceType)
+            .Sum(s => s.Sum) - model.FromBalanceFlow.Sum;
 
         if (fromBalanceSum < 0)
         {
@@ -49,7 +51,7 @@ public class TransferBalanceFlow : Controller
                     Sum = -model.FromBalanceFlow.Sum,
                     Balance = model.FromBalanceFlow.BalanceType,
                     AppUserId = model.AppUserId,
-                    AppUser = toBalanceFlow.AppUser,
+                    AppUser = appUser,
                     CreatedOn = DateTime.Now
                 });
 
@@ -58,7 +60,7 @@ public class TransferBalanceFlow : Controller
                     Sum = model.ToBalanceFlow.Sum,
                     Balance = model.ToBalanceFlow.BalanceType,
                     AppUserId = model.AppUserId,
-                    AppUser = toBalanceFlow.AppUser,
+                    AppUser = appUser,
                     CreatedOn = DateTime.Now
                 });
 
@@ -85,8 +87,6 @@ public class TransferBalanceFlow : Controller
 
         public class _BalanceFlow
         {
-            public required int Id { get; set; }
-
             public required decimal Sum { get; set; }
 
             public required Balance BalanceType { get; set; }
