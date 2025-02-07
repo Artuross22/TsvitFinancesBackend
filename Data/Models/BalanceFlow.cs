@@ -12,6 +12,7 @@ public class BalanceFlow
     public required DateTime CreatedOn { get; set; }
     public required string? AppUserId { get; set; }
     public required AppUser? AppUser { get; set; }
+    //public Balance? FromBalance { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<BalanceFlow>
     {

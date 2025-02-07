@@ -11,5 +11,8 @@ public enum Balance
 
     ReserveOne = 10,
     ReserveTwo,
-    ReserveThree
+    ReserveThree,
+
+
+    NetInternalIncome = 20
 }

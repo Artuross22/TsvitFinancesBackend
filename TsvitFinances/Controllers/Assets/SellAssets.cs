@@ -48,7 +48,7 @@ public class SellAssets : Controller
             AppUserId = asset.AppUserId,
             Sum = profit,
             CreatedOn = now,
-            Balance = Balance.InternalRevenue,
+            Balance = Balance.NetInternalIncome, 
         });
 
         var total = asset.CurrentPrice * asset.Quantity;

@@ -45,7 +45,11 @@ public class ViewUser : Controller
 
         if (user.BalanceFlows != null)
         {
-            model.TotalBalance = user.BalanceFlows.Where(bf => bf.Balance != Balance.Outcome).Sum(bf => bf.Sum);
+            model.TotalBalance = user.BalanceFlows
+                .Where(bf => bf.Balance != Balance.Outcome)
+                .Where(bf => bf.Balance != Balance.NetInternalIncome)
+                .Sum(bf => bf.Sum);
+
             model.GroupedBalanceFlows = user.BalanceFlows
                .GroupBy(bf => bf.Balance)
                .Select(g => new GroupedBalanceFlow
