@@ -48,7 +48,7 @@ public class ApplyStrategies : Controller
 
         var model = new OutputModel();
 
-         _riskManagement(asset, strategy, model);
+        _riskManagement(asset, strategy, model);
 
         _positionManagement(asset, strategy, model);
 
@@ -191,6 +191,11 @@ public class ApplyStrategies : Controller
     private static List<Target> _findPercentTargets(decimal percent, decimal boughtAssetFor, bool isSaleStrategy)
     {
         List<Target> percentLevelTargets = new List<Target>();
+
+        if (percent == default)
+        {
+            return percentLevelTargets;
+        }
 
         decimal totalPercent = 100m;
         decimal percentApplied = 0m;

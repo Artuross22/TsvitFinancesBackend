@@ -21,7 +21,7 @@ public class TransferBalanceFlow : Controller
 
     [HttpPost]
     public async Task<IActionResult> Index(BindingModel model)
-    {    
+    {
         var appUser = await _mainDb.Set<AppUser>()
             .Include(u => u.BalanceFlows)
             .Where(u => u.Id == model.AppUserId)
@@ -34,7 +34,7 @@ public class TransferBalanceFlow : Controller
         }
 
         var fromBalanceSum = appUser.BalanceFlows?
-            .Where(b => b.Balance ==  model.FromBalanceFlow.BalanceType)
+            .Where(b => b.Balance == model.FromBalanceFlow.BalanceType)
             .Sum(s => s.Sum) - model.FromBalanceFlow.Sum;
 
         if (fromBalanceSum < 0)
