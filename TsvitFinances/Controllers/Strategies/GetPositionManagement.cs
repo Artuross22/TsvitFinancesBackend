@@ -3,6 +3,7 @@ using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Data.Models;
 
 namespace TsvitFinances.Controllers.Strategies;
 
@@ -20,15 +21,22 @@ public class GetPositionManagement : Controller
     [HttpGet("{publicId}")]
     public async Task<IActionResult> Index(Guid publicId)
     {
-        var strategy = await _mainDb.Set<Strategy>()
-            .Where(s => s.PositionManagement.PublicId == publicId)
+        var strategy = await _mainDb.Set<PositionManagement>()
+            .Where(s => s.PublicId == publicId)
             .Select(s => new
             {
                 StrategyPublicId = s.PublicId,
-                PublicId = s.PositionManagement.PublicId,
-                ScalingOut = s.PositionManagement.ScalingOut,
-                ScalingIn = s.PositionManagement.ScalingIn,
-                AverageLevel = s.PositionManagement.AverageLevel
+                PublicId = s.PublicId,
+                ScalingOut = s.ScalingOut,
+                ScalingIn = s.ScalingIn,
+                AverageLevel = s.AverageLevel,
+                PositionScalings = s.PositionScalings.Select(p => new 
+                {
+                   p.PublicId,
+                   p.EquityPercentage,
+                   p.PositionType
+                }).ToList()
+
             })
             .FirstOrDefaultAsync();
 

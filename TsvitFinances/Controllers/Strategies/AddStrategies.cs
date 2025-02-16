@@ -50,6 +50,7 @@ public class AddStrategies : Controller
             ScalingIn = 0,
             ScalingOut = 20,
             AverageLevel = 5,
+            PositionScalings = null!,
         };
 
         _mainDb.Add(positionManagement);
