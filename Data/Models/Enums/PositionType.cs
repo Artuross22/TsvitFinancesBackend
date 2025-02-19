@@ -2,6 +2,6 @@
 
 public enum PositionType
 {
-    Long,
+    Long = 1,
     Short
 }

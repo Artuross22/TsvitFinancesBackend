@@ -1,5 +1,4 @@
-﻿using Data.Modelsl;
-using Data;
+﻿using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
@@ -26,17 +25,19 @@ public class GetPositionManagement : Controller
             .Select(s => new
             {
                 StrategyPublicId = s.PublicId,
-                PublicId = s.PublicId,
-                ScalingOut = s.ScalingOut,
-                ScalingIn = s.ScalingIn,
-                AverageLevel = s.AverageLevel,
+                s.PublicId,
+                s.ScalingOut,
+                ScalingOutPositionDistribution = 100 / s.ScalingOut,
+                s.ScalingIn,
+                ScalingInPositionDistribution = 100 / s.ScalingIn,
+                s.AverageLevel,
                 PositionScalings = s.PositionScalings.Select(p => new 
                 {
                    p.PublicId,
                    p.EquityPercentage,
                    p.PositionType
-                }).ToList()
-
+                })
+                .ToList()
             })
             .FirstOrDefaultAsync();
 

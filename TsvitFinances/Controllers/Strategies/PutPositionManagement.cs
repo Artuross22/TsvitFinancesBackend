@@ -85,7 +85,7 @@ public class PutPositionManagement : Controller
 
         public required decimal AverageLevel { get; set; }
 
-        public required IList<_PositionScaling> PositionScalings { get;set;}
+        public required IList<_PositionScaling> PositionScalings { get; set; }
     }
 
     public class _PositionScaling
