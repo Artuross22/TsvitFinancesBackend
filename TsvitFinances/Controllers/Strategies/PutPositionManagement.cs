@@ -31,8 +31,6 @@ public class PutPositionManagement : Controller
             return NotFound();
         }
 
-        positionManagement.ScalingOut = model.ScalingOut;
-        positionManagement.ScalingIn = model.ScalingIn;
         positionManagement.AverageLevel = model.AverageLevel;
 
         var modelPositionScalingIds = model.PositionScalings.Select(a => a.PublicId);
@@ -79,10 +77,6 @@ public class PutPositionManagement : Controller
     {
         public required Guid PublicId { get; init; }
 
-        public required decimal? ScalingOut { get; set; }
-
-        public required decimal? ScalingIn { get; set; }
-
         public required decimal AverageLevel { get; set; }
 
         public required IList<_PositionScaling> PositionScalings { get; set; }
@@ -93,6 +87,7 @@ public class PutPositionManagement : Controller
         public required Guid PublicId { get; init; }
 
         public required decimal EquityPercentage { get; set; }
+
         public required PositionType PositionType { get; set; }
     }
 }

@@ -9,10 +9,6 @@ public class PositionManagement
 
     public required Guid PublicId { get; init; }
 
-    public required decimal? ScalingOut { get; set; }
-
-    public required decimal? ScalingIn { get; set; }
-
     public required decimal AverageLevel { get; set; }
 
     public required ICollection<PositionScaling> PositionScalings { get; set; }

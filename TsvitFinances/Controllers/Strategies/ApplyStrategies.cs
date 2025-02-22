@@ -38,7 +38,7 @@ public class ApplyStrategies : Controller
 
         var strategy = await _mainDb.Set<Strategy>()
             .Include(s => s.RiskManagement.Diversification)
-            .Include(s => s.PositionManagement)
+            .Include(s => s.PositionManagement.PositionScalings)
             .FirstOrDefaultAsync(rm => rm.Id == asset.StrategyId);
 
         if (strategy == null)
@@ -50,17 +50,24 @@ public class ApplyStrategies : Controller
 
         _riskManagement(asset, strategy, model);
 
-        _positionManagement(asset, strategy, model);
+        if (strategy.PositionManagement.PositionScalings != null)
+        {
+            _positionManagement(asset, strategy, model);
+        }
 
         return Ok(model);
     }
 
     private void _positionManagement(Asset? asset, Strategy strategy, OutputModel model)
     {
-        if (strategy.PositionManagement?.ScalingOut != null)
+        var positionScalings = strategy.PositionManagement.PositionScalings
+            .Where(p => p.PositionType == PositionType.Short)
+            .ToList();
+
+        if (positionScalings.Any())
         {
             var percentSellTargets = _findPercentTargets(
-                 strategy.PositionManagement.ScalingOut!.Value,
+                positionScalings,
                  asset.BoughtFor,
                  isSaleStrategy: true);
 
@@ -75,8 +82,8 @@ public class ApplyStrategies : Controller
                 })
                 .ToList();
 
-                model.Position.SellTargets = _generateTargets(
-                strategy.PositionManagement.ScalingOut!.Value,
+                model.Position.SellTargets = _findBestTargets(
+                positionScalings.Count(),
                 strategy.PositionManagement.AverageLevel,
                 percentSellTargets,
                 targets,
@@ -84,10 +91,14 @@ public class ApplyStrategies : Controller
             }
         }
 
-        if (strategy.PositionManagement?.ScalingIn != null)
+        var positionScalingIns = strategy.PositionManagement!.PositionScalings
+             .Where(p => p.PositionType == PositionType.Long)
+             .ToList();
+
+        if (positionScalingIns.Any())
         {
             var percentBuyLevels = _findPercentTargets(
-                strategy.PositionManagement.ScalingIn!.Value,
+                positionScalingIns,
                 asset.BoughtFor,
                 isSaleStrategy: false);
 
@@ -102,8 +113,8 @@ public class ApplyStrategies : Controller
                 })
                 .ToList();
 
-                model.Position.BuyTargets = _generateTargets(
-                    strategy.PositionManagement.ScalingIn!.Value,
+                model.Position.BuyTargets = _findBestTargets(
+                    positionScalingIns.Count,
                     strategy.PositionManagement.AverageLevel,
                     percentBuyLevels,
                     target,
@@ -157,7 +168,7 @@ public class ApplyStrategies : Controller
         return takeProfit;
     }
 
-    private List<Target> _generateTargets(
+    private List<Target> _findBestTargets(
     decimal percent,
     decimal defaultRange,
     List<Target> targets,
@@ -183,14 +194,17 @@ public class ApplyStrategies : Controller
             levelTargets.Add(calculatedLevel);
         }
 
-        var closest = _findClosestLevel(targets, levelTargets, 5m);
-
-        return closest;
+        return _findClosestLevel(targets, levelTargets, 5m);
     }
 
-    private static List<Target> _findPercentTargets(decimal percent, decimal boughtAssetFor, bool isSaleStrategy)
+    private static List<Target> _findPercentTargets(
+        List<PositionScaling> positionScalings,
+        decimal boughtAssetFor,
+        bool isSaleStrategy)
     {
         List<Target> percentLevelTargets = new List<Target>();
+
+        var percent = 100 / positionScalings.Count();
 
         if (percent == default)
         {
@@ -199,21 +213,33 @@ public class ApplyStrategies : Controller
 
         decimal totalPercent = 100m;
         decimal percentApplied = 0m;
-        decimal basePrice = boughtAssetFor;
+        decimal percentageLevel = boughtAssetFor;
+
+        int index = 0;
 
         while (percentApplied < totalPercent)
         {
+            decimal positionScaling = index < positionScalings.Count
+                     ? positionScalings[index].EquityPercentage
+                     : 0;
+
             if (isSaleStrategy)
             {
-                basePrice += boughtAssetFor * (percent / 100m);
+                percentageLevel += boughtAssetFor * (percent / 100m);
             }
             else
             {
-                basePrice -= boughtAssetFor * (percent / 100m);
+                percentageLevel -= boughtAssetFor * (percent / 100m);
             }
 
             percentApplied += percent;
-            percentLevelTargets.Add(new Target { Percentage = basePrice });
+            percentLevelTargets.Add(new Target
+            {
+                PercentageLevel = percentageLevel,
+                PositionScaling = positionScaling
+            });
+
+            index++;
         }
 
         return percentLevelTargets;
@@ -221,39 +247,33 @@ public class ApplyStrategies : Controller
 
     private List<Target> _findClosestLevel(List<Target> targets, List<decimal> levelTargetIncRanges, decimal range)
     {
-        var levelRanges = new List<Target>();
-
-        foreach (var item in targets)
+        foreach (var target in targets)
         {
-            decimal maximumIndentation = (item.Percentage * range) / 100m;
-
-            var levelRange = new Target
-            {
-                Percentage = item.Percentage
-            };
+            decimal maximumIndentation = (target.PercentageLevel * range) / 100m;
 
             var passingLevels = levelTargetIncRanges
-                .Where(levelTargetIncRange => Math.Abs(levelTargetIncRange - item.Percentage) <= maximumIndentation)
+                .Where(levelTargetIncRange => Math.Abs(levelTargetIncRange - target.PercentageLevel) <= maximumIndentation)
                 .ToList();
 
             if (passingLevels.Any())
             {
-                levelRange.Start = passingLevels.First();
-                levelRange.End = passingLevels.Last();
+                target.Start = passingLevels.First();
+                target.End = passingLevels.Last();
             }
-
-            levelRanges.Add(levelRange);
         }
 
-        return levelRanges;
+        return targets;
     }
 
     public class Target
     {
         public decimal? Start { get; set; }
+
         public decimal? End { get; set; }
 
-        public decimal Percentage { get; set; }
+        public decimal PercentageLevel { get; set; }
+
+        public decimal PositionScaling { get; set; }
     }
 
     public class TargetLevels

@@ -26,10 +26,6 @@ public class GetPositionManagement : Controller
             {
                 StrategyPublicId = s.PublicId,
                 s.PublicId,
-                s.ScalingOut,
-                ScalingOutPositionDistribution = 100 / s.ScalingOut,
-                s.ScalingIn,
-                ScalingInPositionDistribution = 100 / s.ScalingIn,
                 s.AverageLevel,
                 PositionScalings = s.PositionScalings.Select(p => new 
                 {
