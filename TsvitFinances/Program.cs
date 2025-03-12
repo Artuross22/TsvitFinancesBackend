@@ -1,5 +1,7 @@
 using Data;
 using Data.Models;
+using FinancialData;
+using FinancialData.APIs.FPM;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Extensions;
@@ -53,6 +55,9 @@ builder.Services.AddIdentityApiEndpoints<AppUser>()
                 .AddEntityFrameworkStores<MainDb>();
 
 builder.Services.AddJwtAuthentication();
+
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+builder.Services.AddTransient<FpmConnection>();
 
 var app = builder.Build();
 

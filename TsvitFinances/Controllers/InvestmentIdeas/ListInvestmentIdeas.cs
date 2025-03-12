@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.Models;
+using FinancialData.APIs.FPM;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -12,15 +13,19 @@ namespace TsvitFinances.Controllers.InvestmentIdeas;
 public class ListInvestmentIdeas : Controller
 {
     protected readonly MainDb _mainDb;
+    protected readonly FpmConnection _connection;
 
-    public ListInvestmentIdeas(MainDb mainDb)
+    public ListInvestmentIdeas(MainDb mainDb, FpmConnection connection)
     {
         _mainDb = mainDb;
+        _connection = connection;
     }
 
     [HttpGet("{id}")]
     public async Task<IActionResult> Index(string id)
     {
+        var ss = _connection.Get("AAPl");
+
         var investmentIdeas = await _mainDb.Set<InvestmentIdea>()
             .Where(a => a.AppUser.Id == id)
             .Select(a => new BindingModel
