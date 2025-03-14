@@ -13,23 +13,45 @@ public class FpmConnection
         _apiSettings = apiSettingsOptions.Value;
     }
 
-    public async Task Get(string symbol)
+    private async Task<string> _connection(string url)
     {
-        string url = $"{_apiSettings.FPM.BaseUrl}{symbol}?apikey={_apiSettings.FPM.Key}";
+        using HttpClient client = new HttpClient();
+        HttpResponseMessage response = await client.GetAsync(url);
 
-        using (HttpClient client = new HttpClient())
+        if (!response.IsSuccessStatusCode)
         {
-            HttpResponseMessage response = await client.GetAsync(url);
-
-            if (response.IsSuccessStatusCode)
-            {
-                string data = await response.Content.ReadAsStringAsync();
-                //return JsonSerializer.Deserialize<List<Financial>>;
-            }
-            else
-            {
-                Console.WriteLine($"Error: {response.StatusCode}");
-            }
+            Console.WriteLine($"Error: {response.StatusCode}");
+            return null!;
         }
+
+        return await response.Content.ReadAsStringAsync();
+    }
+
+    public async Task<List<CryptoData>> GetCrypto(string symbol)
+    {
+        string url = $"{_apiSettings.FPM.BaseUrl}quote/{symbol}?apikey={_apiSettings.FPM.Key}";
+
+        var result = await _connection(url);
+
+        var dataList = JsonSerializer.Deserialize<List<CryptoData>>(result, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        return dataList;
+    }
+
+    public async Task<List<ShareData>> GetShare(string symbol)
+    {
+        string url = $"{_apiSettings.FPM.BaseUrl}ratios/{symbol}?apikey={_apiSettings.FPM.Key}";
+
+        var result = await _connection(url);
+
+        var dataList = JsonSerializer.Deserialize<List<ShareData>>(result, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        return dataList;
     }
 }

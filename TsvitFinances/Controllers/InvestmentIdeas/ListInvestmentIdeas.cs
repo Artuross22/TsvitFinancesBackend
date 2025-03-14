@@ -24,7 +24,7 @@ public class ListInvestmentIdeas : Controller
     [HttpGet("{id}")]
     public async Task<IActionResult> Index(string id)
     {
-        var ss = _connection.Get("AAPl");
+        var ss = await _connection.GetCrypto("WLDUSD");
 
         var investmentIdeas = await _mainDb.Set<InvestmentIdea>()
             .Where(a => a.AppUser.Id == id)
