@@ -1,6 +1,4 @@
-﻿using Data.Models.Enums;
-
-namespace TsvitFinances.FinancialHelper.Models;
+﻿namespace TsvitFinances.FinancialHelper.Models;
 
 public class DiversificationResult
 {

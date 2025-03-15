@@ -26,6 +26,9 @@ public class Strategy
     public required int? PositionManagementId { get; set; }
     public virtual required PositionManagement PositionManagement { get; set; }
 
+    public required int? FinanceDataId { get; set; }
+    public virtual required FinanceData FinanceData { get; set; }
+
     public virtual ICollection<Asset>? Assets { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<Strategy>

@@ -24,8 +24,8 @@ public class ListStrategy : Controller
             .Where(s => s.AppUser.Id == userId)
             .Select(s => new
             {
-                PublicId = s.PublicId,
-                Name = s.Name,
+                s.PublicId,
+                s.Name,
             })
             .ToListAsync();
 

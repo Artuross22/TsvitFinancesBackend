@@ -65,6 +65,8 @@ public class AddStrategies : Controller
             PositionManagement = positionManagement,
             RiskManagementId = null!,
             RiskManagement = riskManagement,
+            FinanceDataId = null!,
+            FinanceData = null!,
         };
 
         _mainDb.Add(strategy);

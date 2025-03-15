@@ -3,6 +3,7 @@ using Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace TsvitFinances.Controllers.InvestmentIdeas;
 
@@ -83,13 +84,8 @@ public class EditInvestmentIdea : Controller
 
         var modelAssetIds = model.Assets.Select(a => a.PublicId);
 
-        foreach (var asset in investmentIdea.Assets)
-        {
-            if (!modelAssetIds.Contains(asset.PublicId))
-            {
-                investmentIdea.Assets.Remove(asset);
-            }
-        }
+        var removeAssets = investmentIdea.Assets.Where(a => !modelAssetIds.Contains(a.PublicId));
+        _mainDb.RemoveRange(removeAssets);
 
         await _mainDb.SaveChangesAsync();
 

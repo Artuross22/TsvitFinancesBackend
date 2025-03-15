@@ -33,12 +33,17 @@ public class FpmConnection
 
         var result = await _connection(url);
 
-        var dataList = JsonSerializer.Deserialize<List<CryptoData>>(result, new JsonSerializerOptions
+        if (result != null)
         {
-            PropertyNameCaseInsensitive = true
-        });
+            var dataList = JsonSerializer.Deserialize<List<CryptoData>>(result, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
-        return dataList;
+            return dataList ?? new List<CryptoData>();
+        }
+
+        return null!;
     }
 
     public async Task<List<ShareData>> GetShare(string symbol)
@@ -47,11 +52,16 @@ public class FpmConnection
 
         var result = await _connection(url);
 
-        var dataList = JsonSerializer.Deserialize<List<ShareData>>(result, new JsonSerializerOptions
+        if (result != null)
         {
-            PropertyNameCaseInsensitive = true
-        });
+            var dataList = JsonSerializer.Deserialize<List<ShareData>>(result, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
-        return dataList;
+            return dataList ?? new List<ShareData>();
+        }
+
+        return null!;
     }
 }
