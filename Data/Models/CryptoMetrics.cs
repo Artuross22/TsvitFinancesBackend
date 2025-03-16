@@ -5,6 +5,10 @@ namespace Data.Models
 {
     public class CryptoMetrics
     {
+        public int Id { get; set; }
+
+        public required Guid PublicId { get; set; }
+
         public required decimal MarketCap { get; set; }
 
         public required decimal Volume { get; set; }

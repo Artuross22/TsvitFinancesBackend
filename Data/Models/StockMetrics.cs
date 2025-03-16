@@ -5,6 +5,10 @@ namespace Data.Models;
 
 public class StockMetrics
 {
+    public int Id { get; set; }
+
+    public required Guid PublicId { get; set; }
+
     public required decimal PERatio { get; set; }
 
     public required decimal OperatingCashFlowPerShare { get; set; }
