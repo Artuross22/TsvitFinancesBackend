@@ -61,7 +61,6 @@ builder.Services.AddTransient<FpmConnection>();
 
 var app = builder.Build();
 
-
 if (builder.Environment.IsDevelopment())
 {
     app.UseDeveloperExceptionPage();
@@ -71,7 +70,6 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
-
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

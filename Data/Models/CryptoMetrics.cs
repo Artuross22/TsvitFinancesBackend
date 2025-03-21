@@ -17,6 +17,9 @@ namespace Data.Models
 
         public required decimal YearLow { get; set; }
 
+        public required int FinanceDataId { get; set; }
+        public required FinanceData FinanceData { get; set; }
+
         internal class EFConfiguration : IEntityTypeConfiguration<CryptoMetrics>
         {
             public void Configure(EntityTypeBuilder<CryptoMetrics> builder)

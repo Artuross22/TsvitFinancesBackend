@@ -13,7 +13,6 @@ namespace TsvitFinances.Controllers.Strategies;
 [ApiController]
 public class AddStrategies : Controller
 {
-
     readonly protected MainDb _mainDb;
     public AddStrategies(MainDb mainDb)
     {

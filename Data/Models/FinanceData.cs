@@ -9,11 +9,8 @@ public class FinanceData
 
     public required Guid PublicId { get; set; }
 
-    public int? CryptoMetricsId { get; set; }
-    public virtual required CryptoMetrics? CryptoMetrics { get; set;}
-
-    public int? StockMetricsId { get; set; }
-    public virtual required StockMetrics? StockMetrics { get; set; }
+    public virtual CryptoMetrics? CryptoMetrics { get; set; }
+    public virtual StockMetrics? StockMetrics { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<FinanceData>
     {

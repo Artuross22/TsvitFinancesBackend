@@ -41,6 +41,9 @@ public class StockMetrics
 
     public required decimal SharesOutstanding { get; set; }
 
+    public required int FinanceDataId {  get; set; }
+    public required FinanceData FinanceData { get; set; }
+
     internal class EFConfiguration : IEntityTypeConfiguration<StockMetrics>
     {
         public void Configure(EntityTypeBuilder<StockMetrics> builder)
