@@ -1,8 +1,8 @@
-﻿using Data.Modelsl;
-using Data;
+﻿using Data;
+using Data.Modelsl;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TsvitFinances.Controllers.Strategies;
 
@@ -21,11 +21,14 @@ public class GetStrategy : Controller
     public async Task<IActionResult> Index(Guid publicId, string userId)
     {
         var strategy = await _mainDb.Set<Strategy>()
+            .Include(s => s.FinanceData)
             .Include(s => s.RiskManagement)
             .Include(s => s.PositionManagement)
             .Where(s => s.PublicId == publicId)
             .Where(s => s.AppUser.Id == userId)
             .FirstOrDefaultAsync();
+
+        await _mainDb.SaveChangesAsync();
 
         if (strategy == null)
         {

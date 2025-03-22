@@ -22,8 +22,8 @@ namespace TsvitFinances.Controllers.Strategies
         [HttpPost]
         public async Task<ActionResult> Index(BindingModel model)
         {
-            var strategy = _mainDb.Set<Strategy>()
-                .AnyAsync(id => id.FinanceDataId == model.FinanceDataId);
+            var strategy = await _mainDb.Set<Strategy>()
+                .FirstOrDefaultAsync(id => id.FinanceData.PublicId == model.FinanceDataId);
 
             if (strategy == null)
             {
@@ -32,7 +32,7 @@ namespace TsvitFinances.Controllers.Strategies
 
             _mainDb.Add(new StockMetrics
             {
-                FinanceDataId = model.FinanceDataId,
+                FinanceDataId = strategy.FinanceDataId!.Value,
                 FinanceData = null!,
                 PublicId = Guid.NewGuid(),
                 PBRatio = model.PBRatio,
@@ -60,7 +60,7 @@ namespace TsvitFinances.Controllers.Strategies
 
         public class BindingModel
         {
-            public required int FinanceDataId { get; set; }
+            public required Guid FinanceDataId { get; set; }
 
             public required decimal PERatio { get; set; }
 

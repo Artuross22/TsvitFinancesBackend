@@ -65,7 +65,10 @@ public class AddStrategies : Controller
             RiskManagementId = null!,
             RiskManagement = riskManagement,
             FinanceDataId = null!,
-            FinanceData = null!,
+            FinanceData = new FinanceData
+            {
+                PublicId = Guid.NewGuid()
+            }         
         };
 
         _mainDb.Add(strategy);
