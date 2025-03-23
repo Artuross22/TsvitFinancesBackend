@@ -22,17 +22,17 @@ namespace TsvitFinances.Controllers.Strategies
         [HttpPost]
         public async Task<ActionResult> Index(BindingModel model)
         {
-            var strategy = await _mainDb.Set<Strategy>()
-                .FirstOrDefaultAsync(id => id.FinanceData.PublicId == model.FinanceDataId);
+            var financeData = await _mainDb.Set<FinanceData>()
+                .FirstOrDefaultAsync(fd => fd.PublicId == model.FinanceDataId);
 
-            if (strategy == null)
+            if (financeData == null)
             {
                 return NotFound();
             }
 
             _mainDb.Add(new StockMetrics
             {
-                FinanceDataId = strategy.FinanceDataId!.Value,
+                FinanceDataId = financeData.Id,
                 FinanceData = null!,
                 PublicId = Guid.NewGuid(),
                 PBRatio = model.PBRatio,

@@ -1,4 +1,5 @@
 ﻿using Data;
+using Data.Models;
 using Data.Modelsl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,16 @@ public class GetStrategy : Controller
     [HttpGet("{publicId}/{userId}")]
     public async Task<IActionResult> Index(Guid publicId, string userId)
     {
+
+        var ss = new FinanceData
+        {
+            PublicId = Guid.NewGuid()
+        };
+
+        _mainDb.Add(ss);
+        await _mainDb.SaveChangesAsync();
+
+
         var strategy = await _mainDb.Set<Strategy>()
             .Include(s => s.FinanceData)
             .Include(s => s.RiskManagement)
@@ -27,6 +38,8 @@ public class GetStrategy : Controller
             .Where(s => s.PublicId == publicId)
             .Where(s => s.AppUser.Id == userId)
             .FirstOrDefaultAsync();
+
+        strategy.FinanceDataId = ss.Id;
 
         await _mainDb.SaveChangesAsync();
 

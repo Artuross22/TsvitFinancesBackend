@@ -68,7 +68,7 @@ public class AddStrategies : Controller
             FinanceData = new FinanceData
             {
                 PublicId = Guid.NewGuid()
-            }         
+            }
         };
 
         _mainDb.Add(strategy);

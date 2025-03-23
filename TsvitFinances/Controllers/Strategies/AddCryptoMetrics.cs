@@ -1,6 +1,5 @@
 ﻿using Data;
 using Data.Models;
-using Data.Modelsl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,10 +21,10 @@ namespace TsvitFinances.Controllers.Strategies
         [HttpPost]
         public async Task<ActionResult> Index(BindingModel model)
         {
-            var strategy = _mainDb.Set<Strategy>()
-                .AnyAsync(id => id.FinanceDataId == model.FinanceDataId);
+            var financeData = _mainDb.Set<FinanceData>()
+                .AnyAsync(id => id.PublicId == model.FinanceDataId);
 
-            if (strategy == null)
+            if (financeData == null)
             {
                 return NotFound();
             }
@@ -38,7 +37,7 @@ namespace TsvitFinances.Controllers.Strategies
                 YearLow = model.YearLow,
                 Volume = model.Volume,
                 FinanceData = null!,
-                FinanceDataId = model.FinanceDataId,
+                FinanceDataId = financeData.Id,
             });
 
             await _mainDb.SaveChangesAsync();
@@ -48,7 +47,7 @@ namespace TsvitFinances.Controllers.Strategies
 
         public class BindingModel
         {
-            public required int FinanceDataId { get; set; }
+            public required Guid FinanceDataId { get; set; }
 
             public required decimal MarketCap { get; set; }
 
