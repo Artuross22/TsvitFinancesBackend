@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.Models;
+using Data.Models.Enums;
 using Data.Modelsl;
 using FinancialData.APIs.FPM;
 using Microsoft.AspNetCore.Authorization;
@@ -22,8 +23,8 @@ public class ApplyStockMetrics : Controller
         _connection = fpmConnection;
     }
 
-    [HttpGet("{publicId}/{symbol}")]
-    public async Task<ActionResult> Index(Guid publicId, string symbol)
+    [HttpGet("{publicId}/{assetPublicId}")]
+    public async Task<ActionResult> Index(Guid publicId, Guid assetPublicId)
     {
         var data = await _mainDb.Set<Strategy>()
             .Include(f => f.FinanceData.StockMetrics)
@@ -36,7 +37,17 @@ public class ApplyStockMetrics : Controller
             return NotFound();
         }
 
-        var shareDatas = (await _connection.GetShare(symbol)).First();
+        var asset = await _mainDb.Set<Asset>()
+            .Where(a => a.PublicId == assetPublicId)
+            .SingleAsync();
+
+        if (asset.Market != Market.Stock)
+        {
+            return Ok();
+        }
+
+        var shareDatas = (await _connection.GetShare(asset.Ticker)).First();
+
 
         if (shareDatas == null)
         {
@@ -82,12 +93,6 @@ public class ApplyStockMetrics : Controller
             DividendYield = shareDatas.DividendYield,
             RecommendedDividendYield = data.FinanceData.StockMetrics.DividendYield,
 
-            RevenueGrowth = shareDatas.RevenueGrowth,
-            RecommendedRevenueGrowth = data.FinanceData.StockMetrics.RevenueGrowth,
-
-            SharesOutstanding = shareDatas.SharesOutstanding,
-            RecommendedSharesOutstanding = data.FinanceData.StockMetrics.SharesOutstanding,
-
             DebtToEquityRatio = shareDatas.DebtToEquityRatio,
             RecommendedDebtToEquityRatio = data.FinanceData.StockMetrics.DebtToEquityRatio,
 
@@ -126,8 +131,6 @@ public class ApplyStockMetrics : Controller
         public required decimal RecommendedROA { get; set; }
         public required decimal NetProfitMargin { get; set; }
         public required decimal RecommendedNetProfitMargin { get; set; }
-        public required decimal RevenueGrowth { get; set; }
-        public required decimal RecommendedRevenueGrowth { get; set; }
 
         public required decimal EBIT { get; set; }
         public required decimal RecommendedEBIT { get; set; }
@@ -140,17 +143,5 @@ public class ApplyStockMetrics : Controller
 
         public required decimal NetIncome { get; set; }
         public required decimal RecommendedNetIncome { get; set; }
-        public required decimal SharesOutstanding { get; set; }
-        public required decimal RecommendedSharesOutstanding { get; set; }
-        //public required decimal MarketCapitalization { get; set; }
-        //public required decimal RecommendedMarketCapitalization { get; set; }
-        //public required decimal EnterpriseValue { get; set; }
-        //public required decimal RecommendedEnterpriseValue { get; set; }
-        //public required decimal CurrentRatio { get; set; }
-        //public required decimal RecommendedCurrentRatio { get; set; }
-        //public required decimal QuickRatio { get; set; }
-        //public required decimal RecommendedQuickRatio { get; set; }
-        //public required decimal EarningsYield { get; set; }
-        //public required decimal RecommendedEarningsYield { get; set; }
     }
 }

@@ -44,8 +44,8 @@ public class ShareData
     [JsonPropertyName("netProfitMargin")]
     public required decimal NetProfitMargin { get; set; }
 
-    [JsonPropertyName("revenueGrowth")]
-    public decimal RevenueGrowth { get; set; }
+    //[JsonPropertyName("revenueGrowth")]
+    //public decimal RevenueGrowth { get; set; }
 
     [JsonPropertyName("debtRatio")]
     public required decimal DebtRatio { get; set; }
@@ -56,9 +56,4 @@ public class ShareData
     // EPS netIncome / totalSharesOutstanding.
     [JsonPropertyName("netIncome")]
     public decimal NetIncome { get; set; }
-
-    [JsonPropertyName("sharesOutstanding")]
-    public decimal SharesOutstanding { get; set; }
 }
-
-// required properties including: 'revenueGrowth'; 'freeCashFlow'; 'netIncome'; 'sharesOutstanding'.'
