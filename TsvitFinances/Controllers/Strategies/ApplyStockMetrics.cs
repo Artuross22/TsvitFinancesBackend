@@ -26,9 +26,9 @@ public class ApplyStockMetrics : Controller
     [HttpGet("{publicId}/{assetPublicId}")]
     public async Task<ActionResult> Index(Guid publicId, Guid assetPublicId)
     {
-        var data = await _mainDb.Set<Strategy>()
-            .Include(f => f.FinanceData.StockMetrics)
-            .FirstOrDefaultAsync(fd => fd.PublicId == publicId);
+        var data = await _mainDb.Set<FinanceData>()
+            .Include(f => f.StockMetrics)
+            .FirstOrDefaultAsync(fd => fd.Strategy.PublicId == publicId);
 
         await _mainDb.SaveChangesAsync();
 
@@ -61,46 +61,46 @@ public class ApplyStockMetrics : Controller
             Date = shareDatas.Date,
 
             DebtRatio = shareDatas.DebtRatio,
-            RecommendedDebtRatio = data.FinanceData.StockMetrics.DebtRatio,
+            RecommendedDebtRatio = data.StockMetrics.DebtRatio,
 
             PSRatio = shareDatas.PSRatio,
-            RecommendedPSRatio = data.FinanceData.StockMetrics.PSRatio,
+            RecommendedPSRatio = data.StockMetrics.PSRatio,
 
             PBRatio = shareDatas.PBRatio,
-            RecommendedPBRatio = data.FinanceData.StockMetrics.PBRatio,
+            RecommendedPBRatio = data.StockMetrics.PBRatio,
 
             PERatio = shareDatas.PERatio,
-            RecommendedPERatio = data.FinanceData.StockMetrics.PERatio,
+            RecommendedPERatio = data.StockMetrics.PERatio,
 
             ROA = shareDatas.ROA,
-            RecommendedROA = data.FinanceData.StockMetrics.ROA,
+            RecommendedROA = data.StockMetrics.ROA,
 
             ROE = shareDatas.ROE,
-            RecommendedROE = data.FinanceData.StockMetrics.ROE,
+            RecommendedROE = data.StockMetrics.ROE,
 
             EBIT = shareDatas.EBIT,
-            RecommendedEBIT = data.FinanceData.StockMetrics.EBIT,
+            RecommendedEBIT = data.StockMetrics.EBIT,
 
             FreeCashFlow = shareDatas.FreeCashFlow,
-            RecommendedFreeCashFlow = data.FinanceData.StockMetrics.FreeCashFlow,
+            RecommendedFreeCashFlow = data.StockMetrics.FreeCashFlow,
 
             NetIncome = shareDatas.NetIncome,
-            RecommendedNetIncome = data.FinanceData.StockMetrics.NetIncome,
+            RecommendedNetIncome = data.StockMetrics.NetIncome,
 
             NetProfitMargin = shareDatas.NetProfitMargin,
-            RecommendedNetProfitMargin = data.FinanceData.StockMetrics.NetProfitMargin,
+            RecommendedNetProfitMargin = data.StockMetrics.NetProfitMargin,
 
             DividendYield = shareDatas.DividendYield,
-            RecommendedDividendYield = data.FinanceData.StockMetrics.DividendYield,
+            RecommendedDividendYield = data.StockMetrics.DividendYield,
 
             DebtToEquityRatio = shareDatas.DebtToEquityRatio,
-            RecommendedDebtToEquityRatio = data.FinanceData.StockMetrics.DebtToEquityRatio,
+            RecommendedDebtToEquityRatio = data.StockMetrics.DebtToEquityRatio,
 
             FreeCashFlowPerShare = shareDatas.FreeCashFlowPerShare,
-            RecommendedFreeCashFlowPerShare = data.FinanceData.StockMetrics.FreeCashFlowPerShare,
+            RecommendedFreeCashFlowPerShare = data.StockMetrics.FreeCashFlowPerShare,
 
             OperatingCashFlowPerShare = shareDatas.OperatingCashFlowPerShare,
-            RecommendedOperatingCashFlowPerShare = data.FinanceData.StockMetrics.OperatingCashFlowPerShare,
+            RecommendedOperatingCashFlowPerShare = data.StockMetrics.OperatingCashFlowPerShare,
         };
 
         return Ok(modelPost);

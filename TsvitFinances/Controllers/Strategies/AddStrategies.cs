@@ -64,14 +64,18 @@ public class AddStrategies : Controller
             PositionManagement = positionManagement,
             RiskManagementId = null!,
             RiskManagement = riskManagement,
-            FinanceDataId = null!,
-            FinanceData = new FinanceData
-            {
-                PublicId = Guid.NewGuid()
-            }
         };
 
         _mainDb.Add(strategy);
+
+        await _mainDb.SaveChangesAsync();
+
+        _mainDb.Add(new FinanceData
+        {
+            StrategyId = strategy.Id,
+            Strategy = strategy,
+            PublicId = Guid.NewGuid()
+        });
 
         await _mainDb.SaveChangesAsync();
 

@@ -65,6 +65,7 @@ public class UpdateAssets : Controller
         }
 
         asset.Name = model.Name;
+        asset.Ticker = model.Ticker;
         asset.CurrentPrice = model.CurrentPrice;
         asset.BoughtFor = model.BoughtFor;
         asset.Quantity = model.Quantity;
