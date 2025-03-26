@@ -30,8 +30,6 @@ public class ApplyStockMetrics : Controller
             .Include(f => f.StockMetrics)
             .FirstOrDefaultAsync(fd => fd.Strategy.PublicId == publicId);
 
-        await _mainDb.SaveChangesAsync();
-
         if (data == null)
         {
             return NotFound();

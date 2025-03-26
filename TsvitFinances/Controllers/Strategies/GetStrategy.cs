@@ -100,20 +100,4 @@ public class GetStrategy : Controller
         public required Guid PublicId { get; set; }
         public required decimal AverageLevel { get; set; }
     }
-
-    public class _PositionScaling
-    {
-        public required string PublicId { get; set; }
-        public required string EquityPercentage { get; set; }
-    }
-
-    public class _Diversification
-    {
-        public required string Name { get; set; }
-    }
-
-    public class _Hedge
-    {
-        public string Name { get; set; }
-    }
 }
