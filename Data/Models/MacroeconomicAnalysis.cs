@@ -16,7 +16,7 @@ public class MacroeconomicAnalysis
 
     public required EconomicType EconomicType { get; set; }
 
-    public required string Source { get; set; }
+    public required DateTime? ArchivedAt { get; set; }
 
     public required string AppUserId { get; set; }
 

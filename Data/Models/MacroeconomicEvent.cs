@@ -14,6 +14,10 @@ public class MacroeconomicEvent
     public required string Description { get; set; }
 
     public required int Rating { get; set; }
+     
+    public required DateTime CreateAt { get; set; }
+
+    public required string Source { get; set; }
 
     public required int MacroeconomicAnalysisId { get; set; }
 

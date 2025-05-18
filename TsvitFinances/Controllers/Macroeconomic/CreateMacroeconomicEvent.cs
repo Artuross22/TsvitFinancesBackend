@@ -1,0 +1,67 @@
+﻿using Data.Models.Enums;
+using Data.Models;
+using Data;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+
+namespace TsvitFinances.Controllers.Macroeconomic;
+
+[Route("api/[controller]")]
+[ApiController]
+public class CreateMacroeconomicEvent : Controller
+{
+    protected readonly MainDb _mainDb;
+
+    public CreateMacroeconomicEvent(MainDb mainDb)
+    {
+        _mainDb = mainDb;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Index(BindingModel model)
+    {
+        var macroeconomicAnalysis = await _mainDb.Set<MacroeconomicAnalysis>()
+            .FirstOrDefaultAsync(u => u.PublicId == model.MacroeconomicAnalysisId);
+
+        if (macroeconomicAnalysis == null)
+        {
+            return NotFound();
+        }
+
+        _mainDb.Add(new MacroeconomicEvent
+        {
+            PublicId = model.PublicId,
+            Description = model.Description,
+            Title = model.Title,
+            Rating = model.Rating,
+            Source = model.Source,
+            CreateAt = model.CreateAt,
+            MacroeconomicAnalysisId = macroeconomicAnalysis.Id,
+            MacroeconomicAnalyses = macroeconomicAnalysis,
+        });
+
+        await _mainDb.SaveChangesAsync();
+
+        return Ok();
+    }
+
+    public class BindingModel
+    {
+        public required Guid MacroeconomicAnalysisId { get; set; }
+
+        public required Guid PublicId { get; set; }
+
+        public required string Title { get; set; }
+
+        public required string Description { get; set; }
+
+        public required EconomicType EconomicType { get; set; }
+
+        public required string Source { get; set; }
+
+        public required DateTime CreateAt {  get; set; }
+
+        public int Rating { get; set; }
+    }
+}
