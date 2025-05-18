@@ -16,6 +16,7 @@ public class AppUser : IdentityUser
     public virtual ICollection<Strategy>? Strategies { get; set; }
     public virtual ICollection<BalanceFlow>? BalanceFlows { get; set; }
     public virtual ICollection<InvestmentIdea>? InvestmentIdeas { get; set; }
+    public virtual ICollection<MacroeconomicAnalysis>? MacroeconomicAnalyses { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<AppUser>
     {
@@ -34,8 +35,12 @@ public class AppUser : IdentityUser
                     .HasForeignKey(a => a.AppUserId);
 
             builder.HasMany(u => u.BalanceFlows)
-                   .WithOne(a => a.AppUser)
-                   .HasForeignKey(a => a.AppUserId);
+                    .WithOne(a => a.AppUser)
+                    .HasForeignKey(a => a.AppUserId);
+
+            builder.HasMany(u => u.MacroeconomicAnalyses)
+                    .WithOne(a => a.AppUser)
+                    .HasForeignKey(a => a.AppUserId);
         }
     }
 }

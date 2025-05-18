@@ -34,5 +34,4 @@ public class InvestmentIdea
             builder.ToTable("InvestmentIdeas");
         }
     }
-
 }
