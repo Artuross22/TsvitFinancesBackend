@@ -17,29 +17,28 @@ public class ViewMacroeconomic : Controller
         _mainDb = mainDb;
     }
 
-    [HttpGet("{publicId}")]
-    public async Task<IActionResult> Index(Guid publicId)
+    public async Task<IActionResult> Index(string userId)
     {
         var macroeconomicAnalysis = await _mainDb.Set<MacroeconomicAnalysis>()
-            .Where(ma => ma.PublicId == publicId)
+            .Where(ma => ma.AppUserId == userId)
+            .Where(ma => ma.ArchivedAt == null)
             .Select(ma => new BindingModel
             {
                 PublicId = ma.PublicId,
                 Title = ma.Title,
                 EconomicType = ma.EconomicType,
                 Description = ma.Description,
-                MacroeconomicEvents = (ma.MacroeconomicEvents ?? new List<MacroeconomicEvent>())
-                    .Select(me => new _MacroeconomicEvent
-                    {
-                        PublicId = me.PublicId,
-                        CreateAt = me.CreateAt,
-                        Description = me.Description,
-                        Rating = me.Rating,
-                        Source = me.Source,
-                        Title = me.Title,
-                    }).ToList()
+                MacroeconomicEvents = ma.MacroeconomicEvents.Select(me => new _MacroeconomicEvent
+                {
+                    PublicId = me.PublicId,
+                    CreateAt = me.CreateAt,
+                    Description = me.Description,
+                    Rating = me.Rating,
+                    Source = me.Source,
+                    Title = me.Title
+                }).ToList()
             })
-            .SingleOrDefaultAsync();
+            .FirstOrDefaultAsync();
 
         if (macroeconomicAnalysis == null)
         {
@@ -59,7 +58,7 @@ public class ViewMacroeconomic : Controller
 
         public required EconomicType EconomicType { get; set; }
 
-        public IReadOnlyList<_MacroeconomicEvent>? MacroeconomicEvents { get; set; }
+        public IReadOnlyList<_MacroeconomicEvent>? MacroeconomicEvents { get; set; } = [];
     }
 
     public class _MacroeconomicEvent

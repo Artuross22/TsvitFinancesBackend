@@ -1,9 +1,8 @@
-﻿using Data.Models.Enums;
+﻿using Data;
 using Data.Models;
-using Data;
+using Data.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TsvitFinances.Controllers.Macroeconomic;
 
@@ -31,7 +30,7 @@ public class CreateMacroeconomicEvent : Controller
 
         _mainDb.Add(new MacroeconomicEvent
         {
-            PublicId = model.PublicId,
+            PublicId = Guid.NewGuid(),
             Description = model.Description,
             Title = model.Title,
             Rating = model.Rating,

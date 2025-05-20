@@ -30,7 +30,7 @@ public class CreateMacroeconomic : Controller
 
         _mainDb.Add(new MacroeconomicAnalysis
         {
-            PublicId = model.PublicId,
+            PublicId = Guid.NewGuid(),
             AppUser = user,
             AppUserId = user.Id,
             Description = model.Description,
@@ -47,8 +47,6 @@ public class CreateMacroeconomic : Controller
     public class BindingModel
     {
         public required string UserId { get; set; }
-
-        public required Guid PublicId { get; set; }
 
         public required string Title { get; set; }
 
