@@ -28,6 +28,15 @@ public class CreateMacroeconomic : Controller
             return NotFound();
         }
 
+        var macroeconomic = await _mainDb.Set<MacroeconomicAnalysis>()
+            .Where(ma => ma.AppUserId == model.UserId)
+            .FirstOrDefaultAsync(ma => ma.EconomicType == model.EconomicType);
+
+        if (macroeconomic != null)
+        {
+            macroeconomic.ArchivedAt = DateTime.Now;
+        }
+
         _mainDb.Add(new MacroeconomicAnalysis
         {
             PublicId = Guid.NewGuid(),

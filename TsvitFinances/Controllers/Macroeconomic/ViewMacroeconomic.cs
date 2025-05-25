@@ -17,10 +17,12 @@ public class ViewMacroeconomic : Controller
         _mainDb = mainDb;
     }
 
-    public async Task<IActionResult> Index(string userId)
+    [HttpGet]
+    public async Task<IActionResult> Index(string userId, EconomicType type)
     {
         var macroeconomicAnalysis = await _mainDb.Set<MacroeconomicAnalysis>()
             .Where(ma => ma.AppUserId == userId)
+            .Where(ma => ma.EconomicType == type)
             .Where(ma => ma.ArchivedAt == null)
             .Select(ma => new BindingModel
             {
@@ -42,7 +44,7 @@ public class ViewMacroeconomic : Controller
 
         if (macroeconomicAnalysis == null)
         {
-            return NotFound(macroeconomicAnalysis);
+            return Ok()!;
         }
 
         return Ok(macroeconomicAnalysis);

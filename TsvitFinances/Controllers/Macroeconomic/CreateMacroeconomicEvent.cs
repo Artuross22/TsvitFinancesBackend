@@ -35,7 +35,7 @@ public class CreateMacroeconomicEvent : Controller
             Title = model.Title,
             Rating = model.Rating,
             Source = model.Source,
-            CreateAt = model.CreateAt,
+            CreateAt = DateTime.Now,
             MacroeconomicAnalysisId = macroeconomicAnalysis.Id,
             MacroeconomicAnalyses = macroeconomicAnalysis,
         });
@@ -49,17 +49,11 @@ public class CreateMacroeconomicEvent : Controller
     {
         public required Guid MacroeconomicAnalysisId { get; set; }
 
-        public required Guid PublicId { get; set; }
-
         public required string Title { get; set; }
 
         public required string Description { get; set; }
 
-        public required EconomicType EconomicType { get; set; }
-
         public required string Source { get; set; }
-
-        public required DateTime CreateAt {  get; set; }
 
         public int Rating { get; set; }
     }
