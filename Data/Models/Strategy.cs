@@ -28,6 +28,8 @@ public class Strategy
 
     public virtual ICollection<Asset>? Assets { get; set; }
 
+    public virtual ICollection<StrategyMacroeconomicEvent>? StrategyMacroeconomicEvents { get; set; }
+
     internal class EFConfiguration : IEntityTypeConfiguration<Strategy>
     {
         public void Configure(EntityTypeBuilder<Strategy> builder)

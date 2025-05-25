@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Data.Modelsl;
 
 namespace Data.Models;
 
@@ -22,6 +23,10 @@ public class MacroeconomicEvent
     public required int MacroeconomicAnalysisId { get; set; }
 
     public required MacroeconomicAnalysis MacroeconomicAnalyses { get; set; }
+
+    public ICollection<Strategy>? Strategies { get; set; }
+
+    public virtual ICollection<StrategyMacroeconomicEvent>? StrategyMacroeconomicEvents { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<MacroeconomicEvent>
     {
