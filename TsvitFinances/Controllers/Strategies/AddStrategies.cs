@@ -56,7 +56,7 @@ public class AddStrategies : Controller
         {
             PublicId = Guid.NewGuid(),
             Category = RiskCategory.Low,
-            Description = string.Empty,
+            Description = model.Description,
             AppUser = user,
             AppUserId = user.Id,
             Name = model.Name,
@@ -86,5 +86,6 @@ public class AddStrategies : Controller
     {
         public required string UserPublicId { get; set; }
         public required string Name { get; set; }
+        public required string Description { get; set; }
     }
 }

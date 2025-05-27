@@ -5,11 +5,13 @@ using Microsoft.EntityFrameworkCore;
 
 public class StrategyMacroeconomicEvent
 {
+    public int Id { get; set; }
+
     public required int StrategyId { get; set; }
-    public required Strategy Strategy { get; set; }
+    public Strategy? Strategy { get; set; }
 
     public required int MacroeconomicEventId { get; set; }
-    public required MacroeconomicEvent MacroeconomicEvent { get; set; }
+    public MacroeconomicEvent? MacroeconomicEvent { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<StrategyMacroeconomicEvent>
     {

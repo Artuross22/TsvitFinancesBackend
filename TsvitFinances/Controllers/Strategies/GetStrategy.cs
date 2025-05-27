@@ -21,7 +21,6 @@ public class GetStrategy : Controller
     [HttpGet("{publicId}/{userId}")]
     public async Task<IActionResult> Index(Guid publicId, string userId)
     {
-
         var strategy = await _mainDb.Set<Strategy>()
             .Include(s => s.RiskManagement)
             .Include(s => s.PositionManagement)
@@ -41,6 +40,7 @@ public class GetStrategy : Controller
         {
             PublicId = strategy.PublicId,
             Name = strategy.Name,
+            Description = strategy.Description,
             PositionManagement = new _PositionManagement
             {
                 Id = strategy.PositionManagement.Id,
@@ -73,6 +73,7 @@ public class GetStrategy : Controller
     {
         public required Guid PublicId { get; set; }
         public required string Name { get; set; }
+        public required string Description { get; set; }
         public _RiskManagement? RiskManagement { get; set; }
         public _PositionManagement? PositionManagement { get; set; }
         public _FinanceData? FinanceData { get; set; }
