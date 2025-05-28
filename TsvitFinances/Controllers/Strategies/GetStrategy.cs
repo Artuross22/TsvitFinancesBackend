@@ -1,5 +1,6 @@
 ﻿using Data;
 using Data.Models;
+using Data.Models.Enums;
 using Data.Modelsl;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,9 +34,6 @@ public class GetStrategy : Controller
             return NotFound();
         }
 
-        var financeData = await _mainDb.Set<FinanceData>()
-            .FirstOrDefaultAsync(fd => fd.StrategyId == strategy.Id);
-
         var model = new BindingModel
         {
             PublicId = strategy.PublicId,
@@ -60,11 +58,23 @@ public class GetStrategy : Controller
             FinanceData = new _FinanceData()
         };
 
-        if (financeData != null)
-        {
+        model.FinanceData.PublicId = await _mainDb.Set<FinanceData>()
+            .Where(fd => fd.StrategyId == strategy.Id)
+            .Select(fd => fd.PublicId)
+            .FirstOrDefaultAsync();
 
-            model.FinanceData.PublicId = financeData.PublicId;
-        }
+        model.MacroeconomicEvents = _mainDb.Set<StrategyMacroeconomicEvent>()
+            .Where(sme => sme.StrategyId == strategy.Id)
+            .Select(sme => sme.MacroeconomicEvent)
+            .Select(me => new _MacroeconomicEvents
+            {
+                PublicId = me!.PublicId,
+                CreateAt = me.CreateAt,
+                Title = me.Title,
+                EconomicType = me.MacroeconomicAnalyses.EconomicType
+            })
+            .OrderBy(me => me.CreateAt)
+            .ToList();
 
         return Json(model);
     }
@@ -77,6 +87,8 @@ public class GetStrategy : Controller
         public _RiskManagement? RiskManagement { get; set; }
         public _PositionManagement? PositionManagement { get; set; }
         public _FinanceData? FinanceData { get; set; }
+
+        public List<_MacroeconomicEvents>? MacroeconomicEvents { get; set; }
     }
 
     public class _RiskManagement
@@ -100,5 +112,13 @@ public class GetStrategy : Controller
         public required int Id { get; set; }
         public required Guid PublicId { get; set; }
         public required decimal AverageLevel { get; set; }
+    }
+
+    public class _MacroeconomicEvents
+    {
+        public required Guid PublicId { get; set; }
+        public required string Title { get; set; }
+        public DateTime CreateAt { get; set; }
+        public EconomicType EconomicType { get; set; }
     }
 }

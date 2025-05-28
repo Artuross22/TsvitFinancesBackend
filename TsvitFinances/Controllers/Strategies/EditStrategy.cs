@@ -45,8 +45,10 @@ public class EditStrategy : Controller
                     PublicId = me.PublicId,
                     EconomicType = ma.EconomicType,
                     Title = me.Title,
+                    CreateAt = me.CreateAt,
                     IsSelected = selectedEventIds != null && selectedEventIds.Contains(me.Id)
                 }))
+            .OrderBy(ma => ma.CreateAt)
             .ToListAsync();
 
 
@@ -119,10 +121,10 @@ public class EditStrategy : Controller
     public class _MacroeconomicEvents
     {
         public required int Id { get; set; }
-
         public required Guid PublicId { get; set; }
         public required string Title { get; set; }
         public required EconomicType EconomicType { get; set; }
         public bool IsSelected { get; set; }
+        public DateTime CreateAt { get; internal set; }
     }
 }
