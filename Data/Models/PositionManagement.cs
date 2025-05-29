@@ -9,6 +9,8 @@ public class PositionManagement
 
     public required Guid PublicId { get; init; }
 
+    public required string Rules { get; set; }
+
     public required decimal AverageLevel { get; set; }
 
     public required ICollection<PositionScaling> PositionScalings { get; set; }

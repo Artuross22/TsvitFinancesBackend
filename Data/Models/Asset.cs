@@ -11,8 +11,7 @@ public class Asset
 
     public required Guid PublicId { get; set; }
 
-    public required string AppUserId { get; set; }
-    public required AppUser AppUser { get; set; }
+    public required string Goal { get; set; }
 
     public required Sector Sector { get; set; }
 
@@ -39,6 +38,9 @@ public class Asset
     public DateTime? ClosedAt { get; set; }
 
     public decimal? SoldFor { get; set; }
+
+    public required string AppUserId { get; set; }
+    public required AppUser AppUser { get; set; }
 
     public required int? StrategyId { get; set; }
     public virtual required Strategy? Strategy { get; set; }

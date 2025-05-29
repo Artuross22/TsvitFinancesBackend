@@ -54,6 +54,7 @@ public class AddAssets : Controller
                 Market = (Market)model.Market,
                 Term = (InvestmentTerm)model.InvestmentTerm,
                 Name = model.Name,
+                Goal = model.MainGoal,
                 Ticker = model.Ticker,
                 AddedAt = DateTime.UtcNow,
                 CurrentPrice = model.CurrentPrice,
@@ -138,6 +139,8 @@ public class AddAssets : Controller
         public required string UserPublicId { get; set; }
 
         public required string Name { get; set; }
+
+        public required string MainGoal { get; set; }
 
         public required string Ticker { get; set; }
 

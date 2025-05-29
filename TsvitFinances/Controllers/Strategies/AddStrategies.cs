@@ -46,6 +46,7 @@ public class AddStrategies : Controller
         var positionManagement = new PositionManagement
         {
             PublicId = Guid.NewGuid(),
+            Rules = "",
             AverageLevel = 5,
             PositionScalings = null!,
         };

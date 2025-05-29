@@ -14,6 +14,8 @@ public class Diversification
 
     public required Sector Sector { get; set; }
 
+    public required int MinimumAssetsPerNiche { get; set; }
+
     public required int RiskManagementId { get; set; }
 
     public required RiskManagement RiskManagement { get; set; }

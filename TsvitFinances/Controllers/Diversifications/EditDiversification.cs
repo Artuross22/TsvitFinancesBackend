@@ -75,6 +75,7 @@ public class EditDiversification : Controller
                 {
                     PublicId = Guid.NewGuid(),
                     NichePercentage = diversification.NichePercentage,
+                    MinimumAssetsPerNiche = diversification.MinimumAssetsPerNiche,
                     Sector = diversification.Sector,
                     RiskManagementId = riskManagement.Id,
                     RiskManagement = riskManagement
@@ -104,6 +105,7 @@ public class EditDiversification : Controller
     {
         public int Id { get; set; }
         public decimal NichePercentage { get; set; }
+        public int MinimumAssetsPerNiche { get;set; }
         public required Sector Sector { get; set; }
     }
 }
