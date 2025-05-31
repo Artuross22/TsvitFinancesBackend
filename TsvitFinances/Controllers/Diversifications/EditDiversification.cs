@@ -28,6 +28,7 @@ public class EditDiversification : Controller
             {
                 Id = a.Id,
                 NichePercentage = a.NichePercentage,
+                MinimumAssetsPerNiche = a.MinimumAssetsPerNiche,
                 Sector = a.Sector
             })
             .ToListAsync();
@@ -68,6 +69,7 @@ public class EditDiversification : Controller
 
                 currentDiversification.Sector = diversification.Sector;
                 currentDiversification.NichePercentage = diversification.NichePercentage;
+                currentDiversification.MinimumAssetsPerNiche = diversification.MinimumAssetsPerNiche;
             }
             else
             {

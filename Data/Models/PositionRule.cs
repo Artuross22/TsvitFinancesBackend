@@ -6,7 +6,7 @@ namespace Data.Models;
 
 public class PositionRule
 {
-    public required int Id { get; init; }
+    public int Id { get; init; }
 
     public required Guid PublicId { get; init; }
 

@@ -42,6 +42,7 @@ public class ViewAsset : Controller
             StrategyPublicId = asset.Strategy?.PublicId,
             StrategyName = asset.Strategy?.Name,
             AddedAt = asset.AddedAt,
+            Goal = asset.Goal,
             BoughtFor = asset.BoughtFor,
             CurrentPrice = asset.CurrentPrice,
             InterestOnCurrentDeposit = asset.InterestOnCurrentDeposit,
@@ -96,6 +97,8 @@ public class ViewAsset : Controller
         public required string Term { get; set; }
 
         public required string Market { get; set; }
+
+        public required string Goal { get; set; }
 
         public required string Name { get; set; }
 

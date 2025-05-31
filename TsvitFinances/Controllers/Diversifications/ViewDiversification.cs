@@ -28,6 +28,7 @@ public class ViewDiversification : Controller
             {
                 PublicId = a.PublicId,
                 NichePercentage = a.NichePercentage,
+                MinimumAssetsPerNiche = a.MinimumAssetsPerNiche,
                 Sector = a.Sector
             })
             .ToListAsync();
@@ -47,6 +48,8 @@ public class ViewDiversification : Controller
         public Guid PublicId { get; set; }
 
         public decimal NichePercentage { get; set; }
+
+        public required int MinimumAssetsPerNiche { get; set; }
 
         public required Sector Sector { get; set; }
     }
