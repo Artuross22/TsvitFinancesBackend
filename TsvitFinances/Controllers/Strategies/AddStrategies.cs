@@ -49,6 +49,7 @@ public class AddStrategies : Controller
             Rules = "",
             AverageLevel = 5,
             PositionScalings = null!,
+            PositionRules = null!,
         };
 
         _mainDb.Add(positionManagement);

@@ -14,6 +14,7 @@ public class PositionManagement
     public required decimal AverageLevel { get; set; }
 
     public required ICollection<PositionScaling> PositionScalings { get; set; }
+    public required ICollection<PositionRule> PositionRules { get; set; }
 
     internal class EFConfiguration : IEntityTypeConfiguration<PositionManagement>
     {

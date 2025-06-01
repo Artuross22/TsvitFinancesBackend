@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace TsvitFinances.Controllers.PositionRules;
+namespace TsvitFinances.Controllers.Strategies;
 
 [AllowAnonymous]
 [Route("api/[controller]")]
@@ -27,7 +27,6 @@ public class ManagePositionRule : Controller
             .Select(a => new _PositionRule
             {
                 Id = a.Id,
-                PublicId = a.PublicId,
                 MinimumCorrectionPercent = a.MinimumCorrectionPercent,
                 TimeFrame = a.TimeFrame,
             })
@@ -48,24 +47,26 @@ public class ManagePositionRule : Controller
     [HttpPost]
     public async Task<ActionResult> Index(BindingModel model)
     {
-        var positionRules = await _mainDb.Set<PositionRule>()
-            .Where(a => a.PositionManagement.PublicId == model.PublicId)
-            .ToListAsync();
+        var positionManagement = await _mainDb.Set<PositionManagement>()
+            .Where(pm => pm.PublicId == model.PublicId)
+            .Include(pm => pm.PositionRules)
+            .FirstOrDefaultAsync();
 
-        if (positionRules == null)
+        if (positionManagement == null)
         {
             return NotFound();
         }
 
-        var positionRuleIds = positionRules
-            .Select(pr => pr.Id)
+        var currentPositionRuleIds = positionManagement.PositionRules
+            .Select(pm => pm. Id)
             .ToList();
 
         foreach (var positionRule in model.PositionRules)
         {
-            if (positionRuleIds.Contains(positionRule.Id))
+            if (currentPositionRuleIds.Contains(positionRule.Id))
             {
-                var currentPositionRule = positionRules.Single(r => r.Id == positionRule.Id);
+                var currentPositionRule = positionManagement.PositionRules
+                    .Single(r => r.Id == positionRule.Id);
 
                 currentPositionRule.MinimumCorrectionPercent = positionRule.MinimumCorrectionPercent;
                 currentPositionRule.TimeFrame = positionRule.TimeFrame;
@@ -77,8 +78,8 @@ public class ManagePositionRule : Controller
                     PublicId = Guid.NewGuid(),
                     MinimumCorrectionPercent = positionRule.MinimumCorrectionPercent,
                     TimeFrame = positionRule.TimeFrame,
-                    PositionManagementId = positionRules.First().PositionManagementId,
-                    PositionManagement = positionRules.First().PositionManagement,
+                    PositionManagementId = positionManagement.Id,
+                    PositionManagement = positionManagement,
                 });
             }
         }
@@ -87,7 +88,7 @@ public class ManagePositionRule : Controller
             .Select(p => p.Id)
             .ToHashSet();
 
-        var removePositionRules = positionRules
+        var removePositionRules = positionManagement.PositionRules
             .Where(pr => !ruleIds.Contains(pr.Id))
             .ToList();
 
@@ -98,19 +99,19 @@ public class ManagePositionRule : Controller
 
         await _mainDb.SaveChangesAsync();
 
-        return Ok(positionRules.First().PositionManagementId);
+        return Ok(positionManagement.PublicId);
     }
+
     public class BindingModel
     {
         public Guid PublicId { get; set; }
 
         public List<_PositionRule> PositionRules { get; set; } = [];
     }
+
     public class _PositionRule
     {
-        public required int Id { get; init; }
-
-        public required Guid PublicId { get; init; }
+        public int Id { get; init; }
 
         public required int MinimumCorrectionPercent { get; set; }
 
