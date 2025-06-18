@@ -2,6 +2,7 @@ using Data;
 using Data.Models;
 using FinancialData;
 using FinancialData.APIs.FPM;
+using IBKR.Client.Extensions;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.Extensions;
@@ -58,6 +59,9 @@ builder.Services.AddJwtAuthentication();
 
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 builder.Services.AddTransient<FpmConnection>();
+
+
+builder.Services.AddIBKRClient(builder.Configuration);
 
 var app = builder.Build();
 
