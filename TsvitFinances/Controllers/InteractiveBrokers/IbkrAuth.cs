@@ -1,10 +1,8 @@
 ﻿using Brokers.IBKR.Client.Services;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class IbkrAuth : Controller

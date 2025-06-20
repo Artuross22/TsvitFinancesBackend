@@ -1,6 +1,5 @@
 ﻿using Data;
 using Data.Models;
-using Data.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

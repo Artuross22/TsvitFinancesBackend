@@ -9,10 +9,10 @@ namespace Brokers.IBKR.Client.Services;
 
 public class IBKRClient
 {
-    private readonly HttpClient _httpClient;
-    private readonly IBKROptions _options;
-    private readonly ILogger<IBKRClient> _logger;
-    private readonly JsonSerializerOptions _jsonOptions;
+    protected readonly HttpClient _httpClient;
+    protected readonly IBKROptions _options;
+    protected readonly ILogger<IBKRClient> _logger;
+    protected readonly JsonSerializerOptions _jsonOptions;
 
     public IBKRClient(HttpClient httpClient, IOptions<IBKROptions> options, ILogger<IBKRClient> logger)
     {

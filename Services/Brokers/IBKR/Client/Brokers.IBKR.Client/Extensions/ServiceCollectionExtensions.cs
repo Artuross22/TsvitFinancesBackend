@@ -10,6 +10,9 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddIBKRClient(this IServiceCollection services, IConfiguration configuration)
     {
         services.Configure<IBKROptions>(configuration.GetSection(IBKROptions.SectionName));
+        services.AddScoped<PaperTradingDemoService>();
+        services.AddScoped<IBKRClient>();
+
 
         services.AddHttpClient<IBKRClient>()
             .ConfigurePrimaryHttpMessageHandler(() =>

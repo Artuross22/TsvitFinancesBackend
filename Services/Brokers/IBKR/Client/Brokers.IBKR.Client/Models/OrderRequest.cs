@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Brokers.IBKR.Client.Models;
+﻿namespace Brokers.IBKR.Client.Models;
 
 public class OrderRequest
 {

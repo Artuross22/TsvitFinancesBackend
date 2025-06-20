@@ -42,10 +42,6 @@ public class ViewMacroeconomic : Controller
             })
             .FirstOrDefaultAsync();
 
-        if (macroeconomicAnalysis == null)
-        {
-            return Ok()!;
-        }
 
         return Ok(macroeconomicAnalysis);
     }
