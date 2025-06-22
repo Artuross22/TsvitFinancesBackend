@@ -217,96 +217,96 @@ public class IBKRClient
         return await PlaceLimitOrderAsync(accountId, orderRequest);
     }
 
-    public async Task<IBKRResponse<object>> GetLiveOrdersAsync()
-    {
-        try
-        {
-            _logger.LogInformation("Retrieving live orders");
-            var response = await _httpClient.GetAsync("/v1/api/iserver/account/orders");
-            var content = await response.Content.ReadAsStringAsync();
+    //public async Task<IBKRResponse<object>> GetLiveOrdersAsync()
+    //{
+    //    try
+    //    {
+    //        _logger.LogInformation("Retrieving live orders");
+    //        var response = await _httpClient.GetAsync("/v1/api/iserver/account/orders");
+    //        var content = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
-            {
-                var orders = JsonSerializer.Deserialize<object>(content, _jsonOptions);
-                return new IBKRResponse<object> { Success = true, Data = orders };
-            }
-            return new IBKRResponse<object> { Success = false, Error = content };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while retrieving live orders");
-            return new IBKRResponse<object> { Success = false, Error = ex.Message };
-        }
-    }
+    //        if (response.IsSuccessStatusCode)
+    //        {
+    //            var orders = JsonSerializer.Deserialize<object>(content, _jsonOptions);
+    //            return new IBKRResponse<object> { Success = true, Data = orders };
+    //        }
+    //        return new IBKRResponse<object> { Success = false, Error = content };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, "Error while retrieving live orders");
+    //        return new IBKRResponse<object> { Success = false, Error = ex.Message };
+    //    }
+    //}
 
-    public async Task<IBKRResponse<object>> CancelOrderAsync(string accountId, string orderId)
-    {
-        try
-        {
-            _logger.LogInformation($"Cancelling order: {orderId}");
-            var response = await _httpClient.DeleteAsync($"/v1/api/iserver/account/{accountId}/order/{orderId}");
-            var content = await response.Content.ReadAsStringAsync();
+    //public async Task<IBKRResponse<object>> CancelOrderAsync(string accountId, string orderId)
+    //{
+    //    try
+    //    {
+    //        _logger.LogInformation($"Cancelling order: {orderId}");
+    //        var response = await _httpClient.DeleteAsync($"/v1/api/iserver/account/{accountId}/order/{orderId}");
+    //        var content = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
-            {
-                var result = JsonSerializer.Deserialize<object>(content, _jsonOptions);
-                return new IBKRResponse<object> { Success = true, Data = result };
-            }
-            return new IBKRResponse<object> { Success = false, Error = content };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while cancelling order");
-            return new IBKRResponse<object> { Success = false, Error = ex.Message };
-        }
-    }
+    //        if (response.IsSuccessStatusCode)
+    //        {
+    //            var result = JsonSerializer.Deserialize<object>(content, _jsonOptions);
+    //            return new IBKRResponse<object> { Success = true, Data = result };
+    //        }
+    //        return new IBKRResponse<object> { Success = false, Error = content };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, "Error while cancelling order");
+    //        return new IBKRResponse<object> { Success = false, Error = ex.Message };
+    //    }
+    //}
 
-    public async Task<IBKRResponse<object>> GetTradesAsync(string accountId, int days = 7)
-    {
-        try
-        {
-            _logger.LogInformation($"Retrieving trade history for {days} days");
-            var response = await _httpClient.GetAsync($"/v1/api/iserver/account/trades?accountId={accountId}&days={days}");
-            var content = await response.Content.ReadAsStringAsync();
+    //public async Task<IBKRResponse<TradeHistoryResponse>> GetTradesAsync(string accountId, int days = 7)
+    //{
+    //    try
+    //    {
+    //        _logger.LogInformation($"Retrieving trade history for {days} days");
+    //        var response = await _httpClient.GetAsync($"/v1/api/iserver/account/trades?accountId={accountId}&days={days}");
+    //        var content = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
-            {
-                var trades = JsonSerializer.Deserialize<object>(content, _jsonOptions);
-                return new IBKRResponse<object> { Success = true, Data = trades };
-            }
-            return new IBKRResponse<object> { Success = false, Error = content };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while retrieving trade history");
-            return new IBKRResponse<object> { Success = false, Error = ex.Message };
-        }
-    }
+    //        if (response.IsSuccessStatusCode)
+    //        {
+    //            var trades = JsonSerializer.Deserialize<TradeHistoryResponse>(content, _jsonOptions);
+    //            return new IBKRResponse<object> { Success = true, Data = trades };
+    //        }
+    //        return new IBKRResponse<object> { Success = false, Error = content };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, "Error while retrieving trade history");
+    //        return new IBKRResponse<object> { Success = false, Error = ex.Message };
+    //    }
+    //}
 
-    public async Task<IBKRResponse<object>> ConfirmOrderAsync(string replyId, bool confirmed = true)
-    {
-        try
-        {
-            _logger.LogInformation($"Confirming order: {replyId}");
+    //public async Task<IBKRResponse<object>> ConfirmOrderAsync(string replyId, bool confirmed = true)
+    //{
+    //    try
+    //    {
+    //        _logger.LogInformation($"Confirming order: {replyId}");
 
-            var confirmData = new { confirmed = confirmed };
-            var json = JsonSerializer.Serialize(confirmData, _jsonOptions);
-            var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
+    //        var confirmData = new { confirmed = confirmed };
+    //        var json = JsonSerializer.Serialize(confirmData, _jsonOptions);
+    //        var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
-            var response = await _httpClient.PostAsync($"/v1/api/iserver/reply/{replyId}", stringContent);
-            var content = await response.Content.ReadAsStringAsync();
+    //        var response = await _httpClient.PostAsync($"/v1/api/iserver/reply/{replyId}", stringContent);
+    //        var content = await response.Content.ReadAsStringAsync();
 
-            if (response.IsSuccessStatusCode)
-            {
-                var result = JsonSerializer.Deserialize<object>(content, _jsonOptions);
-                return new IBKRResponse<object> { Success = true, Data = result };
-            }
-            return new IBKRResponse<object> { Success = false, Error = content };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while confirming order");
-            return new IBKRResponse<object> { Success = false, Error = ex.Message };
-        }
-    }
+    //        if (response.IsSuccessStatusCode)
+    //        {
+    //            var result = JsonSerializer.Deserialize<object>(content, _jsonOptions);
+    //            return new IBKRResponse<object> { Success = true, Data = result };
+    //        }
+    //        return new IBKRResponse<object> { Success = false, Error = content };
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        _logger.LogError(ex, "Error while confirming order");
+    //        return new IBKRResponse<object> { Success = false, Error = ex.Message };
+    //    }
+    //}
 }

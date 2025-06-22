@@ -19,7 +19,7 @@ public class GetAssetsForIdea : Controller
     }
 
     [HttpGet("{userPublicId}")]
-    public async Task<IActionResult> Index(string userPublicId)
+    public async Task<IActionResult> Invoke(string userPublicId)
     {
         var assets = await _mainDb.Set<Asset>()
             .Where(a => a.AppUserId == userPublicId)

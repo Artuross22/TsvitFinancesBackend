@@ -18,7 +18,7 @@ public class AddInvestmentIdea : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Index(string id)
+    public async Task<IActionResult> Invoke(string id)
     {
         var assets = await _mainDb.Set<Asset>()
             .Where(a => a.AppUserId == id)

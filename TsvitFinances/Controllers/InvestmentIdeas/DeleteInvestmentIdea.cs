@@ -19,7 +19,7 @@ public class DeleteInvestmentIdea : Controller
     }
 
     [HttpDelete("{publicId}")]
-    public async Task<IActionResult> Index(Guid publicId)
+    public async Task<IActionResult> Invoke(Guid publicId)
     {
         var investmentIdea = await _mainDb.Set<InvestmentIdea>()
             .Where(ii => ii.PublicId == publicId)

@@ -2,7 +2,6 @@
 
 public class IBKROptions
 {
-    public const string SectionName = "IBKR";
     public string BaseUrl { get; set; } = "https://localhost:5000";
     public int TimeoutMinutes { get; set; } = 5;
     public bool IgnoreSSLErrors { get; set; } = true;
