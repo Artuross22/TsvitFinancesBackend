@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     {
         services.Configure<IBKROptions>(configuration.GetSection(nameof(IBKROptions)));
         services.AddScoped<PaperTradingDemoService>();
+        services.AddScoped<IBKRPaperTradingService>();
         services.AddScoped<IBKRClient>();
 
 
