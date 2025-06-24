@@ -32,18 +32,4 @@ public class GetLiveOrders : Controller
         _logger.LogError("Failed to retrieve live orders. Error: {Error}", result.Error);
         return BadRequest(result.Error);
     }
-
-    public class LiveOrder
-    {
-        public string OrderId { get; set; }
-        public string AccountId { get; set; }
-        public string Symbol { get; set; }
-        public string Side { get; set; } // BUY, SELL
-        public decimal Quantity { get; set; }
-        public decimal FilledQuantity { get; set; }
-        public string OrderType { get; set; } // MKT, LMT, STP
-        public decimal? Price { get; set; }
-        public string Status { get; set; } // Submitted, Filled, Cancelled
-        public DateTime SubmittedTime { get; set; }
-    }
 }
