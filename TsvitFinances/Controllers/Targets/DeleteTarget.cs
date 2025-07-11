@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Targets;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class DeleteTarget : Controller

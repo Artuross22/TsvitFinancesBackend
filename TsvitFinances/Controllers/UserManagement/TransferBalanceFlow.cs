@@ -1,13 +1,11 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.UserManagement;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class TransferBalanceFlow : Controller
