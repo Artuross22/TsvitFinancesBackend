@@ -3,7 +3,6 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using TsvitFinances.Dto.User;
 
 namespace TsvitFinances.Controllers;
 
@@ -70,6 +69,17 @@ public class AuthController : Controller
         }
 
         return BadRequest(ModelState);
+    }
+    public class RegisterModelDto
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
+    }
+
+    public class LoginModelDto
+    {
+        public required string Email { get; set; }
+        public required string Password { get; set; }
     }
 }
 

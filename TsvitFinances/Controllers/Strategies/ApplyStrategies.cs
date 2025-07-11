@@ -2,7 +2,6 @@
 using Data.Models;
 using Data.Models.Enums;
 using Data.Modelsl;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TsvitFinances.FinancialHelper;
@@ -10,7 +9,6 @@ using TsvitFinances.FinancialHelper.Models;
 
 namespace TsvitFinances.Controllers.test;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class ApplyStrategies : Controller
@@ -22,7 +20,7 @@ public class ApplyStrategies : Controller
     }
 
     [HttpGet("{publicId}/{userId}")]
-    public async Task<ActionResult> Index(Guid publicId, string userId)
+    public async Task<ActionResult> Invoke(Guid publicId, string userId)
     {
         var asset = await _mainDb.Set<Asset>()
             .Include(a => a.SalesLevels)

@@ -1,13 +1,11 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class PutPositionManagement : Controller
@@ -19,7 +17,7 @@ public class PutPositionManagement : Controller
     }
 
     [HttpPut]
-    public async Task<IActionResult> Index(PositionManagementDto model)
+    public async Task<IActionResult> Invoke(PositionManagementDto model)
     {
         var positionManagement = await _mainDb.Set<PositionManagement>()
             .Include(s => s.PositionScalings)

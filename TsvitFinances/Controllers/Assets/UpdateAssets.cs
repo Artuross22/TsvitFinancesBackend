@@ -1,13 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class UpdateAssets : Controller
@@ -20,7 +17,7 @@ public class UpdateAssets : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<GetAssetsDto>> Index(Guid id)
+    public async Task<ActionResult<GetAssetsDto>> Invoke(Guid id)
     {
         var asset = await _mainDb.Set<Asset>()
             .Include(c => c.AppUser)

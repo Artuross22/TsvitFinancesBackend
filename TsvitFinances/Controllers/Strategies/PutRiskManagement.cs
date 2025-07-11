@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class PutRiskManagement : Controller
@@ -18,7 +16,7 @@ public class PutRiskManagement : Controller
     }
 
     [HttpPut]
-    public async Task<IActionResult> Index(RiskManagementDto model)
+    public async Task<IActionResult> Invoke(RiskManagementDto model)
     {
         var riskManagement = await _mainDb.Set<RiskManagement>()
             .Where(s => s.PublicId == model.PublicId)

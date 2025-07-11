@@ -1,13 +1,11 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Diversifications;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class EditDiversification : Controller
@@ -20,7 +18,7 @@ public class EditDiversification : Controller
     }
 
     [HttpGet("{publicId}")]
-    public async Task<ActionResult> Index(Guid publicId)
+    public async Task<ActionResult> Invoke(Guid publicId)
     {
         var diversification = await _mainDb.Set<Diversification>()
             .Where(a => a.RiskManagement.PublicId == publicId)

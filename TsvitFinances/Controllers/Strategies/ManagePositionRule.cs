@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class ManagePositionRule : Controller
@@ -20,7 +19,7 @@ public class ManagePositionRule : Controller
     }
 
     [HttpGet("{publicId}")]
-    public async Task<ActionResult> Index(Guid publicId)
+    public async Task<ActionResult> Invoke(Guid publicId)
     {
         var positionRules = await _mainDb.Set<PositionRule>()
             .Where(a => a.PositionManagement.PublicId == publicId)

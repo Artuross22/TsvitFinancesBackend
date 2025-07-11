@@ -1,13 +1,10 @@
-﻿using Data.Models;
-using Data;
+﻿using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TsvitFinances.Controllers.PositionEntries;
 
-
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class DeleteCharts : Controller
@@ -20,7 +17,7 @@ public class DeleteCharts : Controller
     }
 
     [HttpDelete("{id}/{assetId}")]
-    public async Task<IActionResult> Index(int id, Guid assetId)
+    public async Task<IActionResult> Invoke(int id, Guid assetId)
     {
         var chart = await _mainDb.Set<Chart>()
             .Where(c => c.PositionEntryNote.Asset.PublicId == assetId && c.Id == id)

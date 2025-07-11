@@ -1,7 +1,6 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,8 +8,6 @@ using TsvitFinances.Extensions;
 
 namespace TsvitFinances.Controllers.Assets;
 
-
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AddAssets : Controller
@@ -23,7 +20,7 @@ public class AddAssets : Controller
     }
 
     [HttpGet]
-    public ActionResult<AssetPreCreationDataDto> Index()
+    public ActionResult<AssetPreCreationDataDto> Invoke()
     {
         return new AssetPreCreationDataDto
         {
@@ -34,7 +31,7 @@ public class AddAssets : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Index([FromForm] AddAssetDto model)
+    public async Task<ActionResult> Invoke([FromForm] AddAssetDto model)
     {
         var user = await _mainDb.Users.SingleAsync(u => u.Id == model.UserPublicId);
 

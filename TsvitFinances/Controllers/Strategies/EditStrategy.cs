@@ -2,14 +2,11 @@
 using Data.Models;
 using Data.Models.Enums;
 using Data.Modelsl;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class EditStrategy : Controller
@@ -21,7 +18,7 @@ public class EditStrategy : Controller
     }
 
     [HttpGet("{publicId}/{userId}")]
-    public async Task<IActionResult> Index(Guid publicId, string userId)
+    public async Task<IActionResult> Invoke(Guid publicId, string userId)
     {
         var strategy = await _mainDb.Set<Strategy>()
             .Include(s => s.StrategyMacroeconomicEvents)

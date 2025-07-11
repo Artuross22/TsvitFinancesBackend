@@ -1,15 +1,12 @@
 ﻿using Data;
 using Data.Models;
 using Data.Models.Enums;
-using Data.Modelsl;
 using FinancialData.APIs.FPM;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class ApplyStockMetrics : Controller
@@ -24,7 +21,7 @@ public class ApplyStockMetrics : Controller
     }
 
     [HttpGet("{publicId}/{assetPublicId}")]
-    public async Task<ActionResult> Index(Guid publicId, Guid assetPublicId)
+    public async Task<ActionResult> Invoke(Guid publicId, Guid assetPublicId)
     {
         var data = await _mainDb.Set<FinanceData>()
             .Include(f => f.StockMetrics)

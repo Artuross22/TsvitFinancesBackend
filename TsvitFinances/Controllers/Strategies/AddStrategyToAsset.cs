@@ -1,13 +1,11 @@
 ﻿using Data;
 using Data.Models;
 using Data.Modelsl;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AddStrategyToAsset : Controller
@@ -19,7 +17,7 @@ public class AddStrategyToAsset : Controller
     }
 
     [HttpGet("{userId}/{assetPublicId}")]
-    public async Task<IActionResult> Index(string userId, Guid assetPublicId)
+    public async Task<IActionResult> Invoke(string userId, Guid assetPublicId)
     {
         var strategies = await _mainDb.Set<Strategy>()
             .Where(s => s.AppUser.Id == userId)

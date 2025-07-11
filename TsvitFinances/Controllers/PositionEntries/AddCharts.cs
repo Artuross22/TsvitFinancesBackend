@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 
 namespace TsvitFinances.Controllers.PositionEntries;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AddCharts : Controller
@@ -20,7 +19,7 @@ public class AddCharts : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index([FromForm] AddChartDto model)
+    public async Task<IActionResult> Invoke([FromForm] AddChartDto model)
     {
         if (Request.HasJsonContentType())
         {

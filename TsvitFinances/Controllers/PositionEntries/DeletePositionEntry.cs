@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.DeletePositionEntry;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class DeletePositionEntry : Controller
@@ -19,7 +17,7 @@ public class DeletePositionEntry : Controller
     }
 
     [HttpDelete("{publicId}")]
-    public async Task<IActionResult> Index(Guid publicId)
+    public async Task<IActionResult> Invoke(Guid publicId)
     {
         var positionEntryNote = await _mainDb.Set<PositionEntryNote>()
             .Where(pen => pen.PublicId == publicId)

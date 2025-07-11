@@ -1,13 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using FinancialData.APIs.FPM;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.InvestmentIdeas;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class ListInvestmentIdeas : Controller

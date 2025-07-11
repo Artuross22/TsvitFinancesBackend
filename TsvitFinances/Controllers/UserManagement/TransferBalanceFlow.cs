@@ -20,7 +20,7 @@ public class TransferBalanceFlow : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(BindingModel model)
+    public async Task<IActionResult> Invoke(BindingModel model)
     {
         var appUser = await _mainDb.Set<AppUser>()
             .Include(u => u.BalanceFlows)

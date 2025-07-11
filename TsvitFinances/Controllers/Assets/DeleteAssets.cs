@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class DeleteAssets : Controller
@@ -19,7 +17,7 @@ public class DeleteAssets : Controller
     }
 
     [HttpDelete("{id}")]
-    public async Task<ActionResult<Asset>> Index(Guid id)
+    public async Task<ActionResult<Asset>> Invoke(Guid id)
     {
         var asset = await _mainDb.Set<Asset>()
              .Where(a => a.PublicId == id)

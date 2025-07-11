@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class PositionEntryByAsset : Controller
@@ -19,7 +17,7 @@ public class PositionEntryByAsset : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<IActionResult> Index(Guid id)
+    public async Task<IActionResult> Invoke(Guid id)
     {
         var positionEntryNotes = await _mainDb.Set<PositionEntryNote>()
             .Where(a => a.Asset.PublicId == id)

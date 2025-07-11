@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.PositionEntries;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AddChartToPositionEntry : Controller
@@ -18,7 +16,7 @@ public class AddChartToPositionEntry : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index([FromForm] BindingModel model)
+    public async Task<IActionResult> Invoke([FromForm] BindingModel model)
     {
         var positionEntry = await _mainDb.Set<PositionEntryNote>()
             .FirstOrDefaultAsync(c => c.PublicId == model.PublicId);

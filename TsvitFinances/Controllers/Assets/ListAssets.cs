@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class ListAssets : Controller
@@ -19,7 +17,7 @@ public class ListAssets : Controller
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Asset>>> Index()
+    public async Task<ActionResult<IEnumerable<Asset>>> Invoke()
     {
         var asset = await _mainDb.Set<Asset>()
             .ToListAsync();

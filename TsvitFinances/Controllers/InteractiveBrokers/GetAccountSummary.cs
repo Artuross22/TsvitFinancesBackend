@@ -11,6 +11,11 @@ public class GetAccountSummary : ControllerBase
     private readonly IBKRClient _ibkrApiService;
     private readonly ILogger<GetAccountSummary> _logger;
 
+    public GetAccountSummary(IBKRClient ibkrApiService, ILogger<GetAccountSummary> logger)
+    {
+        _ibkrApiService = ibkrApiService;
+        _logger = logger;
+    }   
 
     [HttpGet("{accountId}/summary")]
     public async Task<ActionResult<List<AccountSummary>>> Invoke(string accountId)

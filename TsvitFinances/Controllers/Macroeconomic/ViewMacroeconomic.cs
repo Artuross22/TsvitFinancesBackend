@@ -18,7 +18,7 @@ public class ViewMacroeconomic : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Index(string userId, EconomicType type)
+    public async Task<IActionResult> Invoke(string userId, EconomicType type)
     {
         var macroeconomicAnalysis = await _mainDb.Set<MacroeconomicAnalysis>()
             .Where(ma => ma.AppUserId == userId)

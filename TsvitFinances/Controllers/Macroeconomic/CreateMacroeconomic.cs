@@ -18,7 +18,7 @@ public class CreateMacroeconomic : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(BindingModel model)
+    public async Task<IActionResult> Invoke(BindingModel model)
     {
         var user = await _mainDb.Set<AppUser>()
             .FirstOrDefaultAsync(u => u.Id == model.UserId);

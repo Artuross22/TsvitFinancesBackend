@@ -1,12 +1,10 @@
 ﻿using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using Data.Models;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class GetPositionManagement : Controller
@@ -18,7 +16,7 @@ public class GetPositionManagement : Controller
     }
 
     [HttpGet("{publicId}")]
-    public async Task<IActionResult> Index(Guid publicId)
+    public async Task<IActionResult> Invoke(Guid publicId)
     {
         var strategy = await _mainDb.Set<PositionManagement>()
             .Where(s => s.PublicId == publicId)

@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.PositionEntries;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class UpdateNotes : Controller
@@ -19,7 +17,7 @@ public class UpdateNotes : Controller
     }
 
     [HttpPut]
-    public async Task<IActionResult> Index(BindingModel model)
+    public async Task<IActionResult> Invoke(BindingModel model)
     {
         var positionEntryNote = await _mainDb.Set<PositionEntryNote>()
             .FirstOrDefaultAsync(c => c.PublicId == model.Id);

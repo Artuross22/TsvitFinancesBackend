@@ -17,7 +17,7 @@ public class CreateMacroeconomicEvent : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(BindingModel model)
+    public async Task<IActionResult> Invoke(BindingModel model)
     {
         var macroeconomicAnalysis = await _mainDb.Set<MacroeconomicAnalysis>()
             .FirstOrDefaultAsync(u => u.PublicId == model.MacroeconomicAnalysisId);

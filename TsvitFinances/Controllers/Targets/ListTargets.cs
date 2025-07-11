@@ -19,7 +19,7 @@ public class ListTargets : Controller
     }
 
     [HttpGet("{publicId}")]
-    public async Task<ActionResult<BindingModel>> Index(Guid publicId)
+    public async Task<ActionResult<BindingModel>> Invoke(Guid publicId)
     {
         var listTargets = await _mainDb.Set<Asset>()
             .Where(s => s.PublicId == publicId)

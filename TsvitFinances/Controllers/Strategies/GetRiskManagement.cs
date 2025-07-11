@@ -1,12 +1,10 @@
-﻿using Data.Modelsl;
-using Data;
+﻿using Data;
+using Data.Modelsl;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class GetRiskManagement : Controller
@@ -19,7 +17,7 @@ public class GetRiskManagement : Controller
     }
 
     [HttpGet("{publicId}")]
-    public async Task<IActionResult> Index(Guid publicId)
+    public async Task<IActionResult> Invoke(Guid publicId)
     {
         var strategy = await _mainDb.Set<Strategy>()
             .Where(s => s.RiskManagement.PublicId == publicId)

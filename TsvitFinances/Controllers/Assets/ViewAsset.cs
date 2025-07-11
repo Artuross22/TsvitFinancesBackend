@@ -1,13 +1,11 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NuGet.Packaging;
 
 namespace TsvitFinances.Controllers.Assets;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class ViewAsset : Controller
@@ -20,7 +18,7 @@ public class ViewAsset : Controller
     }
 
     [HttpGet("{id}")]
-    public async Task<ActionResult<BindingModel>> Index(Guid id)
+    public async Task<ActionResult<BindingModel>> Invoke(Guid id)
     {
         var asset = await _mainDb.Set<Asset>()
           .Include(a => a.PositionEntryNotes)

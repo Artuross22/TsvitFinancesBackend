@@ -19,7 +19,7 @@ public class EditTarget : Controller
     }
 
     [HttpGet("{publicId}/{levelName}")]
-    public async Task<ActionResult<BindingModelGet>> Index(Guid publicId, string levelName)
+    public async Task<ActionResult<BindingModelGet>> Invoke(Guid publicId, string levelName)
     {
         if (string.Equals(levelName, "SaleLevels", StringComparison.OrdinalIgnoreCase))
         {

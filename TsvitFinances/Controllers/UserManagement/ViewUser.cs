@@ -20,7 +20,7 @@ public class ViewUser : Controller
     }
 
     [HttpGet("{userId}")]
-    public async Task<IActionResult> Index(string userId)
+    public async Task<IActionResult> Invoke(string userId)
     {
         var user = await _mainDb.Set<AppUser>()
             .Include(u => u.BalanceFlows)

@@ -1,14 +1,11 @@
-﻿using Data.Models.Enums;
+﻿using Data;
 using Data.Models;
-using Data;
+using Data.Models.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TsvitFinances.Controllers.Assets;
 
-
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class SellAssets : Controller
@@ -21,7 +18,7 @@ public class SellAssets : Controller
     }
 
     [HttpPost("{id}")]
-    public async Task<IActionResult> Index(Guid id)
+    public async Task<IActionResult> Invoke(Guid id)
     {
         var asset = await _mainDb.Set<Asset>()
              .Include(a => a.AppUser)

@@ -19,7 +19,7 @@ public class AddTargets : Controller
     }
 
     [HttpPost]
-    public async Task<ActionResult> Index(AddTarget model)
+    public async Task<ActionResult> Invoke(AddTarget model)
     {
         var asset = await _mainDb.Set<Asset>()
             .FirstOrDefaultAsync(a => a.PublicId == model.PublicId);

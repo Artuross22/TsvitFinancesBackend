@@ -1,12 +1,10 @@
 ﻿using Data;
 using Data.Models;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.PositionEntries;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class UpdateCharts : Controller
@@ -19,7 +17,7 @@ public class UpdateCharts : Controller
     }
 
     [HttpPut]
-    public async Task<IActionResult> Index(UpdateChartDto model)
+    public async Task<IActionResult> Invoke(UpdateChartDto model)
     {
         var chart = await _mainDb.Set<Chart>()
             .FirstOrDefaultAsync(c => c.Id == model.Id);

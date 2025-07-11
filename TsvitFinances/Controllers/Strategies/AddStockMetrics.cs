@@ -1,98 +1,94 @@
-﻿using Data.Models;
-using Data.Modelsl;
-using Data;
-using Microsoft.AspNetCore.Authorization;
+﻿using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace TsvitFinances.Controllers.Strategies
+namespace TsvitFinances.Controllers.Strategies;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AddStockMetrics : Controller
 {
-    [AllowAnonymous]
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AddStockMetrics : Controller
+    readonly protected MainDb _mainDb;
+
+    public AddStockMetrics(MainDb mainDb)
     {
-        readonly protected MainDb _mainDb;
+        _mainDb = mainDb;
+    }
 
-        public AddStockMetrics(MainDb mainDb)
+    [HttpPost]
+    public async Task<ActionResult> Invoke(BindingModel model)
+    {
+        var financeData = await _mainDb.Set<FinanceData>()
+            .FirstOrDefaultAsync(fd => fd.PublicId == model.FinanceDataId);
+
+        if (financeData == null)
         {
-            _mainDb = mainDb;
+            return NotFound();
         }
 
-        [HttpPost]
-        public async Task<ActionResult> Index(BindingModel model)
+        _mainDb.Add(new StockMetrics
         {
-            var financeData = await _mainDb.Set<FinanceData>()
-                .FirstOrDefaultAsync(fd => fd.PublicId == model.FinanceDataId);
+            FinanceDataId = financeData.Id,
+            FinanceData = null!,
+            PublicId = Guid.NewGuid(),
+            PBRatio = model.PBRatio,
+            ROA = model.ROA,
+            PERatio = model.PERatio,
+            ROE = model.ROE,
+            EBIT = model.EBIT,
+            PSRatio = model.PSRatio,
+            NetIncome = model.NetIncome,
+            SharesOutstanding = model.SharesOutstanding,
+            FreeCashFlow = model.FreeCashFlow,
+            DebtRatio = model.DebtRatio,
+            RevenueGrowth = model.RevenueGrowth,
+            NetProfitMargin = model.NetProfitMargin,
+            FreeCashFlowPerShare = model.FreeCashFlowPerShare,
+            OperatingCashFlowPerShare = model.OperatingCashFlowPerShare,
+            DebtToEquityRatio = model.DebtToEquityRatio,
+            DividendYield = model.DividendYield,
+        });
 
-            if (financeData == null)
-            {
-                return NotFound();
-            }
+        await _mainDb.SaveChangesAsync();
 
-            _mainDb.Add(new StockMetrics
-            {
-                FinanceDataId = financeData.Id,
-                FinanceData = null!,
-                PublicId = Guid.NewGuid(),
-                PBRatio = model.PBRatio,
-                ROA = model.ROA,
-                PERatio = model.PERatio,
-                ROE = model.ROE,
-                EBIT = model.EBIT,
-                PSRatio = model.PSRatio,
-                NetIncome = model.NetIncome,
-                SharesOutstanding = model.SharesOutstanding,
-                FreeCashFlow = model.FreeCashFlow,
-                DebtRatio = model.DebtRatio,
-                RevenueGrowth = model.RevenueGrowth,
-                NetProfitMargin = model.NetProfitMargin,
-                FreeCashFlowPerShare = model.FreeCashFlowPerShare,
-                OperatingCashFlowPerShare = model.OperatingCashFlowPerShare,
-                DebtToEquityRatio = model.DebtToEquityRatio,
-                DividendYield = model.DividendYield,
-            });
+        return Ok();
+    }
 
-            await _mainDb.SaveChangesAsync();
+    public class BindingModel
+    {
+        public required Guid FinanceDataId { get; set; }
 
-            return Ok();
-        }
+        public required decimal PERatio { get; set; }
 
-        public class BindingModel
-        {
-            public required Guid FinanceDataId { get; set; }
+        public required decimal OperatingCashFlowPerShare { get; set; }
 
-            public required decimal PERatio { get; set; }
+        public required decimal ROE { get; set; }
 
-            public required decimal OperatingCashFlowPerShare { get; set; }
+        public required decimal PBRatio { get; set; }
 
-            public required decimal ROE { get; set; }
+        public required decimal DividendYield { get; set; }
 
-            public required decimal PBRatio { get; set; }
+        public required decimal DebtToEquityRatio { get; set; }
 
-            public required decimal DividendYield { get; set; }
+        public required decimal EBIT { get; set; }
 
-            public required decimal DebtToEquityRatio { get; set; }
+        public required decimal PSRatio { get; set; }
 
-            public required decimal EBIT { get; set; }
+        public required decimal FreeCashFlowPerShare { get; set; }
 
-            public required decimal PSRatio { get; set; }
+        public required decimal ROA { get; set; }
 
-            public required decimal FreeCashFlowPerShare { get; set; }
+        public required decimal NetProfitMargin { get; set; }
 
-            public required decimal ROA { get; set; }
+        public required decimal RevenueGrowth { get; set; }
 
-            public required decimal NetProfitMargin { get; set; }
+        public required decimal DebtRatio { get; set; }
 
-            public required decimal RevenueGrowth { get; set; }
+        public required decimal FreeCashFlow { get; set; }
 
-            public required decimal DebtRatio { get; set; }
+        public required decimal NetIncome { get; set; }
 
-            public required decimal FreeCashFlow { get; set; }
-
-            public required decimal NetIncome { get; set; }
-
-            public required decimal SharesOutstanding { get; set; }
-        }
+        public required decimal SharesOutstanding { get; set; }
     }
 }

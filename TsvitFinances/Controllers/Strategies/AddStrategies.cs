@@ -1,14 +1,12 @@
-﻿using Data.Models.Enums;
+﻿using Data;
 using Data.Models;
+using Data.Models.Enums;
 using Data.Modelsl;
-using Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 
 namespace TsvitFinances.Controllers.Strategies;
 
-[AllowAnonymous]
 [Route("api/[controller]")]
 [ApiController]
 public class AddStrategies : Controller
@@ -20,7 +18,7 @@ public class AddStrategies : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Index(AddStrategy model)
+    public async Task<IActionResult> Invoke(AddStrategy model)
     {
         var user = await _mainDb.Set<AppUser>()
             .FirstOrDefaultAsync(c => c.Id == model.UserPublicId);

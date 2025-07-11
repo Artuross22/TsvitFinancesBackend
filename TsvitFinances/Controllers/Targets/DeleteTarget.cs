@@ -19,7 +19,7 @@ public class DeleteTarget : Controller
     }
 
     [HttpDelete("{publicId}/{levelName}")]
-    public async Task<IActionResult> Index(Guid publicId, string levelName)
+    public async Task<IActionResult> Invoke(Guid publicId, string levelName)
     {
 
         if (string.Equals(levelName, "SaleLevels", StringComparison.Ordinal))
