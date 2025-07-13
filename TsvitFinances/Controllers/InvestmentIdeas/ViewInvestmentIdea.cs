@@ -53,7 +53,6 @@ public class ViewInvestmentIdea : Controller
         public required decimal ExpectedReturn { get; set; }
         public decimal? Profit { get; set; }
         public required DateTime CreatedAt { get; set; }
-
         public List<_Asset>? Assets { get; set; }
     }
 

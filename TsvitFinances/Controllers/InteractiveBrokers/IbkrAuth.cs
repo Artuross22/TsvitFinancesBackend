@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
 
-[Route("api/[controller]")]
-[ApiController]
+[Route("api/[controller]/[action]")]
 public class IbkrAuth : Controller
 {
     private readonly IBKRClient _ibkrService;
@@ -14,14 +13,9 @@ public class IbkrAuth : Controller
         _ibkrService = ibkrService;
     }
 
-    [HttpGet("auth-status")]
+    [HttpGet("{userId}")]
     public async Task<IActionResult> GetAuthStatus()
     {
-        var result = await _ibkrService.GetAuthStatusAsync();
-
-        if (result.Success)
-            return Ok(result);
-
-        return BadRequest(result);
+        return Ok(await _ibkrService.GetAuthStatusAsync());
     }
 }

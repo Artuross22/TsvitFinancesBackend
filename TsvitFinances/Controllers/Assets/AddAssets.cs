@@ -9,7 +9,6 @@ using TsvitFinances.Extensions;
 namespace TsvitFinances.Controllers.Assets;
 
 [Route("api/[controller]")]
-[ApiController]
 public class AddAssets : Controller
 {
     readonly protected MainDb _mainDb;
@@ -51,7 +50,7 @@ public class AddAssets : Controller
                 Market = (Market)model.Market,
                 Term = (InvestmentTerm)model.InvestmentTerm,
                 Name = model.Name,
-                Goal = model.MainGoal,
+                Goal = model.Goal,
                 Ticker = model.Ticker,
                 AddedAt = DateTime.UtcNow,
                 CurrentPrice = model.CurrentPrice,
@@ -137,7 +136,7 @@ public class AddAssets : Controller
 
         public required string Name { get; set; }
 
-        public required string MainGoal { get; set; }
+        public required string Goal { get; set; }
 
         public required string Ticker { get; set; }
 

@@ -39,14 +39,14 @@ public class IBKRPaperTradingService : IBKRClient
         }
     }
 
-    public bool IsPaperAccount(string accountId)
+    public bool _isPaperAccount(string accountId)
     {
         return accountId.StartsWith("DU");
     }
 
     public async Task<IBKRResponse<List<OrderResponse>>> PlacePaperOrderAsync(string accountId, OrderRequest orderRequest)
     {
-        if (!IsPaperAccount(accountId))
+        if (!_isPaperAccount(accountId))
         {
             return new IBKRResponse<List<OrderResponse>>
             {
@@ -61,7 +61,7 @@ public class IBKRPaperTradingService : IBKRClient
 
     public async Task<IBKRResponse<PaperTradingBalance>> GetPaperBalanceAsync(string accountId)
     {
-        if (!IsPaperAccount(accountId))
+        if (!_isPaperAccount(accountId))
         {
             return new IBKRResponse<PaperTradingBalance>
             {

@@ -27,9 +27,6 @@ public class PaperTradingDemoService
                 return false;
             }
 
-
-
-
             _logger.LogInformation("Demo trading completed successfully!");
             return true;
         }

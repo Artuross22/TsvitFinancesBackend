@@ -4,8 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
 
-[ApiController]
-[Route("api/[controller]")]
+[Route("api/[controller]/[action]")]
 public class PaperTrading : ControllerBase
 {
     private readonly PaperTradingDemoService _demoService;
@@ -17,11 +16,11 @@ public class PaperTrading : ControllerBase
         _ibkrService = ibkrService;
     }
 
-    [HttpGet("accounts")]
-    public async Task<IActionResult> GetPaperAccounts()
+    [HttpGet("{userId}")]
+    public async Task<IActionResult> GetPaperAccounts(string userId)
     {
         var result = await _ibkrService.GetPaperAccountsAsync();
-        return result.Success ? Ok(result.Data) : BadRequest(result.Error);
+        return Ok(result);
     }
 
     [HttpGet("balance/{accountId}")]
