@@ -1,6 +1,9 @@
 ﻿using Brokers.IBKR.Client.Models;
 using Brokers.IBKR.Client.Services;
+using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
@@ -11,11 +14,14 @@ public class PlaceLimitOrder : Controller
 {
     private readonly IBKRClient _ibkrService;
     private readonly ILogger<PlaceLimitOrder> _logger;
+    protected readonly MainDb _mainDb;
 
-    public PlaceLimitOrder(IBKRClient ibkrApiService, ILogger<PlaceLimitOrder> logger)
+
+    public PlaceLimitOrder(IBKRClient ibkrApiService, ILogger<PlaceLimitOrder> logger, MainDb mainDb)
     {
         _ibkrService = ibkrApiService;
         _logger = logger;
+        _mainDb = mainDb;
     }
 
     [HttpPost("limit-order")]
@@ -23,6 +29,14 @@ public class PlaceLimitOrder : Controller
     {
         _logger.LogInformation("Limit order request received: {Side} {Quantity} at {Price} for account: {AccountId}",
             request.Side, request.Quantity, request.Price, request.AccountId);
+
+        var asset = await _mainDb.Set<Asset>()
+            .FirstOrDefaultAsync(a => a.PublicId == request.AssetPublicId);
+
+        if (asset == null)
+        {
+            return NotFound();
+        }
 
         if (!ModelState.IsValid)
         {
@@ -32,7 +46,7 @@ public class PlaceLimitOrder : Controller
 
         var orderRequest = new OrderRequest
         {
-            ConId = request.ConId,
+            ConId = asset.ContractId,
             OrderType = "LMT",
             Side = request.Side,
             Quantity = request.Quantity,
@@ -54,26 +68,21 @@ public class PlaceLimitOrder : Controller
     }
 
     public class PlaceLimitOrderRequest
-{
-    [Required]
-    public string AccountId { get; set; }
+    {
+        public required string AccountId { get; set; }
 
-    [Required]
-    public int ConId { get; set; }
+        public required Guid AssetPublicId { get; set; }
 
-    [Required]
-    [RegularExpression("^(BUY|SELL)$", ErrorMessage = "Side must be BUY or SELL")]
-    public string Side { get; set; }
+        [RegularExpression("^(BUY|SELL)$", ErrorMessage = "Side must be BUY or SELL")]
+        public required string Side { get; set; }
 
-    [Required]
-    [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
-    public int Quantity { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
+        public required int Quantity { get; set; }
 
-    [Required]
-    [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
-    public double Price { get; set; }
+        [Range(0.01, double.MaxValue, ErrorMessage = "Price must be greater than 0")]
+        public required double Price { get; set; }
 
-    public string Tif { get; set; } = "DAY";
-    public string Exchange { get; set; } = "SMART";
-}
+        public string Tif { get; set; } = "DAY";
+        public string Exchange { get; set; } = "SMART";
+    }
 }

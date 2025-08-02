@@ -2,7 +2,7 @@
 
 public class OrderRequest
 {
-    public int ConId { get; set; }
+    public string ConId { get; set; }
     public string OrderType { get; set; } = "LMT"; // LMT, MKT, STP, etc.
     public string ListingExchange { get; set; } = "SMART";
     public string OutsideRth { get; set; } = "false";

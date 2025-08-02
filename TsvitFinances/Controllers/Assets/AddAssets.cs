@@ -45,6 +45,7 @@ public class AddAssets : Controller
             {
                 PublicId = Guid.NewGuid(),
                 AppUserId = user.Id,
+                ContractId = "",
                 AppUser = user,
                 Sector = (Sector)model.Sector,
                 Market = (Market)model.Market,

@@ -203,7 +203,7 @@ public class IBKRClient
         }
     }
 
-    public async Task<IBKRResponse<List<OrderResponse>>> PlaceMarketOrderAsync(string accountId, int conId, string side, int quantity)
+    public async Task<IBKRResponse<List<OrderResponse>>> PlaceMarketOrderAsync(string accountId, string conId, string side, int quantity)
     {
         var orderRequest = new OrderRequest
         {

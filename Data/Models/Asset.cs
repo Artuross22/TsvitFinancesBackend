@@ -11,6 +11,8 @@ public class Asset
 
     public required Guid PublicId { get; set; }
 
+    public required string ContractId { get; set; }
+
     public required string Goal { get; set; }
 
     public required Sector Sector { get; set; }

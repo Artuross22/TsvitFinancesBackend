@@ -1,28 +1,40 @@
 ﻿using Brokers.IBKR.Client.Models;
 using Brokers.IBKR.Client.Services;
+using Data;
+using Data.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
 
-[ApiController]
 [Route("api/[controller]")]
 public class PlaceMarketOrder : Controller
 {
     private readonly IBKRClient _ibkrService;
     private readonly ILogger<PlaceMarketOrder> _logger;
+    protected readonly MainDb _mainDb;
 
-    public PlaceMarketOrder(IBKRClient ibkrApiService, ILogger<PlaceMarketOrder> logger)
+    public PlaceMarketOrder(IBKRClient ibkrApiService, ILogger<PlaceMarketOrder> logger, MainDb main)
     {
         _ibkrService = ibkrApiService;
         _logger = logger;
+        _mainDb = main;
     }
 
-    [HttpPost("market-order")]
+    [HttpPost]
     public async Task<ActionResult<List<OrderResponse>>> Invoke([FromBody] PlaceMarketOrderRequest request)
     {
         _logger.LogInformation("Market order request received: {Side} {Quantity} for contract {ConId}, account: {AccountId}",
-            request.Side, request.Quantity, request.ConId, request.AccountId);
+            request.Side, request.Quantity, 12, request.AccountId);
+
+        var asset = await _mainDb.Set<Asset>()
+            .FirstOrDefaultAsync(a => a.PublicId == request.AssetPublicId);
+
+        if (asset == null)
+        {
+            return NotFound();
+        }
 
         if (!ModelState.IsValid)
         {
@@ -30,7 +42,7 @@ public class PlaceMarketOrder : Controller
             return BadRequest(ModelState);
         }
 
-        var result = await _ibkrService.PlaceMarketOrderAsync(request.AccountId, request.ConId, request.Side, request.Quantity);
+        var result = await _ibkrService.PlaceMarketOrderAsync(request.AccountId, asset.ContractId, request.Side, request.Quantity);
 
         if (result.Success)
         {
@@ -44,18 +56,14 @@ public class PlaceMarketOrder : Controller
 
     public class PlaceMarketOrderRequest
     {
-        [Required]
-        public string AccountId { get; set; }
+        public required string AccountId { get; set; }
 
-        [Required]
-        public int ConId { get; set; }
+        public required Guid AssetPublicId { get; set; }
 
-        [Required]
         [RegularExpression("^(BUY|SELL)$", ErrorMessage = "Side must be BUY or SELL")]
-        public string Side { get; set; }
+        public required string Side { get; set; }
 
-        [Required]
         [Range(1, int.MaxValue, ErrorMessage = "Quantity must be greater than 0")]
-        public int Quantity { get; set; }
+        public required int Quantity { get; set; }
     }
 }
