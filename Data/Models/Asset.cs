@@ -1,4 +1,5 @@
-﻿using Data.Models.Enums;
+﻿using Data.Exceptions;
+using Data.Models.Enums;
 using Data.Modelsl;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -59,6 +60,55 @@ public class Asset
 
     public virtual required ICollection<PurchaseLevel> PurchaseLevels { get; set; }
 
+    private readonly List<AssetHistory> _assetHistories = [];
+
+    public IReadOnlyCollection<AssetHistory> AssetHistories => _assetHistories.AsReadOnly();
+
+    private void AddHistory(decimal quantity, decimal price, PositionType type)
+    {
+        var history = new AssetHistory(Guid.NewGuid(), quantity, price, type);
+        _assetHistories.Add(history);
+    }
+
+    public void Buy(decimal quantity, decimal price)
+    {
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be positive");
+        if (!IsActive)
+            throw new DomainException("Cannot buy inactive asset");
+            
+        Quantity += quantity;
+        AddHistory(quantity, price, PositionType.Long);
+    }
+
+    public void Sell(decimal quantity, decimal price)
+    {
+        if (quantity <= 0)
+            throw new DomainException("Quantity must be positive");
+        if (quantity > Quantity)
+            throw new DomainException("Cannot sell more than owned");
+        if (!IsActive)
+            throw new DomainException("Cannot sell inactive asset");
+            
+        Quantity -= quantity;
+        AddHistory(quantity, price, PositionType.Short);
+        
+        if (Quantity == 0)
+        {
+            Close(price);
+        }   
+    }
+
+    public void Close(decimal soldFor)
+    {
+        if (!IsActive)
+            throw new DomainException("Asset is already closed");
+
+        IsActive = false;
+        ClosedAt = DateTime.UtcNow;
+        SoldFor = soldFor;
+    }
+
     internal class EFConfiguration : IEntityTypeConfiguration<Asset>
     {
         public void Configure(EntityTypeBuilder<Asset> builder)
@@ -104,6 +154,11 @@ public class Asset
             builder.HasMany(s => s.PositionEntryNotes)
                 .WithOne(a => a.Asset)
                 .HasForeignKey(a => a.AssetId);
+
+            builder.HasMany(a => a.AssetHistories)
+                .WithOne(h => h.Asset)
+                .HasForeignKey(h => h.AssetId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

@@ -8,7 +8,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
 
-[ApiController]
 [Route("api/[controller]")]
 public class PlaceLimitOrder : Controller
 {
@@ -24,7 +23,7 @@ public class PlaceLimitOrder : Controller
         _mainDb = mainDb;
     }
 
-    [HttpPost("limit-order")]
+    [HttpPost]
     public async Task<ActionResult<List<OrderResponse>>> Invoke([FromBody] PlaceLimitOrderRequest request)
     {
         _logger.LogInformation("Limit order request received: {Side} {Quantity} at {Price} for account: {AccountId}",
@@ -64,6 +63,7 @@ public class PlaceLimitOrder : Controller
         }
 
         _logger.LogError("Failed to place limit order for account: {AccountId}. Error: {Error}", request.AccountId, result.Error);
+
         return BadRequest(result.Error);
     }
 

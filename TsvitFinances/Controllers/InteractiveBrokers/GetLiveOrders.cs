@@ -1,9 +1,10 @@
-﻿using Brokers.IBKR.Client.Services;
+﻿using Brokers.IBKR.Client.Models;
+using Brokers.IBKR.Client.Services;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 
 namespace TsvitFinances.Controllers.InteractiveBrokers;
 
-[ApiController]
 [Route("api/[controller]")]
 public class GetLiveOrders : Controller
 {
@@ -16,8 +17,8 @@ public class GetLiveOrders : Controller
         _logger = logger;
     }
 
-    [HttpGet("live-orders")]
-    public async Task<ActionResult<object>> Invoke()
+    [HttpGet("{userId}")]
+    public async Task<ActionResult> Invoke(string userId)
     {
         _logger.LogInformation("Live orders request received");
 

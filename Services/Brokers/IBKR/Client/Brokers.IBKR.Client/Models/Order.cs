@@ -27,4 +27,6 @@ public class Order
 
     [JsonPropertyName("orderType")]
     public string OrderType { get; set; } = string.Empty;
+
+    public int Quantity { get; set; }
 }
