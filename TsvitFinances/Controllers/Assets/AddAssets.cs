@@ -8,6 +8,7 @@ using TsvitFinances.Extensions;
 
 namespace TsvitFinances.Controllers.Assets;
 
+[ApiController]
 [Route("api/[controller]")]
 public class AddAssets : Controller
 {

@@ -64,11 +64,53 @@ public class Asset
 
     public IReadOnlyCollection<AssetHistory> AssetHistories => _assetHistories.AsReadOnly();
 
+
+
+    public decimal CurrentValue => CurrentQuantity * CurrentPrice;
+
+    public decimal UnrealizedPnL => CurrentValue - CostBasis;
+
+    public decimal UnrealizedPnLPercentage => CostBasis > 0 ? (UnrealizedPnL / CostBasis) * 100 : 0;
+
+    public decimal AveragePrice => CurrentQuantity > 0 ? CostBasis / CurrentQuantity : 0;
+
+    public decimal CostBasis
+    {
+        get
+        {
+            var totalBuyPositionsAmount = _assetHistories
+                 .Where(ah => ah.Type == PositionType.Long)
+                 .Sum(q => q.Quantity * q.Price);
+
+            var totalShortPositionsAmount = _assetHistories
+                .Where(ah => ah.Type == PositionType.Short)
+                .Sum(q => q.Quantity * q.Price);
+
+            return (BoughtFor * Quantity) + (totalBuyPositionsAmount - totalShortPositionsAmount);
+        }
+    }
+
+    public decimal CurrentQuantity
+    {
+        get
+        {
+            var totalBuyPositionsAmount = _assetHistories
+                 .Where(ah => ah.Type == PositionType.Long)
+                 .Sum(q => q.Quantity);
+
+            var totalShortPositionsAmount = _assetHistories
+                .Where(ah => ah.Type == PositionType.Short)
+                .Sum(q => q.Quantity);
+
+            return Quantity + (totalBuyPositionsAmount - totalShortPositionsAmount);
+        }
+    }
+
     private void AddHistory(decimal quantity, decimal price, PositionType type)
     {
-        var history = new AssetHistory(Guid.NewGuid(), quantity, price, type);
+        var history = new AssetHistory(Guid.NewGuid(), quantity, price, type, Id);
         _assetHistories.Add(history);
-    }
+    } 
 
     public void Buy(decimal quantity, decimal price)
     {
@@ -76,8 +118,7 @@ public class Asset
             throw new DomainException("Quantity must be positive");
         if (!IsActive)
             throw new DomainException("Cannot buy inactive asset");
-            
-        Quantity += quantity;
+
         AddHistory(quantity, price, PositionType.Long);
     }
 
@@ -85,15 +126,14 @@ public class Asset
     {
         if (quantity <= 0)
             throw new DomainException("Quantity must be positive");
-        if (quantity > Quantity)
+        if (quantity > CurrentQuantity)
             throw new DomainException("Cannot sell more than owned");
         if (!IsActive)
             throw new DomainException("Cannot sell inactive asset");
             
-        Quantity -= quantity;
         AddHistory(quantity, price, PositionType.Short);
         
-        if (Quantity == 0)
+        if (CurrentQuantity <= 0)
         {
             Close(price);
         }   
@@ -107,7 +147,7 @@ public class Asset
         IsActive = false;
         ClosedAt = DateTime.UtcNow;
         SoldFor = soldFor;
-    }
+    } 
 
     internal class EFConfiguration : IEntityTypeConfiguration<Asset>
     {
@@ -159,6 +199,13 @@ public class Asset
                 .WithOne(h => h.Asset)
                 .HasForeignKey(h => h.AssetId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Ignore(a => a.CurrentValue);
+            builder.Ignore(a => a.UnrealizedPnL);
+            builder.Ignore(a => a.UnrealizedPnLPercentage);
+            builder.Ignore(a => a.AveragePrice);
+            builder.Ignore(a => a.CostBasis);
+            builder.Ignore(a => a.CurrentQuantity);
         }
     }
 }

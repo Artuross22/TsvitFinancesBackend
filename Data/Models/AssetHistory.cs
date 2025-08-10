@@ -17,7 +17,7 @@ public class AssetHistory
 
     private AssetHistory() { }
 
-    internal AssetHistory(Guid publicId, decimal quantity, decimal price, PositionType type)
+    internal AssetHistory(Guid publicId, decimal quantity, decimal price, PositionType type,int assetId)
     {
         ValidateInputs(quantity, price);
         
@@ -26,6 +26,7 @@ public class AssetHistory
         Price = price;
         Type = type;
         CreatedAt = DateTime.UtcNow;
+        AssetId = assetId;
     }
 
     private static void ValidateInputs(decimal quantity, decimal price)

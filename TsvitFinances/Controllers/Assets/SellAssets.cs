@@ -37,29 +37,25 @@ public class SellAssets : Controller
 
         var now = DateTime.UtcNow;
 
-        var profit = (asset.CurrentPrice - asset.BoughtFor) * asset.Quantity;
-
         _mainDb.Add(new BalanceFlow
         {
             AppUser = asset.AppUser,
             AppUserId = asset.AppUserId,
-            Sum = profit,
+            Sum = asset.UnrealizedPnL,
             CreatedOn = now,
             Balance = Balance.NetInternalIncome, 
         });
 
-        var total = asset.CurrentPrice * asset.Quantity;
-
         _mainDb.Add(new BalanceFlow
         {
             AppUser = asset.AppUser,
             AppUserId = asset.AppUserId,
-            Sum = total,
+            Sum = asset.UnrealizedPnL,
             CreatedOn = now,
             Balance = Balance.Total,
         });
 
-        asset.SoldFor = asset.CurrentPrice;
+        asset.SoldFor = asset.CurrentValue;
         asset.ClosedAt = now;
         asset.IsActive = false;
 

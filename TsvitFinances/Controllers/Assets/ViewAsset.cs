@@ -31,9 +31,6 @@ public class ViewAsset : Controller
             return NotFound();
         }
 
-        var percentageProfit = (asset.CurrentPrice - asset.BoughtFor) / asset.BoughtFor * 100;
-        var profit = (asset.CurrentPrice - asset.BoughtFor) * asset.Quantity;
-
         var output = new BindingModel
         {
             PublicId = asset.PublicId,
@@ -47,11 +44,11 @@ public class ViewAsset : Controller
             Market = asset.Market.ToString(),
             Sector = asset.Sector.ToString(),
             Term = asset.Term.ToString(),
-            PercentageProfit = Math.Round(percentageProfit, 2),
-            Profit = Math.Round(profit, 2),
+            PercentageProfit = Math.Round(asset.UnrealizedPnLPercentage, 2),
+            Profit = Math.Round(asset.UnrealizedPnL, 2),
             Name = asset.Name,
             Ticker = asset.Ticker,
-            Quantity = asset.Quantity,
+            Quantity = asset.CurrentQuantity,
             
         };
 

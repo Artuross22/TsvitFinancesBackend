@@ -11,13 +11,13 @@ namespace TsvitFinances.FinancialHelper
         {
             var result = new List<DiversificationResult>();
 
-            var total = assets.Sum(a => a.CurrentPrice * a.Quantity);
+            var total = assets.Sum(a => a.CurrentPrice * a.CurrentQuantity);
 
             foreach (var diversification in diversifications)
             {
                 var totalNicheSum = assets
                     .Where(a => a.Sector == diversification.Sector)
-                    .Sum(a => a.CurrentPrice * a.Quantity);
+                    .Sum(a => a.CurrentPrice * a.CurrentQuantity);
 
                 result.Add(new DiversificationResult
                 {

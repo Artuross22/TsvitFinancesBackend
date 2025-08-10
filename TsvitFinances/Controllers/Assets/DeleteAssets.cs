@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TsvitFinances.Controllers.Assets;
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class DeleteAssets : Controller
 {
     readonly protected MainDb _mainDb;
