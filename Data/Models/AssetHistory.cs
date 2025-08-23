@@ -51,10 +51,6 @@ public class AssetHistory
             builder.ToTable("AssetHistory");
 
             builder.HasKey(e => e.Id);
-
-            builder.HasOne(b => b.Asset)
-                .WithMany()
-                .HasForeignKey(b => b.AssetId);
         }
     }
 }

@@ -198,7 +198,8 @@ public class Asset
             builder.HasMany(a => a.AssetHistories)
                 .WithOne(h => h.Asset)
                 .HasForeignKey(h => h.AssetId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Cascade)
+                .IsRequired();
 
             builder.Ignore(a => a.CurrentValue);
             builder.Ignore(a => a.UnrealizedPnL);
