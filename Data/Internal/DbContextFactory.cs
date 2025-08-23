@@ -14,6 +14,6 @@ public class DbContextFactory : IDesignTimeDbContextFactory<MainDb>
          .Build();
 
         var optionsBuilder = new DbContextOptionsBuilder<MainDb>();
-        return(new MainDb(optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection")).Options));
+        return(new MainDb(optionsBuilder.UseNpgsql(configuration.GetConnectionString("DefaultConnection")).Options));
     }
 }
