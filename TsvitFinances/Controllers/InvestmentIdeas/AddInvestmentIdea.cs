@@ -54,7 +54,7 @@ public class AddInvestmentIdea : Controller
             Description = model.Description,
             ExpectedReturn = model.ExpectedReturn,
             Profit = model.Profit,
-            CreatedAt = DateTime.Now,
+            CreatedAt = DateTime.UtcNow,
             ClosedAt = null!,
             AppUserId = null!,
             AppUser = user,

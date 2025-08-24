@@ -34,7 +34,7 @@ public class CreateMacroeconomic : Controller
 
         if (macroeconomic != null)
         {
-            macroeconomic.ArchivedAt = DateTime.Now;
+            macroeconomic.ArchivedAt = DateTime.UtcNow;
         }
 
         _mainDb.Add(new MacroeconomicAnalysis

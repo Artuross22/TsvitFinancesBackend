@@ -34,7 +34,7 @@ public class CreateMacroeconomicEvent : Controller
             Title = model.Title,
             Rating = model.Rating,
             Source = model.Source,
-            CreateAt = DateTime.Now,
+            CreateAt = DateTime.UtcNow,
             MacroeconomicAnalysisId = macroeconomicAnalysis.Id,
             MacroeconomicAnalyses = macroeconomicAnalysis,
         });

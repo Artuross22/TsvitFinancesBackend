@@ -50,7 +50,7 @@ public class TransferBalanceFlow : Controller
                     Balance = model.FromBalanceFlow.BalanceType,
                     AppUserId = model.AppUserId,
                     AppUser = appUser,
-                    CreatedOn = DateTime.Now
+                    CreatedOn = DateTime.UtcNow
                 });
 
                 _mainDb.Add(new BalanceFlow
@@ -59,7 +59,7 @@ public class TransferBalanceFlow : Controller
                     Balance = model.ToBalanceFlow.BalanceType,
                     AppUserId = model.AppUserId,
                     AppUser = appUser,
-                    CreatedOn = DateTime.Now
+                    CreatedOn = DateTime.UtcNow
                 });
 
                 await _mainDb.SaveChangesAsync();

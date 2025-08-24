@@ -37,7 +37,7 @@ public class AddBalanceFlow : Controller
                 AppUser = user,
                 Sum = balanceFlow.Sum,
                 Balance = balanceFlow.BalanceType,
-                CreatedOn = DateTime.Now
+                CreatedOn = DateTime.UtcNow
             });
         }
 

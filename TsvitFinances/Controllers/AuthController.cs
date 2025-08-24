@@ -49,7 +49,7 @@ public class AuthController : Controller
 
         var user = new AppUser
         {
-            CreatedOn = DateTime.Now,
+            CreatedOn = DateTime.UtcNow,
             UserName = model.Email,
             Email = model.Email
         };
@@ -70,6 +70,7 @@ public class AuthController : Controller
 
         return BadRequest(ModelState);
     }
+    
     public class RegisterModelDto
     {
         public required string Email { get; set; }
