@@ -1,9 +1,26 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        {
+            "name": ".NET Core Launch (web)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/TsvitFinances/bin/Debug/net9.0/TsvitFinances.dll",
+            "args": [
+                "build",
+                "${workspaceFolder}/TsvitFinances/TsvitFinances.csproj"
+            ],
+            "cwd": "${workspaceFolder}/TsvitFinances",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "action": "openExternally",
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
         {
             "type": "chrome",
             "request": "launch",
