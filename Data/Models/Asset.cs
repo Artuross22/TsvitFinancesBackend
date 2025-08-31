@@ -115,11 +115,23 @@ public class Asset
     public void Buy(decimal quantity, decimal price)
     {
         if (quantity <= 0)
+        {
             throw new DomainException("Quantity must be positive");
-        if (!IsActive)
+        }
+        else if (!IsActive)
+        {
             throw new DomainException("Cannot buy inactive asset");
+        }
 
-        AddHistory(quantity, price, PositionType.Long);
+        if (Quantity == default && BoughtFor == default)
+        {
+            Quantity += quantity;
+            BoughtFor += price;
+        }
+        else
+        {
+            AddHistory(quantity, price, PositionType.Long);
+        }
     }
 
     public void Sell(decimal quantity, decimal price)

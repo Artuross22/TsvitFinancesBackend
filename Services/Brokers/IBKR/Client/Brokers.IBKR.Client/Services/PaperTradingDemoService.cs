@@ -20,7 +20,7 @@ public class PaperTradingDemoService
         {
             _logger.LogInformation("Start of demo trading");
 
-            var accountsResult = await _ibkrService.GetPaperAccountsAsync();
+            var accountsResult = await _ibkrService.GetAccountsAsync();
             if (!accountsResult.Success || accountsResult.Data?.Count == 0)
             {
                 _logger.LogError("No Paper Trading accounts found");

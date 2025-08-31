@@ -16,13 +16,6 @@ public class PaperTrading : ControllerBase
         _ibkrService = ibkrService;
     }
 
-    [HttpGet("{userId}")]
-    public async Task<IActionResult> GetPaperAccounts(string userId)
-    {
-        var result = await _ibkrService.GetPaperAccountsAsync();
-        return Ok(result);
-    }
-
     [HttpGet("balance/{accountId}")]
     public async Task<IActionResult> GetBalance(string accountId)
     {

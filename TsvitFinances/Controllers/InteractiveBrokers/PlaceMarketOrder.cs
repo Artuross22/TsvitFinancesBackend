@@ -47,6 +47,10 @@ public class PlaceMarketOrder : Controller
         if (result.Success)
         {
             _logger.LogInformation("Market order placed successfully for account: {AccountId}", request.AccountId);
+
+            asset.Buy(request.Quantity, asset.CurrentPrice);
+            await _mainDb.SaveChangesAsync();
+
             return Ok(result.Data);
         }
 

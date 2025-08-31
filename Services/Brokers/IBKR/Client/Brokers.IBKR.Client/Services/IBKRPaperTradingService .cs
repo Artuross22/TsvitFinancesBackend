@@ -13,32 +13,6 @@ public class IBKRPaperTradingService : IBKRClient
     {
     }
 
-    public async Task<IBKRResponse<List<PaperAccount>>> GetPaperAccountsAsync()
-    {
-        try
-        {
-            _logger.LogInformation("Retrieving Paper Trading accounts");
-            var response = await _httpClient.GetAsync("/v1/api/iserver/accounts");
-            var content = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                var accounts = JsonSerializer.Deserialize<AccountsResponse>(content, _jsonOptions);
-                var paperAccounts = accounts?.Accounts?
-                    .Where(a => a.AccountId.StartsWith("DU"))
-                    .ToList() ?? new List<PaperAccount>();
-
-                return new IBKRResponse<List<PaperAccount>> { Success = true, Data = paperAccounts };
-            }
-            return new IBKRResponse<List<PaperAccount>> { Success = false, Error = content };
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error while retrieving Paper Trading accounts");
-            return new IBKRResponse<List<PaperAccount>> { Success = false, Error = ex.Message };
-        }
-    }
-
     public bool _isPaperAccount(string accountId)
     {
         return accountId.StartsWith("DU");

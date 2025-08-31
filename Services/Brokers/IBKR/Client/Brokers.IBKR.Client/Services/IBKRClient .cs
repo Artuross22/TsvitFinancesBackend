@@ -25,15 +25,6 @@ public class IBKRClient
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
             WriteIndented = true
         };
-
-        ConfigureHttpClient();
-    }
-
-    private void ConfigureHttpClient()
-    {
-        _httpClient.BaseAddress = new Uri(_options.BaseUrl);
-        _httpClient.Timeout = TimeSpan.FromMinutes(_options.TimeoutMinutes);
-        _httpClient.DefaultRequestHeaders.Add("User-Agent", _options.UserAgent);
     }
 
     public async Task<IBKRResponse<AuthStatus>> GetAuthStatusAsync()
@@ -57,6 +48,39 @@ public class IBKRClient
         {
             _logger.LogError(ex, "Error while checking authorization status");
             return new IBKRResponse<AuthStatus> { Success = false, Error = ex.Message };
+        }
+    }
+
+    public async Task<IBKRResponse<AccountInfo>> GetCurrentAccountAsync()
+    {
+        try
+        {
+            _logger.LogInformation("Retrieving Paper Trading accounts");
+            var response = await _httpClient.GetAsync("/v1/api/iserver/accounts");
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                var accountsResponse = JsonSerializer.Deserialize<AccountsResponse>(content, _jsonOptions);
+                
+                var account = accountsResponse?.Accounts?
+                    .Select(accountId => new AccountInfo
+                    {
+                        AccountId = accountId,
+                        Alias = accountsResponse.Aliases.GetValueOrDefault(accountId, accountId),
+                        IsPaperAccount = accountId.StartsWith("DU")
+                    })
+                    .Single();
+
+                return new IBKRResponse<AccountInfo> { Success = true, Data = account };
+            }
+            
+            return new IBKRResponse<AccountInfo> { Success = false, Error = content };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error while retrieving Paper Trading accounts");
+            return new IBKRResponse<AccountInfo> { Success = false, Error = ex.Message };
         }
     }
 

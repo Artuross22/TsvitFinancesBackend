@@ -2,10 +2,10 @@
 
 public class IBKROptions
 {
-    public string BaseUrl { get; set; } = "https://localhost:5000";
-    public int TimeoutMinutes { get; set; } = 5;
-    public bool IgnoreSSLErrors { get; set; } = true;
-    public string UserAgent { get; set; } = "IBKR.Client/1.0";
-    public bool IsPaperTrading { get; set; } = true;
-    public string PaperTradingAccountPrefix { get; set; } = "DU";
+    public required string BaseUrl { get; set; }
+    public required int TimeoutMinutes { get; set; }
+    public required bool IgnoreSSLErrors { get; set; }
+    public required string UserAgent { get; set; }
+    public required bool IsPaperTrading { get; set; }
+    public required string PaperTradingAccountPrefix { get; set; }
 }
