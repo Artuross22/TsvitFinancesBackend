@@ -1,31 +1,31 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Brokers.IBKR.Client.Models;
 
 public class Order
 {
-    [JsonPropertyName("orderId")]
+    [JsonProperty("orderId")]
     public int OrderId { get; set; }
 
-    [JsonPropertyName("conid")]
+    [JsonProperty("conid")]
     public int ContractId { get; set; }
 
-    [JsonPropertyName("ticker")]
+    [JsonProperty("ticker")]
     public string Ticker { get; set; } = string.Empty;
 
-    [JsonPropertyName("status")]
+    [JsonProperty("status")]
     public string Status { get; set; } = string.Empty;
 
-    [JsonPropertyName("side")]
+    [JsonProperty("side")]
     public string Side { get; set; } = string.Empty;
 
-    [JsonPropertyName("remainingQuantity")]
+    [JsonProperty("remainingQuantity")]
     public decimal RemainingQuantity { get; set; }
 
-    [JsonPropertyName("price")]
+    [JsonProperty("price")]
     public decimal? Price { get; set; }
 
-    [JsonPropertyName("orderType")]
+    [JsonProperty("orderType")]
     public string OrderType { get; set; } = string.Empty;
 
     public int Quantity { get; set; }

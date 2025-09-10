@@ -1,57 +1,57 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Brokers.IBKR.Client.Models;
 
 public class TradeHistoryResponse
 {
-    [JsonPropertyName("trades")]
+    [JsonProperty("trades")]
     public List<_Trade> Trades { get; set; } = new List<_Trade>();
 
-    [JsonPropertyName("totalCount")]
+    [JsonProperty("totalCount")]
     public int TotalCount { get; set; }
 
-    [JsonPropertyName("accountId")]
+    [JsonProperty("accountId")]
     public string AccountId { get; set; } = string.Empty;
 
-    [JsonPropertyName("daysRequested")]
+    [JsonProperty("daysRequested")]
     public int DaysRequested { get; set; }
 
-    [JsonPropertyName("requestTime")]
+    [JsonProperty("requestTime")]
     public DateTime RequestTime { get; set; }
 
     public class _Trade
     {
-        [JsonPropertyName("execution_id")]
+        [JsonProperty("execution_id")]
         public string ExecutionId { get; set; } = string.Empty;
 
-        [JsonPropertyName("symbol")]
+        [JsonProperty("symbol")]
         public string Symbol { get; set; } = string.Empty;
 
-        [JsonPropertyName("side")]
+        [JsonProperty("side")]
         public string Side { get; set; } = string.Empty;
 
-        [JsonPropertyName("quantity")]
+        [JsonProperty("quantity")]
         public decimal Quantity { get; set; }
 
-        [JsonPropertyName("price")]
+        [JsonProperty("price")]
         public decimal Price { get; set; }
 
-        [JsonPropertyName("execution_time")]
+        [JsonProperty("execution_time")]
         public DateTime ExecutionTime { get; set; }
 
-        [JsonPropertyName("order_id")]
+        [JsonProperty("order_id")]
         public string OrderId { get; set; } = string.Empty;
 
-        [JsonPropertyName("exchange")]
+        [JsonProperty("exchange")]
         public string Exchange { get; set; } = string.Empty;
 
-        [JsonPropertyName("commission")]
+        [JsonProperty("commission")]
         public decimal Commission { get; set; }
 
-        [JsonPropertyName("currency")]
+        [JsonProperty("currency")]
         public string Currency { get; set; } = string.Empty;
 
-        [JsonPropertyName("secType")]
+        [JsonProperty("secType")]
         public string SecType { get; set; } = string.Empty;
     }
 }

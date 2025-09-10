@@ -45,13 +45,12 @@ public class PlaceLimitOrder : Controller
 
         var orderRequest = new OrderRequest
         {
-            ConId = asset.ContractId,
+            Conid = int.Parse(asset.ContractId),
             OrderType = "LMT",
             Side = request.Side,
             Quantity = request.Quantity,
             Price = request.Price,
             Tif = request.Tif ?? "DAY",
-            ListingExchange = request.Exchange ?? "SMART"
         };
 
         var result = await _ibkrService.PlaceLimitOrderAsync(request.AccountId, orderRequest);

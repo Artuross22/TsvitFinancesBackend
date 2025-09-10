@@ -1,18 +1,18 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Brokers.IBKR.Client.Models;
 
 public class IBKRResponse<T>
 {
-    [JsonPropertyName("success")]
+    [JsonProperty("success")]
     public bool Success { get; set; }
 
-    [JsonPropertyName("data")]
+    [JsonProperty("data")]
     public T? Data { get; set; }
 
-    [JsonPropertyName("error")]
+    [JsonProperty("error")]
     public string? Error { get; set; }
 
-    [JsonPropertyName("message")]
+    [JsonProperty("message")]
     public string? Message { get; set; }
 }

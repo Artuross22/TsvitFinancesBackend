@@ -40,6 +40,12 @@ public class AddAssets : Controller
             return NotFound();
         }
 
+        // TODO Market == Market.InteractiveBrokers
+        if (!int.TryParse(model.ContractId, out var conid))
+        {
+            return BadRequest("Invalid ContractId for asset. ContractId is required as integer for Interactive Brokers assets.");
+        }
+
         try
         {
             var asset = new Asset
@@ -135,6 +141,8 @@ public class AddAssets : Controller
     public class AddAssetDto
     {
         public required string UserPublicId { get; set; }
+
+        public string? ContractId { get; set; }
 
         public required string Name { get; set; }
 

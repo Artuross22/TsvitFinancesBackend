@@ -1,31 +1,31 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace FinancialData.APIs.FPM.Models
 {
     public class CryptoData
     {
-        [JsonPropertyName("symbol")]
+        [JsonProperty("symbol")]
         public required string Symbol { get; set; }
 
-        [JsonPropertyName("price")]
+        [JsonProperty("price")]
         public required decimal Price { get; set; }
 
-        [JsonPropertyName("marketCap")]
+        [JsonProperty("marketCap")]
         public required decimal MarketCap { get; set; }
 
-        [JsonPropertyName("volume")]
+        [JsonProperty("volume")]
         public required decimal Volume { get; set; }
 
-        [JsonPropertyName("dayHigh")]
+        [JsonProperty("dayHigh")]
         public required decimal DayHigh { get; set; }
 
-        [JsonPropertyName("dayLow")]
+        [JsonProperty("dayLow")]
         public required decimal DayLow { get; set; }
 
-        [JsonPropertyName("yearHigh")]
+        [JsonProperty("yearHigh")]
         public required decimal YearHigh { get; set; }
 
-        [JsonPropertyName("yearLow")]
+        [JsonProperty("yearLow")]
         public required decimal YearLow { get; set; }
     }
 }

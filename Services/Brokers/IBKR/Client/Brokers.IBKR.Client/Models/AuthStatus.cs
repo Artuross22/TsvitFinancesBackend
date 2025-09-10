@@ -1,18 +1,18 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Brokers.IBKR.Client.Models;
 
 public class AuthStatus
 {
-    [JsonPropertyName("authenticated")]
+    [JsonProperty("authenticated")]
     public bool Authenticated { get; set; }
 
-    [JsonPropertyName("connected")]
+    [JsonProperty("connected")]
     public bool Connected { get; set; }
 
-    [JsonPropertyName("competing")]
+    [JsonProperty("competing")]
     public bool Competing { get; set; }
 
-    [JsonPropertyName("message")]
+    [JsonProperty("message")]
     public string? Message { get; set; }
 }

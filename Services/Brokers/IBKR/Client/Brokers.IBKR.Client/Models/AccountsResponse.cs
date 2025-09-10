@@ -1,12 +1,12 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Brokers.IBKR.Client.Models;
 
 public class AccountsResponse
 {
-    [JsonPropertyName("accounts")]
+    [JsonProperty("accounts")]
     public List<string> Accounts { get; set; } = new();
 
-    [JsonPropertyName("aliases")]
+    [JsonProperty("aliases")]
     public Dictionary<string, string> Aliases { get; set; } = new();
 }

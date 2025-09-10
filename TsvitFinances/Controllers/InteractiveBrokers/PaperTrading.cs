@@ -35,7 +35,7 @@ public class PaperTrading : ControllerBase
     {
         var orderRequest = new OrderRequest
         {
-            ConId = request.ConId.ToString(),
+            Conid = request.ConId,
             OrderType = request.OrderType,
             Side = request.Side,
             Quantity = request.Quantity,

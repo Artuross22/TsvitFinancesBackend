@@ -1,6 +1,6 @@
 ﻿using FinancialData.APIs.FPM.Models;
 using Microsoft.Extensions.Options;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace FinancialData.APIs.FPM;
 
@@ -35,9 +35,9 @@ public class FpmConnection
 
         if (result != null)
         {
-            var dataList = JsonSerializer.Deserialize<List<CryptoData>>(result, new JsonSerializerOptions
+            var dataList = JsonConvert.DeserializeObject<List<CryptoData>>(result, new JsonSerializerSettings
             {
-                PropertyNameCaseInsensitive = true
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
             });
 
             return dataList ?? new List<CryptoData>();
@@ -54,9 +54,9 @@ public class FpmConnection
 
         if (result != null)
         {
-            var dataList = JsonSerializer.Deserialize<List<ShareData>>(result, new JsonSerializerOptions
+            var dataList = JsonConvert.DeserializeObject<List<ShareData>>(result, new JsonSerializerSettings
             {
-                PropertyNameCaseInsensitive = true
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver()
             });
 
             return dataList ?? new List<ShareData>();

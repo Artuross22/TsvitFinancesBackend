@@ -1,59 +1,59 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 public class ShareData
 {
-    [JsonPropertyName("symbol")]
+    [JsonProperty("symbol")]
     public required string Symbol { get; set; }
 
-    [JsonPropertyName("date")]
+    [JsonProperty("date")]
     public required string Date { get; set; }
 
-    [JsonPropertyName("calendarYear")]
+    [JsonProperty("calendarYear")]
     public required string CalendarYear { get; set; }
 
-    [JsonPropertyName("priceEarningsRatio")]
+    [JsonProperty("priceEarningsRatio")]
     public required decimal PERatio { get; set; }
 
-    [JsonPropertyName("operatingCashFlowPerShare")]
+    [JsonProperty("operatingCashFlowPerShare")]
     public required decimal OperatingCashFlowPerShare { get; set; }
 
-    [JsonPropertyName("returnOnEquity")]
+    [JsonProperty("returnOnEquity")]
     public required decimal ROE { get; set; }
 
-    [JsonPropertyName("priceToBookRatio")]
+    [JsonProperty("priceToBookRatio")]
     public required decimal PBRatio { get; set; }
 
-    [JsonPropertyName("dividendYield")]
+    [JsonProperty("dividendYield")]
     public required decimal DividendYield { get; set; }
 
-    [JsonPropertyName("debtEquityRatio")]
+    [JsonProperty("debtEquityRatio")]
     public required decimal DebtToEquityRatio { get; set; }
 
-    [JsonPropertyName("ebitPerRevenue")]
+    [JsonProperty("ebitPerRevenue")]
     public required decimal EBIT { get; set; }
 
-    [JsonPropertyName("priceSalesRatio")]
+    [JsonProperty("priceSalesRatio")]
     public required decimal PSRatio { get; set; }
 
-    [JsonPropertyName("freeCashFlowPerShare")]
+    [JsonProperty("freeCashFlowPerShare")]
     public required decimal FreeCashFlowPerShare { get; set; }
 
-    [JsonPropertyName("returnOnAssets")]
+    [JsonProperty("returnOnAssets")]
     public required decimal ROA { get; set; }
 
-    [JsonPropertyName("netProfitMargin")]
+    [JsonProperty("netProfitMargin")]
     public required decimal NetProfitMargin { get; set; }
 
-    //[JsonPropertyName("revenueGrowth")]
+    //[JsonProperty("revenueGrowth")]
     //public decimal RevenueGrowth { get; set; }
 
-    [JsonPropertyName("debtRatio")]
+    [JsonProperty("debtRatio")]
     public required decimal DebtRatio { get; set; }
 
-    [JsonPropertyName("freeCashFlow")]
+    [JsonProperty("freeCashFlow")]
     public decimal FreeCashFlow { get; set; }
 
     // EPS netIncome / totalSharesOutstanding.
-    [JsonPropertyName("netIncome")]
+    [JsonProperty("netIncome")]
     public decimal NetIncome { get; set; }
 }

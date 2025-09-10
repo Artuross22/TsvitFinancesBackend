@@ -3,7 +3,7 @@ using Brokers.IBKR.Client.Models;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Text;
-using System.Text.Json;
+using Newtonsoft.Json;
 
 namespace Brokers.IBKR.Client.Services;
 
@@ -12,7 +12,7 @@ public class IBKRClient
     protected readonly HttpClient _httpClient;
     protected readonly IBKROptions _options;
     protected readonly ILogger<IBKRClient> _logger;
-    protected readonly JsonSerializerOptions _jsonOptions;
+    protected readonly JsonSerializerSettings _jsonSettings;
 
     public IBKRClient(HttpClient httpClient, IOptions<IBKROptions> options, ILogger<IBKRClient> logger)
     {
@@ -20,10 +20,10 @@ public class IBKRClient
         _options = options.Value;
         _logger = logger;
 
-        _jsonOptions = new JsonSerializerOptions
+        _jsonSettings = new JsonSerializerSettings
         {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-            WriteIndented = true
+            ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+            Formatting = Formatting.Indented
         };
     }
 
@@ -38,7 +38,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var authStatus = JsonSerializer.Deserialize<AuthStatus>(content, _jsonOptions);
+                var authStatus = JsonConvert.DeserializeObject<AuthStatus>(content, _jsonSettings);
                 return new IBKRResponse<AuthStatus> { Success = true, Data = authStatus };
             }
 
@@ -61,7 +61,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var accountsResponse = JsonSerializer.Deserialize<AccountsResponse>(content, _jsonOptions);
+                var accountsResponse = JsonConvert.DeserializeObject<AccountsResponse>(content, _jsonSettings);
                 
                 var account = accountsResponse?.Accounts?
                     .Select(accountId => new AccountInfo
@@ -95,7 +95,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var accounts = JsonSerializer.Deserialize<List<Account>>(content, _jsonOptions);
+                var accounts = JsonConvert.DeserializeObject<List<Account>>(content, _jsonSettings);
                 return new IBKRResponse<List<Account>> { Success = true, Data = accounts };
             }
 
@@ -118,7 +118,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var positions = JsonSerializer.Deserialize<List<PortfolioPosition>>(content, _jsonOptions);
+                var positions = JsonConvert.DeserializeObject<List<PortfolioPosition>>(content, _jsonSettings);
                 return new IBKRResponse<List<PortfolioPosition>> { Success = true, Data = positions };
             }
             return new IBKRResponse<List<PortfolioPosition>> { Success = false, Error = content };
@@ -140,7 +140,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var summary = JsonSerializer.Deserialize<List<AccountSummary>>(content, _jsonOptions);
+                var summary = JsonConvert.DeserializeObject<List<AccountSummary>>(content, _jsonSettings);
                 return new IBKRResponse<List<AccountSummary>> { Success = true, Data = summary };
             }
             return new IBKRResponse<List<AccountSummary>> { Success = false, Error = content };
@@ -162,7 +162,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var contracts = JsonSerializer.Deserialize<List<ContractInfo>>(content, _jsonOptions);
+                var contracts = JsonConvert.DeserializeObject<List<ContractInfo>>(content, _jsonSettings);
                 return new IBKRResponse<List<ContractInfo>> { Success = true, Data = contracts };
             }
             return new IBKRResponse<List<ContractInfo>> { Success = false, Error = content };
@@ -184,7 +184,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var marketData = JsonSerializer.Deserialize<List<MarketData>>(content, _jsonOptions);
+                var marketData = JsonConvert.DeserializeObject<List<MarketData>>(content, _jsonSettings);
                 return new IBKRResponse<List<MarketData>> { Success = true, Data = marketData };
             }
             return new IBKRResponse<List<MarketData>> { Success = false, Error = content };
@@ -200,14 +200,19 @@ public class IBKRClient
     {
         try
         {
-            _logger.LogInformation($"Placing limit order: {orderRequest.Side} {orderRequest.Quantity} at price {orderRequest.Price}");
+            _logger.LogInformation($"Placing limit order: {orderRequest.Side} {orderRequest.Quantity} at price {orderRequest.Price}. Account: {accountId}");
 
-            var orderData = new
+            var payload = new
             {
-                orders = new[] { orderRequest }
+                orders = new List<OrderRequest> { orderRequest }
             };
+            
+            var json = JsonConvert.SerializeObject(payload, new JsonSerializerSettings
+            {
+                ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
+                NullValueHandling = NullValueHandling.Ignore
+            });
 
-            var json = JsonSerializer.Serialize(orderData, _jsonOptions);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync($"/v1/api/iserver/account/{accountId}/orders", stringContent);
@@ -215,7 +220,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var orderResponse = JsonSerializer.Deserialize<List<OrderResponse>>(content, _jsonOptions);
+                var orderResponse = JsonConvert.DeserializeObject<List<OrderResponse>>(content, _jsonSettings);
                 return new IBKRResponse<List<OrderResponse>> { Success = true, Data = orderResponse };
             }
             return new IBKRResponse<List<OrderResponse>> { Success = false, Error = content };
@@ -231,7 +236,7 @@ public class IBKRClient
     {
         var orderRequest = new OrderRequest
         {
-            ConId = conId,
+            Conid = int.Parse(conId),
             OrderType = "MKT",
             Side = side,
             Quantity = quantity,
@@ -250,7 +255,7 @@ public class IBKRClient
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                var orders = JsonSerializer.Deserialize<List<Order>>(content, _jsonOptions);
+                var orders = JsonConvert.DeserializeObject<List<Order>>(content, _jsonSettings);
                 return new IBKRResponse<List<Order>> { Success = true, Data = orders };
             }
             return new IBKRResponse<List<Order>> { Success = false, Error = content };
@@ -272,7 +277,7 @@ public class IBKRClient
 
             if (response.IsSuccessStatusCode)
             {
-                var result = JsonSerializer.Deserialize<OrderResponse>(content, _jsonOptions);
+                var result = JsonConvert.DeserializeObject<OrderResponse>(content, _jsonSettings);
                 return new IBKRResponse<OrderResponse> { Success = true, Data = result };
             }
             return new IBKRResponse<OrderResponse> { Success = false, Error = content };
@@ -293,7 +298,7 @@ public class IBKRClient
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                var trades = JsonSerializer.Deserialize<TradeHistoryResponse>(content, _jsonOptions);
+                var trades = JsonConvert.DeserializeObject<TradeHistoryResponse>(content, _jsonSettings);
                 return new IBKRResponse<TradeHistoryResponse> { Success = true, Data = trades }; 
             }
             return new IBKRResponse<TradeHistoryResponse> { Success = false, Error = content };
@@ -311,13 +316,13 @@ public class IBKRClient
         {
             _logger.LogInformation($"Confirming order: {replyId}");
             var confirmData = new { confirmed = confirmed };
-            var json = JsonSerializer.Serialize(confirmData, _jsonOptions);
+            var json = JsonConvert.SerializeObject(confirmData, _jsonSettings);
             var stringContent = new StringContent(json, Encoding.UTF8, "application/json");
             var response = await _httpClient.PostAsync($"/v1/api/iserver/reply/{replyId}", stringContent);
             var content = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                var result = JsonSerializer.Deserialize<OrderResponse>(content, _jsonOptions);
+                var result = JsonConvert.DeserializeObject<OrderResponse>(content, _jsonSettings);
                 return new IBKRResponse<OrderResponse> { Success = true, Data = result };
             }
             return new IBKRResponse<OrderResponse> { Success = false, Error = content };
