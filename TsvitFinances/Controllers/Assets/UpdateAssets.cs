@@ -32,6 +32,7 @@ public class UpdateAssets : Controller
         {
             PublicId = asset.PublicId,
             UserPublicId = asset.AppUser.Id,
+            Broker = (int)asset.Broker,
             ContractId = asset.ContractId,
             Goal = asset.Goal,
             BoughtFor = asset.BoughtFor,
@@ -54,11 +55,13 @@ public class UpdateAssets : Controller
             return NotFound();
         }
 
-        // TODO Market == Market.InteractiveBrokers
-        if (!int.TryParse(model.ContractId, out var conid))
-        {
-            return BadRequest("Invalid ContractId for asset. ContractId is required as integer for Interactive Brokers assets.");
-        }
+         if ((Broker)model.Broker == Broker.InteractiveBrokers)
+         {
+            if (!int.TryParse(model.ContractId, out var conid))
+            {
+                return BadRequest("ContractId must be a valid integer for Interactive Brokers assets.");
+            }
+         }
 
         var asset = await _mainDb.Set<Asset>()
              .Where(a => a.PublicId == model.PublicId)
@@ -86,6 +89,8 @@ public class UpdateAssets : Controller
         public Guid PublicId { get; set; }
 
         public string? ContractId { get; set; }
+
+        public required int Broker { get; set; }
 
         public required string UserPublicId { get; set; }
 

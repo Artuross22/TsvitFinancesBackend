@@ -14,6 +14,8 @@ public class Asset
 
     public required string ContractId { get; set; }
 
+    public required Broker Broker { get; set; }
+
     public required string Goal { get; set; }
 
     public required Sector Sector { get; set; }
